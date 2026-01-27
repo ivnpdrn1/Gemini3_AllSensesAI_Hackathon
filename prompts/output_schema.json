@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Gemini 3 Emergency Detection Response",
+  "description": "Structured output schema for Gemini 3 emergency detection analysis",
+  "type": "object",
+  "required": [
+    "risk_level",
+    "confidence",
+    "reasoning",
+    "indicators",
+    "recommended_action"
+  ],
+  "properties": {
+    "risk_level": {
+      "type": "string",
+      "enum": ["CRITICAL", "HIGH", "MEDIUM", "LOW", "NONE"],
+      "description": "Assessed risk level of the situation"
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "Confidence score for the assessment (0.0 to 1.0)"
+    },
+    "reasoning": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Detailed explanation of the risk assessment"
+    },
+    "indicators": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "description": "Specific signals that influenced the decision"
+    },
+    "context_factors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Relevant contextual elements considered"
+    },
+    "recommended_action": {
+      "type": "string",
+      "enum": ["IMMEDIATE_ALERT", "MONITOR", "LOG_ONLY", "DISMISS"],
+      "description": "Recommended system action"
+    },
+    "explanation_for_user": {
+      "type": "string",
+      "description": "Brief explanation suitable for emergency responders"
+    },
+    "multimodal_analysis": {
+      "type": "object",
+      "properties": {
+        "text_signals": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "audio_signals": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "visual_signals": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    }
+  }
+}

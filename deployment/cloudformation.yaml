@@ -1,0 +1,161 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AllSensesAI Gemini 3 Edition - Emergency Detection System'
+
+Parameters:
+  LambdaCodeBucket:
+    Type: String
+    Description: S3 bucket containing Lambda deployment package
+  
+  LambdaCodeKey:
+    Type: String
+    Default: lambda_function.zip
+    Description: S3 key for Lambda deployment package
+  
+  GeminiApiKey:
+    Type: String
+    NoEcho: true
+    Description: Google Gemini API key from Google AI Studio
+  
+  GeminiModel:
+    Type: String
+    Default: gemini-1.5-pro
+    AllowedValues:
+      - gemini-1.5-pro
+      - gemini-1.5-flash
+    Description: Gemini model to use (pro for accuracy, flash for speed)
+
+Resources:
+  # Lambda Execution Role
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: SNSPublishPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sns:Publish
+                Resource: !Ref EmergencyAlertTopic
+        - PolicyName: DynamoDBPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                  - dynamodb:GetItem
+                  - dynamodb:Query
+                Resource: !GetAtt EventLogTable.Arn
+
+  # Lambda Function
+  EmergencyDetectorFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: allsensesai-emergency-detector
+      Runtime: python3.11
+      Handler: aws.lambda_handler.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        S3Bucket: !Ref LambdaCodeBucket
+        S3Key: !Ref LambdaCodeKey
+      Timeout: 30
+      MemorySize: 512
+      Environment:
+        Variables:
+          GOOGLE_GEMINI_API_KEY: !Ref GeminiApiKey
+          GEMINI_MODEL: !Ref GeminiModel
+          EMERGENCY_TOPIC_ARN: !Ref EmergencyAlertTopic
+          EVENT_LOG_TABLE: !Ref EventLogTable
+
+  # API Gateway
+  ApiGateway:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: allsensesai-api
+      ProtocolType: HTTP
+      CorsConfiguration:
+        AllowOrigins:
+          - '*'
+        AllowMethods:
+          - POST
+          - OPTIONS
+        AllowHeaders:
+          - Content-Type
+
+  ApiIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref ApiGateway
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !GetAtt EmergencyDetectorFunction.Arn
+      PayloadFormatVersion: '2.0'
+
+  ApiRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref ApiGateway
+      RouteKey: 'POST /analyze'
+      Target: !Sub 'integrations/${ApiIntegration}'
+
+  ApiStage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId: !Ref ApiGateway
+      StageName: prod
+      AutoDeploy: true
+
+  LambdaApiPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref EmergencyDetectorFunction
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiGateway}/*'
+
+  # SNS Topic for Emergency Alerts
+  EmergencyAlertTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: allsensesai-emergency-alerts
+      DisplayName: AllSensesAI Emergency Alerts
+
+  # DynamoDB Table for Event Logging
+  EventLogTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: allsensesai-event-log
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: event_id
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: N
+      KeySchema:
+        - AttributeName: event_id
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+
+Outputs:
+  ApiEndpoint:
+    Description: API Gateway endpoint URL
+    Value: !Sub 'https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/prod'
+  
+  EmergencyTopicArn:
+    Description: SNS topic ARN for emergency alerts
+    Value: !Ref EmergencyAlertTopic
+  
+  LambdaFunctionArn:
+    Description: Lambda function ARN
+    Value: !GetAtt EmergencyDetectorFunction.Arn

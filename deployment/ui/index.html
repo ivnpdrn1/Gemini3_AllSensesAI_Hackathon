@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AllSensesAI - Gemini Emergency Detection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .header .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .runtime-health {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .runtime-health h2 {
+            color: #333;
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+
+        .health-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .health-item {
+            padding: 12px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            border-left: 4px solid #ddd;
+        }
+
+        .health-item.live {
+            background: #d4edda;
+            border-left-color: #28a745;
+        }
+
+        .health-item.fallback {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+        }
+
+        .health-item.error {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+        }
+
+        .health-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .health-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .pipeline-steps {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .step {
+            padding: 16px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            border-left: 4px solid #ddd;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .step:hover {
+            background: #e9ecef;
+        }
+
+        .step.active {
+            background: #e7f3ff;
+            border-left-color: #007bff;
+        }
+
+        .step.complete {
+            background: #d4edda;
+            border-left-color: #28a745;
+        }
+
+        .step-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .step-status {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: #ddd;
+            color: #666;
+        }
+
+        .step.complete .step-status {
+            background: #28a745;
+            color: white;
+        }
+
+        .step-content {
+            margin-top: 12px;
+            display: none;
+        }
+
+        .step.active .step-content {
+            display: block;
+        }
+
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .input-group input,
+        .input-group textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .input-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .analysis-result {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .analysis-result.show {
+            display: block;
+        }
+
+        .risk-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 16px;
+        }
+
+        .risk-critical {
+            background: #dc3545;
+            color: white;
+        }
+
+        .risk-high {
+            background: #fd7e14;
+            color: white;
+        }
+
+        .risk-medium {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .risk-low {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .risk-none {
+            background: #28a745;
+            color: white;
+        }
+
+        .console-log {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 16px;
+        }
+
+        .console-log .log-entry {
+            margin-bottom: 4px;
+        }
+
+        .console-log .log-info {
+            color: #4fc3f7;
+        }
+
+        .console-log .log-success {
+            color: #81c784;
+        }
+
+        .console-log .log-warning {
+            color: #ffb74d;
+        }
+
+        .console-log .log-error {
+            color: #e57373;
+        }
+
+        .architecture-note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+
+        .architecture-note h3 {
+            color: #856404;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .architecture-note p {
+            color: #856404;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>AllSensesAI - Gemini Emergency Detection</h1>
+            <p class="subtitle">Google Gemini 1.5 Pro | CloudFront + Lambda | Production Runtime</p>
+        </div>
+
+        <!-- Runtime Health Panel -->
+        <div class="runtime-health">
+            <h2>Runtime Health Check</h2>
+            <div class="health-grid">
+                <div class="health-item" id="health-gemini-status">
+                    <div class="health-label">Gemini Client</div>
+                    <div class="health-value">Initializing...</div>
+                </div>
+                <div class="health-item" id="health-model">
+                    <div class="health-label">Model</div>
+                    <div class="health-value">-</div>
+                </div>
+                <div class="health-item" id="health-sdk">
+                    <div class="health-label">SDK Available</div>
+                    <div class="health-value">-</div>
+                </div>
+                <div class="health-item" id="health-mode">
+                    <div class="health-label">Mode</div>
+                    <div class="health-value">-</div>
+                </div>
+                <div class="health-item" id="health-backend">
+                    <div class="health-label">Backend</div>
+                    <div class="health-value">Lambda</div>
+                </div>
+                <div class="health-item" id="health-deployment">
+                    <div class="health-label">Deployment</div>
+                    <div class="health-value">CloudFront</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pipeline Steps -->
+        <div class="pipeline-steps">
+            <h2>Emergency Response Pipeline</h2>
+            
+            <!-- Step 1: Identity -->
+            <div class="step complete" id="step1">
+                <div class="step-header">
+                    <div class="step-title">Step 1: Identity & Emergency Contacts</div>
+                    <div class="step-status">Complete</div>
+                </div>
+                <div class="step-content">
+                    <div class="input-group">
+                        <label>Your Name</label>
+                        <input type="text" id="input-name" value="Demo User" readonly>
+                    </div>
+                    <div class="input-group">
+                        <label>Emergency Contact</label>
+                        <input type="text" id="input-contact" value="+1-555-0100" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Location -->
+            <div class="step complete" id="step2">
+                <div class="step-header">
+                    <div class="step-title">Step 2: Location Services</div>
+                    <div class="step-status">Complete</div>
+                </div>
+                <div class="step-content">
+                    <div class="input-group">
+                        <label>Location</label>
+                        <input type="text" id="input-location" value="37.7749, -122.4194 (San Francisco)" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Voice Capture -->
+            <div class="step complete" id="step3">
+                <div class="step-header">
+                    <div class="step-title">Step 3: Voice/Text Capture</div>
+                    <div class="step-status">Complete</div>
+                </div>
+                <div class="step-content">
+                    <div class="input-group">
+                        <label>Emergency Transcript</label>
+                        <textarea id="input-transcript" placeholder="Enter emergency situation description...">Help me please, I don't feel safe. There's someone following me and I'm scared.</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Gemini Analysis -->
+            <div class="step active" id="step4">
+                <div class="step-header">
+                    <div class="step-title">Step 4: Gemini Threat Analysis</div>
+                    <div class="step-status">Ready</div>
+                </div>
+                <div class="step-content">
+                    <p style="margin-bottom: 12px; color: #666; font-size: 14px;">
+                        Google Gemini 1.5 Pro will analyze the situation for emergency indicators.
+                    </p>
+                    <button class="btn btn-primary" id="btn-analyze" onclick="analyzeWithGemini()">
+                        Analyze with Gemini
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 5: Emergency Alerting -->
+            <div class="step" id="step5">
+                <div class="step-header">
+                    <div class="step-title">Step 5: Emergency Alerting</div>
+                    <div class="step-status">Pending</div>
+                </div>
+                <div class="step-content">
+                    <p style="color: #666; font-size: 14px;">
+                        Alerts will be sent based on Gemini's risk assessment.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analysis Result -->
+        <div class="analysis-result" id="analysis-result">
+            <h2>Gemini Analysis Result</h2>
+            <div id="result-content"></div>
+            
+            <div class="architecture-note">
+                <h3>Architecture: ERNIE → Gemini Parity</h3>
+                <p>
+                    <strong>This system demonstrates architectural parity between ERNIE and Gemini.</strong>
+                    The same 5-step pipeline (Identity → Location → Voice → AI Analysis → Alerting) works identically with both providers.
+                    Gemini 1.5 Pro replaces ERNIE as the intelligence layer while preserving all safety guarantees, fallback mechanisms, and runtime diagnostics.
+                    Deployed on AWS CloudFront + Lambda for production-grade reliability and HTTPS GPS access.
+                </p>
+            </div>
+
+            <div class="console-log" id="console-log"></div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration - Lambda Function URL will be injected during deployment
+        const LAMBDA_FUNCTION_URL = '{{LAMBDA_FUNCTION_URL}}';
+
+        // Runtime state
+        const RUNTIME = {
+            geminiAvailable: false,
+            modelName: 'gemini-1.5-pro',
+            sdkLoaded: false,
+            mode: 'CLOUDFRONT',
+            logs: []
+        };
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            log('System initializing...', 'info');
+            log(`Lambda Function URL: ${LAMBDA_FUNCTION_URL}`, 'info');
+            checkGeminiRuntime();
+        });
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toISOString().split('T')[1].split('.')[0];
+            const entry = `[${timestamp}] ${message}`;
+            RUNTIME.logs.push({ message: entry, type });
+            
+            console.log(`[GEMINI-CLOUDFRONT] ${message}`);
+            updateConsoleLog();
+        }
+
+        function updateConsoleLog() {
+            const consoleEl = document.getElementById('console-log');
+            if (!consoleEl) return;
+            
+            consoleEl.innerHTML = RUNTIME.logs.map(log => 
+                `<div class="log-entry log-${log.type}">${log.message}</div>`
+            ).join('');
+            
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+
+        function checkGeminiRuntime() {
+            log('Checking Gemini runtime via Lambda...', 'info');
+            
+            fetch(`${LAMBDA_FUNCTION_URL}/health`)
+                .then(response => response.json())
+                .then(data => {
+                    RUNTIME.sdkLoaded = data.sdk_loaded;
+                    RUNTIME.geminiAvailable = data.gemini_available;
+                    RUNTIME.mode = data.mode;
+                    RUNTIME.modelName = data.model_name;
+                    
+                    updateHealthPanel();
+                    
+                    if (RUNTIME.geminiAvailable) {
+                        log('Gemini SDK detected and initialized', 'success');
+                        log(`Model: ${RUNTIME.modelName}`, 'info');
+                    } else {
+                        log('Gemini API not available - using fallback mode', 'warning');
+                        log('Lambda will use keyword matching for demo', 'info');
+                    }
+                })
+                .catch(error => {
+                    log(`Lambda health check failed: ${error.message}`, 'error');
+                    log('Using mock mode for demo', 'warning');
+                    
+                    RUNTIME.sdkLoaded = false;
+                    RUNTIME.geminiAvailable = false;
+                    RUNTIME.mode = 'MOCK';
+                    
+                    updateHealthPanel();
+                });
+        }
+
+        function updateHealthPanel() {
+            // Gemini Status
+            const statusEl = document.getElementById('health-gemini-status');
+            statusEl.className = 'health-item ' + (RUNTIME.geminiAvailable ? 'live' : 'fallback');
+            statusEl.querySelector('.health-value').textContent = RUNTIME.geminiAvailable ? 'LIVE' : 'FALLBACK';
+            
+            // Model
+            const modelEl = document.getElementById('health-model');
+            modelEl.className = 'health-item live';
+            modelEl.querySelector('.health-value').textContent = RUNTIME.modelName;
+            
+            // SDK
+            const sdkEl = document.getElementById('health-sdk');
+            sdkEl.className = 'health-item ' + (RUNTIME.sdkLoaded ? 'live' : 'fallback');
+            sdkEl.querySelector('.health-value').textContent = RUNTIME.sdkLoaded ? 'Yes' : 'No';
+            
+            // Mode
+            const modeEl = document.getElementById('health-mode');
+            modeEl.className = 'health-item ' + (RUNTIME.mode === 'LIVE' ? 'live' : 'fallback');
+            modeEl.querySelector('.health-value').textContent = RUNTIME.mode;
+            
+            // Backend
+            const backendEl = document.getElementById('health-backend');
+            backendEl.className = 'health-item live';
+            
+            // Deployment
+            const deploymentEl = document.getElementById('health-deployment');
+            deploymentEl.className = 'health-item live';
+        }
+
+        async function analyzeWithGemini() {
+            const btn = document.getElementById('btn-analyze');
+            btn.disabled = true;
+            btn.textContent = 'Analyzing...';
+            
+            log('Starting Gemini analysis...', 'info');
+            
+            const transcript = document.getElementById('input-transcript').value;
+            const location = document.getElementById('input-location').value;
+            const name = document.getElementById('input-name').value;
+            const contact = document.getElementById('input-contact').value;
+            
+            try {
+                log('Calling Lambda Function URL...', 'info');
+                const response = await fetch(`${LAMBDA_FUNCTION_URL}/analyze`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        transcript,
+                        location,
+                        name,
+                        contact
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Lambda returned ${response.status}`);
+                }
+                
+                const result = await response.json();
+                log(`Lambda response: ${result.mode} mode`, 'info');
+                log(`Analysis complete: ${result.risk_level} (confidence: ${result.confidence})`, 'success');
+                
+                displayResult(result);
+                
+                // Update steps
+                document.getElementById('step4').classList.add('complete');
+                document.getElementById('step4').classList.remove('active');
+                document.getElementById('step4').querySelector('.step-status').textContent = 'Complete';
+                
+                if (result.risk_level === 'HIGH' || result.risk_level === 'CRITICAL') {
+                    document.getElementById('step5').classList.add('active');
+                    document.getElementById('step5').querySelector('.step-status').textContent = 'Alerting';
+                    log('Emergency alert triggered', 'warning');
+                }
+                
+            } catch (error) {
+                log(`Error: ${error.message}`, 'error');
+                log('Using fallback response for safety', 'warning');
+                
+                const fallbackResult = {
+                    risk_level: 'MEDIUM',
+                    confidence: 0.0,
+                    reasoning: 'Analysis unavailable. Using fallback response for safety.',
+                    indicators: ['API_ERROR'],
+                    recommended_action: 'MONITOR',
+                    response_time: 0,
+                    mode: 'FALLBACK'
+                };
+                
+                displayResult(fallbackResult);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Analyze Again';
+            }
+        }
+
+        function displayResult(result) {
+            const resultDiv = document.getElementById('analysis-result');
+            const contentDiv = document.getElementById('result-content');
+            
+            const riskClass = `risk-${result.risk_level.toLowerCase()}`;
+            
+            contentDiv.innerHTML = `
+                <div class="risk-badge ${riskClass}">
+                    Risk Level: ${result.risk_level}
+                </div>
+                <p><strong>Confidence:</strong> ${(result.confidence * 100).toFixed(0)}%</p>
+                <p><strong>Mode:</strong> ${result.mode}</p>
+                <p><strong>Response Time:</strong> ${result.response_time}s</p>
+                <p><strong>Recommended Action:</strong> ${result.recommended_action}</p>
+                <p><strong>Reasoning:</strong> ${result.reasoning}</p>
+                <p><strong>Indicators:</strong> ${result.indicators.join(', ')}</p>
+            `;
+            
+            resultDiv.classList.add('show');
+        }
+    </script>
+</body>
+</html>

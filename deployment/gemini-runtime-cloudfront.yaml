@@ -1,0 +1,188 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AllSensesAI Gemini Runtime - CloudFront + Lambda Function URL Deployment'
+
+Parameters:
+  GeminiApiKeyParameter:
+    Type: String
+    Default: /allsensesai/gemini/api-key
+    Description: SSM Parameter Store path for Gemini API key
+  
+  GeminiModel:
+    Type: String
+    Default: gemini-1.5-pro
+    AllowedValues:
+      - gemini-1.5-pro
+      - gemini-1.5-flash
+    Description: Gemini model to use (pro for accuracy, flash for speed)
+
+Resources:
+  # S3 Bucket for UI Assets
+  UIAssetsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub 'allsensesai-gemini-ui-${AWS::AccountId}'
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      CorsConfiguration:
+        CorsRules:
+          - AllowedOrigins:
+              - '*'
+            AllowedMethods:
+              - GET
+              - HEAD
+            AllowedHeaders:
+              - '*'
+
+  # S3 Bucket Policy for CloudFront Access
+  UIAssetsBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref UIAssetsBucket
+      PolicyDocument:
+        Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: '*'
+            Action: s3:GetObject
+            Resource: !Sub '${UIAssetsBucket.Arn}/*'
+
+  # Lambda Execution Role
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: SSMParameterAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ssm:GetParameter
+                Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter${GeminiApiKeyParameter}'
+
+  # Lambda Function
+  GeminiAnalysisFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: allsensesai-gemini-analysis
+      Runtime: python3.11
+      Handler: gemini_handler.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        ZipFile: |
+          # Placeholder - will be replaced by deployment script
+          def lambda_handler(event, context):
+              return {
+                  'statusCode': 200,
+                  'body': '{"status": "placeholder"}'
+              }
+      Timeout: 30
+      MemorySize: 512
+      Environment:
+        Variables:
+          GEMINI_API_KEY_PARAMETER: !Ref GeminiApiKeyParameter
+          GEMINI_MODEL: !Ref GeminiModel
+
+  # Lambda Function URL
+  GeminiAnalysisFunctionUrl:
+    Type: AWS::Lambda::Url
+    Properties:
+      TargetFunctionArn: !GetAtt GeminiAnalysisFunction.Arn
+      AuthType: NONE
+      Cors:
+        AllowOrigins:
+          - '*'
+        AllowMethods:
+          - POST
+          - GET
+          - OPTIONS
+        AllowHeaders:
+          - Content-Type
+        MaxAge: 300
+
+  # Lambda Permission for Function URL
+  GeminiAnalysisFunctionUrlPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref GeminiAnalysisFunction
+      Action: lambda:InvokeFunctionUrl
+      Principal: '*'
+      FunctionUrlAuthType: NONE
+
+  # CloudFront Distribution
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Comment: 'AllSensesAI Gemini Runtime Demo - HTTPS for GPS Access'
+        DefaultCacheBehavior:
+          TargetOriginId: S3Origin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          CachedMethods:
+            - GET
+            - HEAD
+          Compress: true
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+          DefaultTTL: 300
+          MaxTTL: 600
+          MinTTL: 0
+        DefaultRootObject: index.html
+        Enabled: true
+        HttpVersion: http2
+        Origins:
+          - Id: S3Origin
+            DomainName: !Sub '${UIAssetsBucket}.s3-website-${AWS::Region}.amazonaws.com'
+            CustomOriginConfig:
+              HTTPPort: 80
+              HTTPSPort: 443
+              OriginProtocolPolicy: http-only
+        PriceClass: PriceClass_100
+        ViewerCertificate:
+          CloudFrontDefaultCertificate: true
+
+Outputs:
+  CloudFrontUrl:
+    Description: 'HTTPS URL for Gemini Demo (GPS-enabled)'
+    Value: !Sub 'https://${CloudFrontDistribution.DomainName}'
+    Export:
+      Name: !Sub '${AWS::StackName}-CloudFrontUrl'
+
+  LambdaFunctionUrl:
+    Description: 'Lambda Function URL for backend API'
+    Value: !GetAtt GeminiAnalysisFunctionUrl.FunctionUrl
+    Export:
+      Name: !Sub '${AWS::StackName}-LambdaFunctionUrl'
+
+  S3BucketName:
+    Description: 'S3 bucket for UI assets'
+    Value: !Ref UIAssetsBucket
+
+  DistributionId:
+    Description: 'CloudFront Distribution ID'
+    Value: !Ref CloudFrontDistribution
+
+  LambdaFunctionArn:
+    Description: 'Lambda function ARN'
+    Value: !GetAtt GeminiAnalysisFunction.Arn
