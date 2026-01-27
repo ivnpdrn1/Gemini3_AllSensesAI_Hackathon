@@ -1,0 +1,7 @@
+{
+    "Name": "gemini-demo-oac-20260127092219",
+    "Description": "OAC for Gemini demo",
+    "SigningProtocol": "sigv4",
+    "SigningBehavior": "always",
+    "OriginAccessControlOriginType": "s3"
+}

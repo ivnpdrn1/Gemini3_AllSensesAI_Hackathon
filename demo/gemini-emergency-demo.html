@@ -314,7 +314,7 @@
         <!-- Header -->
         <div class="header">
             <h1>AllSensesAI - Gemini Emergency Detection</h1>
-            <p class="subtitle">Google Gemini 1.5 Pro | Production-Grade Safety Pipeline | Jury Demo</p>
+            <p class="subtitle">Google Gemini 1.5 Pro | Client-Side Demo | Keyword Matching</p>
         </div>
 
         <!-- Runtime Health Panel -->
@@ -485,36 +485,15 @@
 
         function checkGeminiRuntime() {
             log('Checking Gemini runtime...', 'info');
+            log('Running in client-side demo mode', 'info');
             
-            // Check if backend is available
-            fetch('http://localhost:5000/health')
-                .then(response => response.json())
-                .then(data => {
-                    RUNTIME.sdkLoaded = data.sdk_loaded;
-                    RUNTIME.geminiAvailable = data.gemini_available;
-                    RUNTIME.mode = data.mode;
-                    RUNTIME.modelName = data.model_name;
-                    
-                    updateHealthPanel();
-                    
-                    if (RUNTIME.geminiAvailable) {
-                        log('Gemini SDK detected and initialized', 'success');
-                        log(`Model: ${RUNTIME.modelName}`, 'info');
-                    } else {
-                        log('Gemini API not available - using fallback mode', 'warning');
-                        log('Backend will use keyword matching for demo', 'info');
-                    }
-                })
-                .catch(error => {
-                    log('Backend not available - using mock mode', 'warning');
-                    log('Start backend with: python demo/backend.py', 'info');
-                    
-                    RUNTIME.sdkLoaded = false;
-                    RUNTIME.geminiAvailable = false;
-                    RUNTIME.mode = 'MOCK';
-                    
-                    updateHealthPanel();
-                });
+            // Client-side demo mode (no backend)
+            RUNTIME.sdkLoaded = false;
+            RUNTIME.geminiAvailable = false;
+            RUNTIME.mode = 'DEMO';
+            
+            updateHealthPanel();
+            log('Demo mode: Using keyword matching for analysis', 'info');
         }
 
         function updateHealthPanel() {
@@ -560,34 +539,8 @@
             const contact = document.getElementById('input-contact').value;
             
             try {
-                let result;
-                
-                // Try backend API first
-                try {
-                    log('Calling backend API...', 'info');
-                    const response = await fetch('http://localhost:5000/analyze', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            transcript,
-                            location,
-                            name,
-                            contact
-                        })
-                    });
-                    
-                    if (response.ok) {
-                        result = await response.json();
-                        log(`Backend response: ${result.mode} mode`, 'info');
-                    } else {
-                        throw new Error('Backend returned error');
-                    }
-                } catch (backendError) {
-                    log('Backend unavailable, using mock mode', 'warning');
-                    result = await mockGeminiResponse(transcript, location);
-                }
+                log('Using client-side keyword matching', 'info');
+                const result = await mockGeminiResponse(transcript, location);
                 
                 log(`Analysis complete: ${result.risk_level} (confidence: ${result.confidence})`, 'success');
                 displayResult(result);

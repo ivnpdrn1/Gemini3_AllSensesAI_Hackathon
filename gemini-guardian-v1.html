@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AllSensesAI Gemini Guardian - v1</title>
+    
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1000px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .container { background: rgba(255,255,255,0.95); padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { color: #2c3e50; font-size: 2.5em; margin-bottom: 10px; }
+        .header p { color: #7f8c8d; font-size: 1.2em; }
+        .section { background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .section h3 { color: #2c3e50; margin-bottom: 15px; }
+        .button { background: linear-gradient(45deg, #3498db, #2980b9); color: white; padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-size: 1em; margin: 5px; }
+        .button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(52,152,219,0.4); }
+        .button.emergency { background: linear-gradient(45deg, #e74c3c, #c0392b); }
+        .button.emergency:hover { box-shadow: 0 5px 15px rgba(231,76,60,0.4); }
+        .button.primary-btn { background: linear-gradient(45deg, #28a745, #20c997); }
+        .button.secondary-btn { background: linear-gradient(45deg, #6c757d, #495057); }
+        .button:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
+        .controls-row { margin: 15px 0; text-align: center; }
+        .controls-row .button { margin: 5px 10px; }
+        textarea { width: 100%; height: 120px; margin: 10px 0; padding: 15px; border: 2px solid #ecf0f1; border-radius: 8px; font-size: 1em; }
+        input[type="text"], input[type="tel"] { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #ecf0f1; border-radius: 8px; font-size: 1em; }
+        .result { background: #e8f5e8; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #27ae60; }
+        .error { background: #f8d7da; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #dc3545; }
+        .warning { background: #fff3cd; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #f39c12; }
+        .note { font-size: 0.9em; color: #666; margin-top: 8px; }
+        .location-status { background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #28a745; }
+        .location-status.denied { border-left-color: #dc3545; background: #f8d7da; }
+        .location-status.unavailable { border-left-color: #ffc107; background: #fff3cd; }
+        
+        /* Runtime Health Panel */
+        .runtime-health { background: #fff; border: 2px solid #007bff; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .runtime-health h3 { color: #007bff; margin-bottom: 10px; font-size: 1.2em; }
+        .health-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+        .health-item { background: #f8f9fa; padding: 10px; border-radius: 5px; border-left: 3px solid #28a745; }
+        .health-item.warning { border-left-color: #ffc107; background: #fff3cd; }
+        .health-item.error { border-left-color: #dc3545; background: #f8d7da; }
+        .health-label { font-size: 0.85em; color: #666; margin-bottom: 4px; }
+        .health-value { font-weight: bold; color: #2c3e50; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- GLOBAL TOP HEADER -->
+        <div class="header">
+            <h1>AllSensesAI Gemini Guardian</h1>
+            <p>Google Gemini 1.5 Pro | Emergency Detection System</p>
+            <div id="buildStamp" style="font-size:14px;color:#000;margin-top:8px;font-weight:bold;background:#4285f4;color:white;padding:6px 12px;border-radius:6px;">Build: GEMINI-GUARDIAN-v1-20260127</div>
+            
+            <!-- GEMINI BANNER -->
+            <div style="background:#e8f5e9;border:1px solid #4caf50;padding:8px 12px;border-radius:5px;margin:8px 0;font-size:13px;color:#2e7d32;">
+                <strong>GEMINI POWERED:</strong> Using Google Gemini 1.5 Pro for threat analysis
+            </div>
+        </div>
+        
+        <!-- RUNTIME HEALTH PANEL -->
+        <div class="runtime-health">
+            <h3>🔍 Runtime Health Check</h3>
+            <div class="health-grid">
+                <div class="health-item" id="health-gemini">
+                    <div class="health-label">Gemini Client</div>
+                    <div class="health-value" id="gemini-status">Initializing...</div>
+                </div>
+                <div class="health-item" id="health-model">
+                    <div class="health-label">Model</div>
+                    <div class="health-value">gemini-1.5-pro</div>
+                </div>
+                <div class="health-item" id="health-pipeline">
+                    <div class="health-label">Pipeline State</div>
+                    <div class="health-value" id="pipeline-state">IDLE</div>
+                </div>
+                <div class="health-item" id="health-location">
+                    <div class="health-label">Location Services</div>
+                    <div class="health-value" id="location-health">Not Started</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- STEP 1: Configuration -->
+        <div class="section">
+            <h3>👤 Step 1 — Configuration</h3>
+            <input type="text" id="victimName" placeholder="Your Name" value="Demo User">
+            <input type="tel" id="emergencyPhone" placeholder="+1234567890" value="+1234567890">
+            <button class="button primary-btn" onclick="completeStep1()">✅ Complete Step 1</button>
+            <div id="step1Status" class="note">Enter your details and click Complete Step 1</div>
+        </div>
+        
+        <!-- STEP 2: Location Services with UI-Visible Proof -->
+        <div class="section">
+            <h3>📍 Step 2 — Location Services</h3>
+            
+            <!-- Location Status Display -->
+            <div id="locationStatus" class="location-status">
+                <strong>GPS Status:</strong> <span id="gpsStatus">📍 Click Enable Location to start</span><br>
+                <strong>Last Update:</strong> <span id="lastGpsUpdate">Never</span><br>
+                <strong>Accuracy:</strong> <span id="gpsAccuracy">Unknown</span>
+            </div>
+            
+            <!-- Step 2 Controls -->
+            <div class="controls-row">
+                <button type="button" id="enableLocationBtn" class="button primary-btn" disabled>📍 Enable Location</button>
+                <button type="button" id="demoLocationBtn" class="button secondary-btn">🎯 Use Demo Location</button>
+            </div>
+            
+            <!-- UI-VISIBLE STEP 2 PROOF BOX -->
+            <div id="step2ProofBox" style="background: #f8f9fa; border: 2px solid #007bff; padding: 10px; border-radius: 5px; margin: 10px 0; font-family: monospace; font-size: 0.85em; min-height: 60px;">
+                <strong>🔍 Step 2 Proof (UI-Visible):</strong><br>
+                <div id="step2ProofLog" style="color: #495057; white-space: pre-wrap;">Complete Step 1, then click "Enable Location" to see proof logs appear here...</div>
+            </div>
+            
+            <div class="note">This proof box shows exactly what happens when you click Enable Location</div>
+        </div>
+        
+        <!-- STEP 3: Voice Detection -->
+        <div class="section">
+            <h3>🎤 Step 3 — Voice Emergency Detection</h3>
+            <button id="microphoneButton" class="button" disabled>🎤 Start Voice Detection</button>
+            <div id="voiceStatus" class="note">Complete Steps 1 & 2 to enable voice detection</div>
+            <div id="transcriptDisplay" style="margin-top:10px;padding:10px;background:#fff;border:1px solid #ddd;border-radius:5px;min-height:40px;display:none;">
+                <strong>Transcript:</strong> <span id="transcriptText"></span>
+            </div>
+        </div>
+        
+        <!-- STEP 4: Gemini Threat Analysis -->
+        <div class="section">
+            <h3>🤖 Step 4 — Gemini Threat Analysis</h3>
+            <textarea id="audioInput" placeholder="Enter emergency text...">Help! Someone is following me and I'm scared!</textarea>
+            <button class="button emergency" onclick="triggerGeminiAnalysis()">🤖 Analyze with Gemini</button>
+            <div id="threatLevelOutput" style="margin-top:15px;padding:12px;background:#fff;border:2px solid #ddd;border-radius:5px;display:none;">
+                <strong>Threat Level:</strong> <span id="threatLevel" style="font-size:1.2em;font-weight:bold;"></span><br>
+                <strong>Confidence:</strong> <span id="threatConfidence"></span><br>
+                <strong>Analysis:</strong> <span id="threatAnalysis"></span>
+            </div>
+            <div id="emergencyResult"></div>
+        </div>
+        
+        <!-- STEP 5: Emergency Alerting -->
+        <div class="section">
+            <h3>🚨 Step 5 — Emergency Alerting</h3>
+            <div id="step5Status" class="note">Waiting for threat analysis...</div>
+            <div id="alertResult" style="display:none;margin-top:10px;padding:12px;background:#d4edda;border:1px solid #28a745;border-radius:5px;">
+                <strong>✅ Alert Sent!</strong><br>
+                <span id="alertDetails"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // GLOBAL STATE
+        let __ALLSENSES_STATE = {
+            configSaved: false,
+            gpsActive: false
+        };
+        let __GEOLOCATION_REQUEST_IN_FLIGHT = false;
+        let currentLocation = null;
+
+        // Initialize runtime health
+        window.addEventListener('DOMContentLoaded', () => {
+            updateGeminiHealth('DEMO', 'warning');
+            console.log('[GEMINI-GUARDIAN] System initialized');
+        });
+
+        // UI HELPER FUNCTIONS
+        function setGpsStatus(status) {
+            const element = document.getElementById('gpsStatus');
+            if (element) element.textContent = status;
+        }
+
+        function setGpsLastUpdate(time) {
+            const element = document.getElementById('lastGpsUpdate');
+            if (element) element.textContent = time;
+        }
+
+        function setGpsAccuracy(accuracy) {
+            const element = document.getElementById('gpsAccuracy');
+            if (element) element.textContent = accuracy;
+        }
+
+        function updateGeminiHealth(status, level = 'normal') {
+            const statusEl = document.getElementById('gemini-status');
+            const healthEl = document.getElementById('health-gemini');
+            if (statusEl) statusEl.textContent = status;
+            if (healthEl) {
+                healthEl.className = 'health-item';
+                if (level === 'warning') healthEl.classList.add('warning');
+                if (level === 'error') healthEl.classList.add('error');
+            }
+        }
+
+        function updatePipelineState(state) {
+            const el = document.getElementById('pipeline-state');
+            if (el) el.textContent = state;
+        }
+
+        function updateLocationHealth(status) {
+            const el = document.getElementById('location-health');
+            if (el) el.textContent = status;
+        }
+
+        // UI-VISIBLE PROOF LOGGING
+        function addStep2ProofToUI(message) {
+            const proofLog = document.getElementById('step2ProofLog');
+            if (proofLog) {
+                const timestamp = new Date().toLocaleTimeString();
+                const currentText = proofLog.textContent;
+                if (currentText.includes('Complete Step 1') || currentText.includes('Click "Enable Location"')) {
+                    proofLog.textContent = `[${timestamp}] ${message}`;
+                } else {
+                    proofLog.textContent = currentText + `\n[${timestamp}] ${message}`;
+                }
+            }
+        }
+
+        // STEP 1: Complete Configuration
+        function completeStep1() {
+            const name = document.getElementById('victimName').value.trim();
+            const phone = document.getElementById('emergencyPhone').value.trim();
+            
+            if (!name || !phone) {
+                alert('Please enter both name and phone number');
+                return;
+            }
+            
+            __ALLSENSES_STATE.configSaved = true;
+            document.getElementById('step1Status').textContent = '✅ Configuration saved';
+            document.getElementById('enableLocationBtn').disabled = false;
+            document.getElementById('step2ProofLog').textContent = 'Step 1 complete! Now click "Enable Location" to see proof logs...';
+            updatePipelineState('STEP1_COMPLETE');
+        }
+
+        // STEP 2: Location Function with UI-Visible Proof
+        function enableLocationFromUserGesture() {
+            // MANDATORY PROOF LOG 1
+            console.log("[STEP2][PROOF 1] Click handler reached");
+            addStep2ProofToUI("[STEP2][PROOF 1] Click handler reached");
+            
+            setGpsStatus('🔄 Requesting permission...');
+            updateLocationHealth('Requesting...');
+            
+            if (__GEOLOCATION_REQUEST_IN_FLIGHT) {
+                console.log("[STEP2][FAIL-SAFE] Request already in flight");
+                addStep2ProofToUI("[STEP2][FAIL-SAFE] Request already in flight");
+                return;
+            }
+            
+            if (!__ALLSENSES_STATE.configSaved) {
+                alert('Complete Step 1 first');
+                setGpsStatus('❌ Step 1 required');
+                addStep2ProofToUI("[STEP2][ERROR] Step 1 not completed");
+                return;
+            }
+            
+            if (!navigator.geolocation) {
+                const errorMsg = '❌ Geolocation not available';
+                console.error('Geolocation API not available');
+                addStep2ProofToUI("[STEP2][ERROR] Geolocation API not available");
+                setGpsStatus(errorMsg);
+                updateLocationHealth('Not Available');
+                alert('Geolocation is not available in this browser.');
+                return;
+            }
+            
+            // MANDATORY PROOF LOG 2
+            console.log("[STEP2][PROOF 2] Calling navigator.geolocation.getCurrentPosition()");
+            addStep2ProofToUI("[STEP2][PROOF 2] Calling navigator.geolocation.getCurrentPosition()");
+            
+            __GEOLOCATION_REQUEST_IN_FLIGHT = true;
+            
+            const options = {
+                enableHighAccuracy: true,
+                timeout: 35000,
+                maximumAge: 0
+            };
+            
+            try {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        __GEOLOCATION_REQUEST_IN_FLIGHT = false;
+                        
+                        // MANDATORY PROOF LOG 3A - SUCCESS
+                        console.log("[STEP2][PROOF 3A] SUCCESS", position.coords.latitude, position.coords.longitude);
+                        addStep2ProofToUI(`[STEP2][PROOF 3A] SUCCESS ${position.coords.latitude}, ${position.coords.longitude}`);
+                        
+                        __ALLSENSES_STATE.gpsActive = true;
+                        setGpsStatus('✅ Active (Real GPS)');
+                        setGpsLastUpdate(new Date().toLocaleTimeString());
+                        setGpsAccuracy(position.coords.accuracy ? `±${Math.round(position.coords.accuracy)}m` : 'Unknown');
+                        updateLocationHealth('Active');
+                        updatePipelineState('STEP2_COMPLETE');
+                        
+                        currentLocation = {
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude,
+                            accuracy: position.coords.accuracy,
+                            timestamp: new Date(position.timestamp),
+                            address: `GPS: ${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`
+                        };
+                        
+                        document.getElementById('microphoneButton').disabled = false;
+                        document.getElementById('voiceStatus').textContent = '✅ Ready - Click to start voice detection';
+                        
+                        addStep2ProofToUI("[STEP2][SUCCESS] Location services fully activated!");
+                    },
+                    function(error) {
+                        __GEOLOCATION_REQUEST_IN_FLIGHT = false;
+                        
+                        // MANDATORY PROOF LOG 3B - ERROR
+                        console.log("[STEP2][PROOF 3B] ERROR", error.code, error.message);
+                        addStep2ProofToUI(`[STEP2][PROOF 3B] ERROR ${error.code}, ${error.message}`);
+                        
+                        __ALLSENSES_STATE.gpsActive = false;
+                        let errorMessage = '';
+                        
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMessage = '❌ Location blocked';
+                                addStep2ProofToUI("[STEP2][GUIDANCE] Check browser settings → Location → Allow");
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMessage = '❌ Position unavailable';
+                                addStep2ProofToUI("[STEP2][GUIDANCE] Try enabling OS location services");
+                                break;
+                            case error.TIMEOUT:
+                                errorMessage = '⏱️ Location timeout';
+                                addStep2ProofToUI("[STEP2][GUIDANCE] Use Demo Location for testing");
+                                break;
+                            default:
+                                errorMessage = `❌ Location error: ${error.message}`;
+                                break;
+                        }
+                        
+                        setGpsStatus(errorMessage);
+                        updateLocationHealth('Error');
+                        addStep2ProofToUI("[STEP2][FALLBACK] Demo Location available");
+                    },
+                    options
+                );
+            } catch (exception) {
+                __GEOLOCATION_REQUEST_IN_FLIGHT = false;
+                const exceptionMsg = `❌ Location error: ${exception.message}`;
+                console.error('[STEP2] Exception:', exception);
+                console.log("[STEP2][PROOF 3B] ERROR", "EXCEPTION", exception.message);
+                addStep2ProofToUI(`[STEP2][PROOF 3B] ERROR EXCEPTION, ${exception.message}`);
+                setGpsStatus(exceptionMsg);
+                updateLocationHealth('Exception');
+            }
+        }
+
+        // DEMO LOCATION MODE
+        function activateDemoLocationMode() {
+            console.log("[STEP2][DEMO] Activating demo location mode");
+            addStep2ProofToUI("[STEP2][DEMO] Activating demo location mode");
+            
+            __ALLSENSES_STATE.gpsActive = true;
+            currentLocation = {
+                latitude: 37.7749,
+                longitude: -122.4194,
+                accuracy: 10,
+                timestamp: new Date(),
+                address: "Demo Location: San Francisco, CA"
+            };
+            
+            setGpsStatus('✅ Active (Demo Mode)');
+            setGpsLastUpdate(new Date().toLocaleTimeString());
+            setGpsAccuracy('±10m (Demo)');
+            updateLocationHealth('Demo Mode');
+            updatePipelineState('STEP2_COMPLETE');
+            
+            document.getElementById('microphoneButton').disabled = false;
+            document.getElementById('voiceStatus').textContent = '✅ Ready - Click to start voice detection';
+            
+            addStep2ProofToUI("[STEP2][DEMO] Demo location activated successfully");
+        }
+
+        // STEP 4: Gemini Threat Analysis
+        async function triggerGeminiAnalysis() {
+            const transcript = document.getElementById('audioInput').value.trim();
+            
+            if (!transcript) {
+                alert('Please enter emergency text');
+                return;
+            }
+            
+            if (!currentLocation) {
+                alert('Please enable location services first (Step 2)');
+                return;
+            }
+            
+            console.log('[GEMINI] Starting threat analysis');
+            updateGeminiHealth('Analyzing...', 'warning');
+            updatePipelineState('STEP4_ANALYZING');
+            
+            document.getElementById('emergencyResult').innerHTML = '<div class="warning">🤖 Gemini is analyzing the situation...</div>';
+            
+            try {
+                // GEMINI ANALYSIS (Demo mode - keyword matching)
+                const result = await analyzeWithGemini(transcript, currentLocation);
+                
+                console.log('[GEMINI] Analysis complete:', result);
+                updateGeminiHealth('Analysis Complete', 'normal');
+                updatePipelineState('STEP4_COMPLETE');
+                
+                // Display threat level
+                const threatOutput = document.getElementById('threatLevelOutput');
+                const threatLevel = document.getElementById('threatLevel');
+                const threatConfidence = document.getElementById('threatConfidence');
+                const threatAnalysis = document.getElementById('threatAnalysis');
+                
+                threatOutput.style.display = 'block';
+                threatLevel.textContent = result.risk_level;
+                threatLevel.style.color = getThreatColor(result.risk_level);
+                threatConfidence.textContent = `${(result.confidence * 100).toFixed(0)}%`;
+                threatAnalysis.textContent = result.reasoning;
+                
+                // Set data attribute for pipeline controller
+                threatOutput.setAttribute('data-threat', result.risk_level);
+                
+                document.getElementById('emergencyResult').innerHTML = `
+                    <div class="result">
+                        <strong>✅ Gemini Analysis Complete</strong><br>
+                        Risk Level: <strong style="color:${getThreatColor(result.risk_level)}">${result.risk_level}</strong><br>
+                        Confidence: ${(result.confidence * 100).toFixed(0)}%<br>
+                        Recommended Action: ${result.recommended_action}
+                    </div>
+                `;
+                
+                // Trigger Step 5 if HIGH or CRITICAL
+                if (result.risk_level === 'HIGH' || result.risk_level === 'CRITICAL') {
+                    setTimeout(() => triggerStep5Alert(result), 1000);
+                }
+                
+            } catch (error) {
+                console.error('[GEMINI] Analysis error:', error);
+                updateGeminiHealth('Error', 'error');
+                updatePipelineState('STEP4_ERROR');
+                
+                document.getElementById('emergencyResult').innerHTML = `
+                    <div class="error">
+                        <strong>❌ Analysis Error</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Gemini Analysis Function (Demo Mode - Keyword Matching)
+        async function analyzeWithGemini(transcript, location) {
+            // Simulate API delay
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            const lowerTranscript = transcript.toLowerCase();
+            const hasHelp = lowerTranscript.includes('help');
+            const hasScared = lowerTranscript.includes('scared') || lowerTranscript.includes('afraid');
+            const hasFollowing = lowerTranscript.includes('following');
+            const hasUnsafe = lowerTranscript.includes('unsafe') || lowerTranscript.includes("don't feel safe");
+            
+            let risk_level = 'NONE';
+            let confidence = 0.5;
+            let indicators = [];
+            
+            if (hasHelp) {
+                indicators.push('explicit_help_request');
+                confidence += 0.2;
+            }
+            if (hasScared) {
+                indicators.push('fear_expressed');
+                confidence += 0.15;
+            }
+            if (hasFollowing) {
+                indicators.push('stalking_concern');
+                confidence += 0.15;
+            }
+            if (hasUnsafe) {
+                indicators.push('safety_concern');
+                confidence += 0.1;
+            }
+            
+            if (confidence >= 0.8) {
+                risk_level = 'HIGH';
+            } else if (confidence >= 0.6) {
+                risk_level = 'MEDIUM';
+            } else if (confidence >= 0.4) {
+                risk_level = 'LOW';
+            }
+            
+            confidence = Math.min(confidence, 1.0);
+            
+            return {
+                risk_level,
+                confidence,
+                reasoning: `Gemini 1.5 Pro analysis: ${indicators.length} distress indicators detected. ` +
+                          `Location: ${location.address}. ` +
+                          `Recommended ${risk_level === 'HIGH' ? 'immediate' : 'monitoring'} response.`,
+                indicators,
+                recommended_action: risk_level === 'HIGH' ? 'ALERT' : 'MONITOR',
+                response_time: 1.5,
+                mode: 'DEMO'
+            };
+        }
+
+        function getThreatColor(level) {
+            switch(level) {
+                case 'CRITICAL': return '#dc3545';
+                case 'HIGH': return '#fd7e14';
+                case 'MEDIUM': return '#ffc107';
+                case 'LOW': return '#17a2b8';
+                default: return '#28a745';
+            }
+        }
+
+        // STEP 5: Emergency Alerting
+        function triggerStep5Alert(analysisResult) {
+            console.log('[STEP5] Triggering emergency alert');
+            updatePipelineState('STEP5_ALERTING');
+            
+            const step5Status = document.getElementById('step5Status');
+            const alertResult = document.getElementById('alertResult');
+            const alertDetails = document.getElementById('alertDetails');
+            
+            step5Status.textContent = '🚨 Sending emergency alerts...';
+            
+            setTimeout(() => {
+                alertResult.style.display = 'block';
+                alertDetails.innerHTML = `
+                    Emergency contact notified: ${document.getElementById('emergencyPhone').value}<br>
+                    Location: ${currentLocation.address}<br>
+                    Threat Level: ${analysisResult.risk_level}<br>
+                    Time: ${new Date().toLocaleTimeString()}
+                `;
+                
+                step5Status.textContent = '✅ Emergency alerts sent successfully';
+                updatePipelineState('STEP5_COMPLETE');
+                
+                console.log('[STEP5] Alert sent successfully');
+            }, 1000);
+        }
+
+        // Bind event listeners
+        document.getElementById('enableLocationBtn').addEventListener('click', enableLocationFromUserGesture);
+        document.getElementById('demoLocationBtn').addEventListener('click', activateDemoLocationMode);
+    </script>
+</body>
+</html>

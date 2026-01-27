@@ -1,0 +1,10 @@
+﻿{
+    "lambdaArn":  null,
+    "timestamp":  "2026-01-27 08:44:59",
+    "distributionId":  null,
+    "cloudFrontUrl":  null,
+    "s3Bucket":  null,
+    "region":  "us-east-1",
+    "stackName":  "allsensesai-gemini-runtime",
+    "lambdaFunctionUrl":  null
+}
