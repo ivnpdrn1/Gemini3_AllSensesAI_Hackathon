@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vision MVP Integration Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; background: #f5f5f5; }
+        .test-container { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; }
+        h2 { color: #3498db; font-size: 1.2em; margin-top: 20px; }
+        .test-case { background: #f8f9fa; padding: 15px; border-radius: 6px; margin: 10px 0; border-left: 4px solid #3498db; }
+        .test-case h3 { margin: 0 0 10px 0; color: #2c3e50; font-size: 1em; }
+        .test-case p { margin: 5px 0; color: #666; font-size: 0.9em; }
+        .test-result { padding: 10px; border-radius: 4px; margin-top: 10px; font-weight: bold; }
+        .test-result.pass { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .test-result.fail { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .test-result.pending { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        button { background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 1em; margin: 5px; }
+        button:hover { background: #2980b9; }
+        button:disabled { background: #95a5a6; cursor: not-allowed; }
+        .instructions { background: #e8f5e9; padding: 15px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #4caf50; }
+        .instructions h3 { margin: 0 0 10px 0; color: #2e7d32; }
+        .instructions ol { margin: 10px 0; padding-left: 20px; }
+        .instructions li { margin: 8px 0; color: #555; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔍 Vision MVP Integration Test</h1>
+        <p><strong>Build:</strong> GEMINI3-VISION-MVP-20260127</p>
+        <p><strong>Purpose:</strong> Verify Vision Context Analysis panel state transitions</p>
+        
+        <div class="instructions">
+            <h3>📋 Test Instructions</h3>
+            <ol>
+                <li>Open <code>gemini3-guardian-vision-mvp.html</code> in a browser</li>
+                <li>Complete Step 1 (Configuration) - enter name and phone</li>
+                <li>Complete Step 2 (Location) - use Demo Location</li>
+                <li>Start Step 3 (Voice Detection)</li>
+                <li>Observe Vision panel in Step 4 - should show "Standby" state</li>
+                <li>Say "emergency" or "help" to trigger detection</li>
+                <li>Observe Vision panel transition to "Capturing…" then "Analyzing…"</li>
+                <li>Wait for completion - should show blurred thumbnails, findings, confidence</li>
+                <li>Click "Reset Emergency State"</li>
+                <li>Verify Vision panel returns to "Standby" with placeholders</li>
+            </ol>
+        </div>
+        
+        <h2>Acceptance Test Criteria</h2>
+        
+        <div class="test-case">
+            <h3>✅ Test 1: Standby State (Before Emergency)</h3>
+            <p><strong>Expected:</strong> Vision panel shows "Standby" badge, explainer text, capture policy, and greyed placeholders</p>
+            <p><strong>Verify:</strong> Panel is always visible, not hidden</p>
+            <div class="test-result pending" id="test1">⏳ Pending - Manual verification required</div>
+        </div>
+        
+        <div class="test-case">
+            <h3>✅ Test 2: Activation State (During Emergency)</h3>
+            <p><strong>Expected:</strong> After saying "emergency", panel shows "Capturing…" badge, trigger reason, and progress indicators</p>
+            <p><strong>Verify:</strong> Transition happens in < 1 second</p>
+            <div class="test-result pending" id="test2">⏳ Pending - Manual verification required</div>
+        </div>
+        
+        <div class="test-case">
+            <h3>✅ Test 3: Completed State (After Analysis)</h3>
+            <p><strong>Expected:</strong> Panel shows "Complete" badge, 1-3 blurred thumbnails, structured findings (bullets only), confidence badge, and "Added to Evidence Packet"</p>
+            <p><strong>Verify:</strong> No raw text dumps, only structured bullets</p>
+            <div class="test-result pending" id="test3">⏳ Pending - Manual verification required</div>
+        </div>
+        
+        <div class="test-case">
+            <h3>✅ Test 4: Reset Behavior</h3>
+            <p><strong>Expected:</strong> After clicking "Reset Emergency State", panel returns to Standby with placeholders restored</p>
+            <p><strong>Verify:</strong> All findings cleared, status = "Standby", placeholders show "—"</p>
+            <div class="test-result pending" id="test4">⏳ Pending - Manual verification required</div>
+        </div>
+        
+        <div class="test-case">
+            <h3>✅ Test 5: Demo Mode</h3>
+            <p><strong>Expected:</strong> Vision works without camera hardware, shows simulated frames with "Demo Frame" text</p>
+            <p><strong>Verify:</strong> No camera permission prompts, reliable demo execution</p>
+            <div class="test-result pending" id="test5">⏳ Pending - Manual verification required</div>
+        </div>
+        
+        <div class="test-case">
+            <h3>✅ Test 6: No Regressions</h3>
+            <p><strong>Expected:</strong> All existing Steps 1-5 work identically to before</p>
+            <p><strong>Verify:</strong> Configuration, Location, Voice, Audio Analysis, Alert all function normally</p>
+            <div class="test-result pending" id="test6">⏳ Pending - Manual verification required</div>
+        </div>
+        
+        <h2>Manual Test Checklist</h2>
+        <div style="background: #fff; padding: 15px; border-radius: 6px; margin: 20px 0;">
+            <label style="display: block; margin: 10px 0;">
+                <input type="checkbox" id="check1"> Vision panel visible in Standby state before emergency
+            </label>
+            <label style="display: block; margin: 10px 0;">
+                <input type="checkbox" id="check2"> Panel transitions to Capturing/Analyzing on emergency trigger
+            </label>
+            <label style="display: block; margin: 10px 0;">
+                <input type="checkbox" id="check3"> Completed state shows thumbnails + findings + confidence
+            </label>
+            <label style="display: block; margin: 10px 0;">
+                <input type="checkbox" id="check4"> Reset returns panel to Standby with placeholders
+            </label>
+            <label style="display: block; margin: 10px 0;">
+                <input type="checkbox" id="check5"> Demo mode works without camera hardware
+            </label>
+            <label style="display: block; margin: 10px 0;">
+                <input type="checkbox" id="check6"> No regressions in existing Steps 1-5
+            </label>
+        </div>
+        
+        <button onclick="markAllPassed()">✅ Mark All Tests Passed</button>
+        <button onclick="resetTests()">🔄 Reset Test Status</button>
+        
+        <div style="margin-top: 30px; padding: 15px; background: #e3f2fd; border-radius: 6px; border-left: 4px solid #2196f3;">
+            <h3 style="margin: 0 0 10px 0; color: #1976d2;">📝 Test Notes</h3>
+            <textarea id="testNotes" style="width: 100%; height: 100px; padding: 10px; border: 1px solid #90caf9; border-radius: 4px; font-family: monospace; font-size: 0.9em;" placeholder="Add any observations, issues, or notes here..."></textarea>
+        </div>
+    </div>
+    
+    <script>
+        function markAllPassed() {
+            for (let i = 1; i <= 6; i++) {
+                const testResult = document.getElementById(`test${i}`);
+                testResult.className = 'test-result pass';
+                testResult.textContent = '✅ PASSED - Manual verification complete';
+                
+                const checkbox = document.getElementById(`check${i}`);
+                checkbox.checked = true;
+            }
+            alert('All tests marked as PASSED! 🎉\n\nMake sure you actually verified each test case.');
+        }
+        
+        function resetTests() {
+            for (let i = 1; i <= 6; i++) {
+                const testResult = document.getElementById(`test${i}`);
+                testResult.className = 'test-result pending';
+                testResult.textContent = '⏳ Pending - Manual verification required';
+                
+                const checkbox = document.getElementById(`check${i}`);
+                checkbox.checked = false;
+            }
+            document.getElementById('testNotes').value = '';
+        }
+        
+        // Auto-check checkboxes when clicked
+        for (let i = 1; i <= 6; i++) {
+            document.getElementById(`check${i}`).addEventListener('change', function() {
+                const testResult = document.getElementById(`test${i}`);
+                if (this.checked) {
+                    testResult.className = 'test-result pass';
+                    testResult.textContent = '✅ PASSED - Manual verification complete';
+                } else {
+                    testResult.className = 'test-result pending';
+                    testResult.textContent = '⏳ Pending - Manual verification required';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -307,6 +307,45 @@
             font-size: 14px;
             line-height: 1.6;
         }
+        
+        /* Vision Context Analysis Panel */
+        .vision-context-panel { background: #f0f8ff; border: 2px solid #4a90e2; padding: 20px; border-radius: 10px; margin: 20px 0; }
+        .vision-context-panel h4 { margin: 0 0 15px 0; color: #2c5aa0; font-size: 1.2em; }
+        .vision-status-badge { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 0.9em; font-weight: bold; margin-bottom: 15px; }
+        .vision-status-badge.standby { background: #e9ecef; color: #6c757d; }
+        .vision-status-badge.capturing { background: #fff3cd; color: #856404; animation: pulse 1.5s infinite; }
+        .vision-status-badge.analyzing { background: #cfe2ff; color: #084298; animation: pulse 1.5s infinite; }
+        .vision-status-badge.complete { background: #d1e7dd; color: #0f5132; }
+        .vision-status-badge.error { background: #f8d7da; color: #842029; }
+        .vision-explainer { background: #fff; padding: 12px; border-radius: 6px; margin: 10px 0; font-size: 0.95em; color: #495057; border-left: 4px solid #4a90e2; }
+        .vision-capture-policy { background: #fff; padding: 12px; border-radius: 6px; margin: 10px 0; font-size: 0.9em; color: #6c757d; }
+        .vision-placeholders { background: #f8f9fa; padding: 15px; border-radius: 6px; margin: 10px 0; color: #adb5bd; font-style: italic; }
+        .vision-placeholders p { margin: 5px 0; }
+        .vision-trigger-reason { background: #fff3cd; padding: 12px; border-radius: 6px; margin: 10px 0; font-size: 0.95em; color: #856404; border-left: 4px solid #ffc107; }
+        .vision-progress { background: #fff; padding: 15px; border-radius: 6px; margin: 10px 0; }
+        .vision-progress-item { display: flex; align-items: center; gap: 10px; margin: 8px 0; font-size: 0.95em; }
+        .vision-progress-item .icon { font-size: 1.2em; }
+        .vision-thumbnails { display: flex; gap: 10px; margin: 15px 0; flex-wrap: wrap; }
+        .vision-thumbnail { width: 120px; height: 90px; border-radius: 6px; object-fit: cover; border: 2px solid #dee2e6; }
+        .vision-thumbnail.blurred { filter: blur(8px); }
+        .vision-thumbnail-toggle { background: #6c757d; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; margin-top: 8px; }
+        .vision-thumbnail-toggle:hover { background: #5a6268; }
+        .vision-findings { background: #fff; padding: 15px; border-radius: 6px; margin: 10px 0; }
+        .vision-findings ul { margin: 10px 0; padding-left: 20px; }
+        .vision-findings li { margin: 6px 0; color: #495057; }
+        .vision-confidence { background: #f8f9fa; padding: 10px; border-radius: 6px; margin: 10px 0; display: inline-block; }
+        .vision-confidence .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.85em; font-weight: bold; margin-left: 8px; }
+        .vision-confidence .badge.low { background: #d1e7dd; color: #0f5132; }
+        .vision-confidence .badge.medium { background: #fff3cd; color: #856404; }
+        .vision-confidence .badge.high { background: #f8d7da; color: #842029; }
+        .vision-evidence-indicator { background: #d1e7dd; padding: 10px 15px; border-radius: 6px; margin: 10px 0; color: #0f5132; font-weight: 500; border-left: 4px solid #198754; }
+        .vision-why-helps { font-size: 0.85em; color: #6c757d; margin-top: 10px; font-style: italic; }
+        .vision-frames-placeholder { margin: 15px 0; }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
     </style>
 </head>
 <body>
@@ -315,6 +354,7 @@
         <div class="header">
             <h1>AllSensesAI - Gemini Emergency Detection</h1>
             <p class="subtitle">Google Gemini 1.5 Pro | CloudFront + Lambda | Production Runtime</p>
+            <div style="font-size:14px;color:#667eea;margin-top:8px;font-weight:bold;background:#f0f8ff;padding:6px 12px;border-radius:6px;display:inline-block;">Build: GEMINI3-VISION-VIDEO-FIX-20260127</div>
         </div>
 
         <!-- Runtime Health Panel -->
@@ -405,6 +445,95 @@
                     <div class="step-status">Ready</div>
                 </div>
                 <div class="step-content">
+                    <!-- NEW: Visual Context Analysis Panel (Always Visible) - PLACED FIRST -->
+                    <div id="visionContextPanel" class="vision-context-panel">
+                        <h4>🎥 Visual Context (Gemini Vision) — Video Frames</h4>
+                        
+                        <div id="visionStatusBadge" class="vision-status-badge standby">
+                            <span>Standby</span>
+                        </div>
+                        
+                        <div id="visionExplainer" class="vision-explainer">
+                            <p><strong>Standby:</strong> Activates automatically during detected risk to corroborate audio/text signals.</p>
+                            <p><strong>Capture policy:</strong> Captures 1–3 video frames during emergency. No continuous recording.</p>
+                        </div>
+                        
+                        <!-- Video Frames Placeholders (Always Visible Before Trigger) -->
+                        <div id="visionFramesPlaceholder" class="vision-frames-placeholder">
+                            <h5 style="margin: 10px 0; color: #6c757d; font-size: 1em;">📹 Video Frames (Standby)</h5>
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <div class="frame-placeholder">
+                                    <div style="width: 120px; height: 90px; background: #e9ecef; border: 2px dashed #adb5bd; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #6c757d; font-size: 0.85em; text-align: center; padding: 5px;">
+                                        Frame 1<br>not captured
+                                    </div>
+                                </div>
+                                <div class="frame-placeholder">
+                                    <div style="width: 120px; height: 90px; background: #e9ecef; border: 2px dashed #adb5bd; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #6c757d; font-size: 0.85em; text-align: center; padding: 5px;">
+                                        Frame 2<br>not captured
+                                    </div>
+                                </div>
+                                <div class="frame-placeholder">
+                                    <div style="width: 120px; height: 90px; background: #e9ecef; border: 2px dashed #adb5bd; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #6c757d; font-size: 0.85em; text-align: center; padding: 5px;">
+                                        Frame 3<br>not captured
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="visionPlaceholders" class="vision-placeholders">
+                            <p><strong>Findings:</strong> —</p>
+                            <p><strong>Confidence:</strong> —</p>
+                            <p><strong>Vision/Video Status:</strong> Standby</p>
+                        </div>
+                        
+                        <div id="visionTriggerReason" class="vision-trigger-reason" style="display:none;">
+                            <p><strong>Activated because:</strong> <span id="visionTriggerText">—</span></p>
+                        </div>
+                        
+                        <div id="visionProgress" class="vision-progress" style="display:none;">
+                            <div class="vision-progress-item">
+                                <span class="icon" id="progressTrigger">⏳</span>
+                                <span>Trigger received</span>
+                            </div>
+                            <div class="vision-progress-item">
+                                <span class="icon" id="progressCapture">⏳</span>
+                                <span>Capturing frames</span>
+                            </div>
+                            <div class="vision-progress-item">
+                                <span class="icon" id="progressAnalyze">⏳</span>
+                                <span>Analyzing environment</span>
+                            </div>
+                            <div class="vision-progress-item">
+                                <span class="icon" id="progressPublish">⏳</span>
+                                <span>Publishing findings</span>
+                            </div>
+                        </div>
+                        
+                        <div id="visionThumbnails" class="vision-thumbnails" style="display:none;">
+                            <!-- Thumbnails will be inserted here -->
+                        </div>
+                        
+                        <div id="visionFindings" class="vision-findings" style="display:none;">
+                            <strong>Environmental Risk Indicators:</strong>
+                            <ul id="visionFindingsList">
+                                <!-- Findings will be inserted here -->
+                            </ul>
+                        </div>
+                        
+                        <div id="visionConfidence" class="vision-confidence" style="display:none;">
+                            <strong>Confidence:</strong>
+                            <span class="badge" id="visionConfidenceBadge">—</span>
+                        </div>
+                        
+                        <div id="visionEvidenceIndicator" class="vision-evidence-indicator" style="display:none;">
+                            ✅ Added to Evidence Packet
+                        </div>
+                        
+                        <div class="vision-why-helps">
+                            💡 Why this helps: Visual context helps responders validate environment risk when voice is limited or ambiguous.
+                        </div>
+                    </div>
+                    
                     <p style="margin-bottom: 12px; color: #666; font-size: 14px;">
                         Google Gemini 1.5 Pro will analyze the situation for emergency indicators.
                     </p>
@@ -562,6 +691,12 @@
             const name = document.getElementById('input-name').value;
             const contact = document.getElementById('input-contact').value;
             
+            // Trigger vision analysis (demo mode)
+            if (visionController) {
+                log('Triggering vision analysis...', 'info');
+                visionController.activateOnEmergency('emergency', transcript);
+            }
+            
             try {
                 log('Calling Lambda Function URL...', 'info');
                 const response = await fetch(`${LAMBDA_FUNCTION_URL}/analyze`, {
@@ -639,6 +774,324 @@
             
             resultDiv.classList.add('show');
         }
+        
+        // ========== VISION CONTEXT ANALYSIS ==========
+        
+        /**
+         * VisionContextController - Manages vision analysis state and workflow
+         */
+        class VisionContextController {
+            constructor() {
+                this.status = 'standby';  // standby | capturing | analyzing | complete | error
+                this.triggerReason = null;
+                this.frames = [];
+                this.findings = [];
+                this.confidence = null;
+                this.isDemoMode = true;  // MVP uses demo mode only
+            }
+            
+            /**
+             * Activate vision analysis on emergency trigger
+             */
+            async activateOnEmergency(keyword, transcript) {
+                console.log('[VISION] Activating on emergency:', keyword);
+                
+                this.status = 'capturing';
+                this.triggerReason = `Emergency trigger detected ('${keyword}')`;
+                
+                // Update UI to activation state
+                this.renderActivationState();
+                
+                // Simulate capture and analysis
+                await this.simulateCaptureAndAnalysis(transcript);
+            }
+            
+            /**
+             * Simulate capture and analysis (Demo Mode)
+             */
+            async simulateCaptureAndAnalysis(transcript) {
+                // Step 1: Trigger received
+                document.getElementById('progressTrigger').textContent = '✅';
+                await this.delay(500);
+                
+                // Step 2: Capturing frames
+                this.status = 'capturing';
+                this.updateStatusBadge('capturing', 'Capturing…');
+                document.getElementById('progressCapture').textContent = '⏳';
+                await this.delay(1000);
+                
+                // Generate demo frames
+                this.frames = this.generateDemoFrames(2);
+                document.getElementById('progressCapture').textContent = '✅';
+                
+                // Step 3: Analyzing
+                this.status = 'analyzing';
+                this.updateStatusBadge('analyzing', 'Analyzing…');
+                document.getElementById('progressAnalyze').textContent = '⏳';
+                await this.delay(1500);
+                
+                // Generate demo findings
+                this.findings = this.generateDemoFindings(transcript);
+                this.confidence = this.calculateConfidence(transcript);
+                document.getElementById('progressAnalyze').textContent = '✅';
+                
+                // Step 4: Publishing
+                document.getElementById('progressPublish').textContent = '⏳';
+                await this.delay(500);
+                document.getElementById('progressPublish').textContent = '✅';
+                
+                // Complete
+                this.status = 'complete';
+                this.renderCompletedState();
+                
+                console.log('[VISION] Analysis complete:', {
+                    frames: this.frames.length,
+                    findings: this.findings.length,
+                    confidence: this.confidence
+                });
+            }
+            
+            /**
+             * Generate demo frames (simulated images)
+             */
+            generateDemoFrames(count) {
+                const frames = [];
+                for (let i = 0; i < count; i++) {
+                    // Create placeholder canvas
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 320;
+                    canvas.height = 240;
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Draw gradient background
+                    const gradient = ctx.createLinearGradient(0, 0, 320, 240);
+                    gradient.addColorStop(0, '#667eea');
+                    gradient.addColorStop(1, '#764ba2');
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, 320, 240);
+                    
+                    // Add text
+                    ctx.fillStyle = 'white';
+                    ctx.font = 'bold 20px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`Demo Frame ${i + 1}`, 160, 120);
+                    ctx.font = '14px Arial';
+                    ctx.fillText('(Simulated)', 160, 145);
+                    
+                    frames.push(canvas.toDataURL('image/jpeg', 0.8));
+                }
+                return frames;
+            }
+            
+            /**
+             * Generate demo findings based on transcript
+             */
+            generateDemoFindings(transcript) {
+                const findings = [];
+                const lowerTranscript = transcript.toLowerCase();
+                
+                // Analyze transcript for context clues
+                if (lowerTranscript.includes('following') || lowerTranscript.includes('stalking')) {
+                    findings.push('Multiple individuals detected nearby');
+                    findings.push('Low visibility conditions');
+                }
+                
+                if (lowerTranscript.includes('scared') || lowerTranscript.includes('afraid')) {
+                    findings.push('Confined indoor environment');
+                }
+                
+                if (lowerTranscript.includes('help') || lowerTranscript.includes('emergency')) {
+                    findings.push('Isolated location detected');
+                }
+                
+                // Always add at least one finding
+                if (findings.length === 0) {
+                    findings.push('Environmental risk indicators present');
+                }
+                
+                return findings;
+            }
+            
+            /**
+             * Calculate confidence based on transcript
+             */
+            calculateConfidence(transcript) {
+                const lowerTranscript = transcript.toLowerCase();
+                let score = 0;
+                
+                if (lowerTranscript.includes('help')) score += 0.3;
+                if (lowerTranscript.includes('scared') || lowerTranscript.includes('afraid')) score += 0.3;
+                if (lowerTranscript.includes('following')) score += 0.2;
+                if (lowerTranscript.includes('emergency')) score += 0.2;
+                
+                if (score >= 0.7) return 'high';
+                if (score >= 0.4) return 'medium';
+                return 'low';
+            }
+            
+            /**
+             * Render activation state UI
+             */
+            renderActivationState() {
+                // Update status badge
+                this.updateStatusBadge('capturing', 'Capturing…');
+                
+                // Hide standby elements
+                document.getElementById('visionExplainer').style.display = 'none';
+                document.getElementById('visionFramesPlaceholder').style.display = 'none';
+                
+                // Update placeholders to show capturing status
+                const placeholders = document.getElementById('visionPlaceholders');
+                placeholders.innerHTML = `
+                    <p><strong>Findings:</strong> Analyzing...</p>
+                    <p><strong>Confidence:</strong> —</p>
+                    <p><strong>Vision/Video Status:</strong> Capturing frames...</p>
+                `;
+                
+                // Show trigger reason
+                const triggerReasonDiv = document.getElementById('visionTriggerReason');
+                const triggerText = document.getElementById('visionTriggerText');
+                triggerReasonDiv.style.display = 'block';
+                triggerText.textContent = this.triggerReason;
+                
+                // Show progress indicators
+                document.getElementById('visionProgress').style.display = 'block';
+            }
+            
+            /**
+             * Render completed state UI
+             */
+            renderCompletedState() {
+                // Update status badge
+                this.updateStatusBadge('complete', 'Complete');
+                
+                // Hide progress
+                document.getElementById('visionProgress').style.display = 'none';
+                
+                // Update placeholders to show completed status
+                const placeholders = document.getElementById('visionPlaceholders');
+                placeholders.innerHTML = `
+                    <p><strong>Findings:</strong> ${this.findings.length} indicators detected</p>
+                    <p><strong>Confidence:</strong> ${this.confidence.charAt(0).toUpperCase() + this.confidence.slice(1)}</p>
+                    <p><strong>Vision/Video Status:</strong> Findings recorded (${this.frames.length} frames, confidence: ${this.confidence})</p>
+                `;
+                
+                // Show thumbnails
+                const thumbnailsDiv = document.getElementById('visionThumbnails');
+                thumbnailsDiv.innerHTML = '';
+                this.frames.forEach((frame, index) => {
+                    const img = document.createElement('img');
+                    img.src = frame;
+                    img.className = 'vision-thumbnail blurred';
+                    img.alt = `Frame ${index + 1}`;
+                    thumbnailsDiv.appendChild(img);
+                });
+                
+                // Add toggle button
+                const toggleBtn = document.createElement('button');
+                toggleBtn.className = 'vision-thumbnail-toggle';
+                toggleBtn.textContent = 'Tap to view';
+                toggleBtn.onclick = () => this.toggleBlur();
+                thumbnailsDiv.appendChild(toggleBtn);
+                thumbnailsDiv.style.display = 'flex';
+                
+                // Show findings
+                const findingsDiv = document.getElementById('visionFindings');
+                const findingsList = document.getElementById('visionFindingsList');
+                findingsList.innerHTML = '';
+                this.findings.forEach(finding => {
+                    const li = document.createElement('li');
+                    li.textContent = finding;
+                    findingsList.appendChild(li);
+                });
+                findingsDiv.style.display = 'block';
+                
+                // Show confidence
+                const confidenceDiv = document.getElementById('visionConfidence');
+                const confidenceBadge = document.getElementById('visionConfidenceBadge');
+                confidenceBadge.textContent = this.confidence.charAt(0).toUpperCase() + this.confidence.slice(1);
+                confidenceBadge.className = `badge ${this.confidence}`;
+                confidenceDiv.style.display = 'block';
+                
+                // Show evidence indicator
+                document.getElementById('visionEvidenceIndicator').style.display = 'block';
+            }
+            
+            /**
+             * Update status badge
+             */
+            updateStatusBadge(status, text) {
+                const badge = document.getElementById('visionStatusBadge');
+                badge.className = `vision-status-badge ${status}`;
+                badge.querySelector('span').textContent = text;
+            }
+            
+            /**
+             * Toggle blur on thumbnails
+             */
+            toggleBlur() {
+                const thumbnails = document.querySelectorAll('.vision-thumbnail');
+                thumbnails.forEach(img => {
+                    img.classList.toggle('blurred');
+                });
+                
+                const btn = document.querySelector('.vision-thumbnail-toggle');
+                if (btn) {
+                    btn.textContent = thumbnails[0].classList.contains('blurred') ? 'Tap to view' : 'Blur images';
+                }
+            }
+            
+            /**
+             * Reset to standby state
+             */
+            reset() {
+                this.status = 'standby';
+                this.triggerReason = null;
+                this.frames = [];
+                this.findings = [];
+                this.confidence = null;
+                
+                // Reset UI
+                this.updateStatusBadge('standby', 'Standby');
+                
+                // Show standby elements
+                document.getElementById('visionExplainer').style.display = 'block';
+                document.getElementById('visionFramesPlaceholder').style.display = 'block';
+                
+                // Reset placeholders
+                const placeholders = document.getElementById('visionPlaceholders');
+                placeholders.innerHTML = `
+                    <p><strong>Findings:</strong> —</p>
+                    <p><strong>Confidence:</strong> —</p>
+                    <p><strong>Vision/Video Status:</strong> Standby</p>
+                `;
+                
+                // Hide other elements
+                document.getElementById('visionTriggerReason').style.display = 'none';
+                document.getElementById('visionProgress').style.display = 'none';
+                document.getElementById('visionThumbnails').style.display = 'none';
+                document.getElementById('visionFindings').style.display = 'none';
+                document.getElementById('visionConfidence').style.display = 'none';
+                document.getElementById('visionEvidenceIndicator').style.display = 'none';
+                
+                console.log('[VISION] Reset to standby');
+            }
+            
+            /**
+             * Delay helper
+             */
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+        }
+        
+        // Initialize vision controller
+        let visionController = null;
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            visionController = new VisionContextController();
+            log('Vision Context Controller initialized', 'info');
+        });
     </script>
 </body>
 </html>

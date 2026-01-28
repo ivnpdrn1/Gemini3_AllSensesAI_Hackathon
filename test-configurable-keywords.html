@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurable Keywords Tests</title>
+    <script src="https://cdn.jsdelivr.net/npm/fast-check@3.15.0/lib/bundle.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
+        .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; }
+        h2 { color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 10px; margin-top: 30px; }
+        .test-section { margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 5px; }
+        .test-result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .test-result.pass { background: #d4edda; border-left: 4px solid #28a745; }
+        .test-result.fail { background: #f8d7da; border-left: 4px solid #dc3545; }
+        .test-name { font-weight: bold; margin-bottom: 5px; }
+        .test-details { font-size: 0.9em; color: #666; margin-left: 20px; }
+        .summary { background: #e7f3ff; padding: 15px; border-radius: 5px; margin-top: 20px; border-left: 4px solid #007bff; }
+        .summary h3 { margin-top: 0; color: #007bff; }
+        button { background: #3498db; color: white; padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; margin: 10px 5px; }
+        button:hover { background: #2980b9; }
+        button:disabled { background: #95a5a6; cursor: not-allowed; }
+        .code { font-family: monospace; background: #f4f4f4; padding: 2px 6px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Configurable Emergency Keywords - Test Suite</h1>
+        <p>Property-based tests and unit tests for the configurable keywords feature.</p>
+        
+        <button onclick="runAllTests()">▶️ Run All Tests</button>
+        <button onclick="clearResults()">🗑️ Clear Results</button>
+        
+        <div id="results"></div>
+        
+        <div id="summary" class="summary" style="display:none;">
+            <h3>📊 Test Summary</h3>
+            <div id="summaryContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Copy the classes from the main file for testing
+        class EmergencyKeywordsConfig {
+            constructor() {
+                this.storageKey = 'allsenses_emergency_keywords_test';
+                this.defaultKeywords = ['emergency', 'help', 'call police', 'scared', 'following', 'danger', 'attack'];
+                this.keywords = this.loadKeywords();
+            }
+            
+            loadKeywords() {
+                try {
+                    const stored = localStorage.getItem(this.storageKey);
+                    if (stored) {
+                        const parsed = JSON.parse(stored);
+                        if (Array.isArray(parsed) && parsed.length > 0) {
+                            return parsed;
+                        }
+                    }
+                } catch (error) {
+                    console.warn('[KEYWORDS] Error loading from localStorage:', error);
+                }
+                return [...this.defaultKeywords];
+            }
+            
+            saveKeywords(keywords) {
+                try {
+                    localStorage.setItem(this.storageKey, JSON.stringify(keywords));
+                } catch (error) {
+                    console.error('[KEYWORDS] Error saving to localStorage:', error);
+                }
+            }
+            
+            addKeyword(keyword) {
+                const normalized = keyword.trim().toLowerCase();
+                if (!normalized) return false;
+                if (this.keywords.some(k => k.toLowerCase() === normalized)) return false;
+                this.keywords.push(keyword.trim());
+                this.saveKeywords(this.keywords);
+                return true;
+            }
+            
+            removeKeyword(keyword) {
+                if (this.keywords.length <= 1) return false;
+                this.keywords = this.keywords.filter(k => k !== keyword);
+                this.saveKeywords(this.keywords);
+                return true;
+            }
+            
+            getKeywords() {
+                return [...this.keywords];
+            }
+        }
+        
+        class KeywordDetectionEngine {
+            constructor(keywords) {
+                this.keywords = keywords || [];
+            }
+            
+            normalizeText(text) {
+                if (!text) return '';
+                return text.toLowerCase().trim().replace(/\s+/g, ' ');
+            }
+            
+            detectKeyword(text) {
+                const normalized = this.normalizeText(text);
+                
+                for (const keyword of this.keywords) {
+                    const normalizedKeyword = this.normalizeText(keyword);
+                    const words = normalizedKeyword.split(' ');
+                    
+                    if (words.length === 1) {
+                        if (this.matchExactWord(normalized, normalizedKeyword)) {
+                            return { matched: true, keyword: keyword, snippet: this.extractSnippet(text, normalizedKeyword) };
+                        }
+                    } else {
+                        if (this.matchPhraseSubstring(normalized, normalizedKeyword)) {
+                            return { matched: true, keyword: keyword, snippet: this.extractSnippet(text, normalizedKeyword) };
+                        }
+                    }
+                }
+                
+                return { matched: false, keyword: null, snippet: null };
+            }
+            
+            matchExactWord(text, keyword) {
+                const regex = new RegExp(`\\b${this.escapeRegex(keyword)}\\b`, 'i');
+                return regex.test(text);
+            }
+            
+            matchPhraseSubstring(text, phrase) {
+                return text.includes(phrase);
+            }
+            
+            escapeRegex(str) {
+                return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            }
+            
+            extractSnippet(text, keyword, contextWords = 10) {
+                const words = text.split(' ');
+                return words.slice(0, Math.min(20, words.length)).join(' ');
+            }
+            
+            updateKeywords(keywords) {
+                this.keywords = keywords || [];
+            }
+        }
+
+        // Test results storage
+        let testResults = [];
+        let totalTests = 0;
+        let passedTests = 0;
+        let failedTests = 0;
+
+        function addTestResult(name, passed, details = '') {
+            testResults.push({ name, passed, details });
+            totalTests++;
+            if (passed) passedTests++;
+            else failedTests++;
+            
+            const resultsDiv = document.getElementById('results');
+            const testDiv = document.createElement('div');
+            testDiv.className = `test-result ${passed ? 'pass' : 'fail'}`;
+            testDiv.innerHTML = `
+                <div class="test-name">${passed ? '✅' : '❌'} ${name}</div>
+                ${details ? `<div class="test-details">${details}</div>` : ''}
+            `;
+            resultsDiv.appendChild(testDiv);
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('summary').style.display = 'none';
+            testResults = [];
+            totalTests = 0;
+            passedTests = 0;
+            failedTests = 0;
+        }
+
+        function showSummary() {
+            const summaryDiv = document.getElementById('summary');
+            const summaryContent = document.getElementById('summaryContent');
+            
+            summaryDiv.style.display = 'block';
+            summaryContent.innerHTML = `
+                <p><strong>Total Tests:</strong> ${totalTests}</p>
+                <p><strong>Passed:</strong> <span style="color: #28a745;">${passedTests}</span></p>
+                <p><strong>Failed:</strong> <span style="color: #dc3545;">${failedTests}</span></p>
+                <p><strong>Success Rate:</strong> ${totalTests > 0 ? ((passedTests / totalTests) * 100).toFixed(1) : 0}%</p>
+            `;
+        }
+
+        // ========== PROPERTY-BASED TESTS ==========
+
+        function runPropertyTest1() {
+            // Property 1: Keyword Configuration Persistence Round-Trip
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            section.innerHTML = '<h2>Property 1: Keyword Configuration Persistence Round-Trip</h2>';
+            document.getElementById('results').appendChild(section);
+
+            try {
+                fc.assert(
+                    fc.property(
+                        fc.array(fc.string(1, 30), { minLength: 1, maxLength: 10 }),
+                        (keywords) => {
+                            // Clear localStorage first
+                            localStorage.removeItem('allsenses_emergency_keywords_test');
+                            
+                            // Create config and save keywords
+                            const config = new EmergencyKeywordsConfig();
+                            config.keywords = keywords;
+                            config.saveKeywords(keywords);
+                            
+                            // Create new config instance (simulates page reload)
+                            const config2 = new EmergencyKeywordsConfig();
+                            const loaded = config2.getKeywords();
+                            
+                            // Verify round-trip
+                            return JSON.stringify(keywords) === JSON.stringify(loaded);
+                        }
+                    ),
+                    { numRuns: 100 }
+                );
+                addTestResult('Property 1: Persistence Round-Trip', true, 'Tested with 100 random keyword arrays');
+            } catch (error) {
+                addTestResult('Property 1: Persistence Round-Trip', false, `Failed: ${error.message}`);
+            }
+        }
+
+        function runPropertyTest4() {
+            // Property 4: Text Normalization Consistency
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            section.innerHTML = '<h2>Property 4: Text Normalization Consistency</h2>';
+            document.getElementById('results').appendChild(section);
+
+            const detector = new KeywordDetectionEngine([]);
+
+            try {
+                fc.assert(
+                    fc.property(
+                        fc.string(),
+                        (inputText) => {
+                            const normalized = detector.normalizeText(inputText);
+                            
+                            // Property: normalized text is lowercase
+                            const isLowercase = normalized === normalized.toLowerCase();
+                            
+                            // Property: no leading/trailing whitespace
+                            const noWhitespace = normalized === normalized.trim();
+                            
+                            // Property: no multiple consecutive spaces
+                            const noMultipleSpaces = !normalized.includes('  ');
+                            
+                            return isLowercase && noWhitespace && noMultipleSpaces;
+                        }
+                    ),
+                    { numRuns: 100 }
+                );
+                addTestResult('Property 4: Text Normalization Consistency', true, 'Tested with 100 random strings');
+            } catch (error) {
+                addTestResult('Property 4: Text Normalization Consistency', false, `Failed: ${error.message}`);
+            }
+        }
+
+        function runPropertyTest6() {
+            // Property 6: Single-Word Keyword Matching Respects Word Boundaries
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            section.innerHTML = '<h2>Property 6: Word Boundary Matching</h2>';
+            document.getElementById('results').appendChild(section);
+
+            try {
+                const detector = new KeywordDetectionEngine(['help']);
+                
+                // Test cases
+                const shouldMatch = ['help', 'Help me', 'I need help', 'help!', 'HELP'];
+                const shouldNotMatch = ['helpful', 'helpless', 'unhelpful'];
+                
+                let allPassed = true;
+                let details = [];
+                
+                shouldMatch.forEach(text => {
+                    const result = detector.detectKeyword(text);
+                    if (!result.matched) {
+                        allPassed = false;
+                        details.push(`Should match but didn't: "${text}"`);
+                    }
+                });
+                
+                shouldNotMatch.forEach(text => {
+                    const result = detector.detectKeyword(text);
+                    if (result.matched) {
+                        allPassed = false;
+                        details.push(`Should not match but did: "${text}"`);
+                    }
+                });
+                
+                addTestResult('Property 6: Word Boundary Matching', allPassed, details.join('; ') || 'All test cases passed');
+            } catch (error) {
+                addTestResult('Property 6: Word Boundary Matching', false, `Failed: ${error.message}`);
+            }
+        }
+
+        function runPropertyTest7() {
+            // Property 7: Multi-Word Phrase Matching Supports Substring Detection
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            section.innerHTML = '<h2>Property 7: Phrase Substring Matching</h2>';
+            document.getElementById('results').appendChild(section);
+
+            try {
+                const detector = new KeywordDetectionEngine(['call police']);
+                
+                // Test cases
+                const shouldMatch = [
+                    'call police',
+                    'please call police',
+                    'I need to call police now',
+                    'CALL POLICE',
+                    'someone call police'
+                ];
+                
+                let allPassed = true;
+                let details = [];
+                
+                shouldMatch.forEach(text => {
+                    const result = detector.detectKeyword(text);
+                    if (!result.matched) {
+                        allPassed = false;
+                        details.push(`Should match but didn't: "${text}"`);
+                    }
+                });
+                
+                addTestResult('Property 7: Phrase Substring Matching', allPassed, details.join('; ') || 'All test cases passed');
+            } catch (error) {
+                addTestResult('Property 7: Phrase Substring Matching', false, `Failed: ${error.message}`);
+            }
+        }
+
+        function runPropertyTest2() {
+            // Property 2: Keyword List UI Rendering Completeness
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            section.innerHTML = '<h2>Property 2: UI Rendering Completeness</h2>';
+            document.getElementById('results').appendChild(section);
+
+            try {
+                fc.assert(
+                    fc.property(
+                        fc.array(fc.string(1, 20), { minLength: 1, maxLength: 8 }),
+                        (keywords) => {
+                            // Create a test container
+                            const container = document.createElement('div');
+                            
+                            // Create config with test keywords
+                            const config = new EmergencyKeywordsConfig();
+                            config.keywords = keywords;
+                            
+                            // Render UI
+                            config.renderUI(container);
+                            
+                            // Count rendered chips
+                            const chips = container.querySelectorAll('.keyword-chip');
+                            
+                            // Verify all keywords are rendered
+                            return chips.length === keywords.length;
+                        }
+                    ),
+                    { numRuns: 50 }
+                );
+                addTestResult('Property 2: UI Rendering Completeness', true, 'Tested with 50 random keyword arrays');
+            } catch (error) {
+                addTestResult('Property 2: UI Rendering Completeness', false, `Failed: ${error.message}`);
+            }
+        }
+
+
+        function runPropertyTest8() {
+            // Property 8: Emergency Detection Sets Complete State
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            section.innerHTML = '<h2>Property 8: Emergency State Completeness</h2>';
+            document.getElementById('results').appendChild(section);
+
+            try {
+                const manager = new EmergencyStateManager();
+                const keyword = 'help';
+                const snippet = 'I need help right now';
+                const transcript = 'I need help right now please';
+                const location = { latitude: 37.7749, longitude: -122.4194 };
+                
+                manager.triggerEmergency(keyword, snippet, transcript, location);
+                const state = manager.getEmergencyState();
+                
+                const allSet = 
+                    state.emergencyDetected === true &&
+                    state.emergencyKeyword === keyword &&
+                    state.emergencySnippet === snippet &&
+                    state.emergencyTimestamp !== null &&
+                    state.evidencePacket !== null;
+                
+                if (allSet) {
+                    addTestResult('Property 8: Emergency State Completeness', true, 'All state variables set correctly');
+                } else {
+                    addTestResult('Property 8: Emergency State Completeness', false, `State incomplete: ${JSON.stringify(state)}`);
+                }
+            } catch (error) {
+                addTestResult('Property 8: Emergency State Completeness', false, `Failed: ${error.message}`);
+            }
+        }
+
+        function runPropertyTest12() {
+            // Property 12: Evidence Packet Contains Complete Emergency Context
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            section.innerHTML = '<h2>Property 12: Evidence Packet Completeness</h2>';
+            document.getElementById('results').appendChild(section);
+
+            try {
+                const manager = new EmergencyStateManager();
+                const transcript = 'Emergency transcript text';
+                const location = { 
+                    latitude: 37.7749, 
+                    longitude: -122.4194,
+                    timestamp: new Date(),
+                    source: 'GPS',
+                    label: 'Test Location'
+                };
+                
+                manager.lockEvidencePacket(transcript, location);
+                const state = manager.getEmergencyState();
+                
+                const hasTranscript = state.evidencePacket.transcriptWindow === transcript;
+                const hasLocation = state.evidencePacket.location !== null;
+                const hasCoords = 
+                    state.evidencePacket.location.latitude === location.latitude &&
+                    state.evidencePacket.location.longitude === location.longitude;
+                
+                if (hasTranscript && hasLocation && hasCoords) {
+                    addTestResult('Property 12: Evidence Packet Completeness', true, 'Evidence packet contains transcript and location');
+                } else {
+                    addTestResult('Property 12: Evidence Packet Completeness', false, 'Evidence packet incomplete');
+                }
+            } catch (error) {
+                addTestResult('Property 12: Evidence Packet Completeness', false, `Failed: ${error.message}`);
+            }
+        }
+
+        function runPropertyTest17() {
+            // Property 17: Reset Clears All Emergency State Variables
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            section.innerHTML = '<h2>Property 17: Reset Clears All State</h2>';
+            document.getElementById('results').appendChild(section);
+
+            try {
+                const manager = new EmergencyStateManager();
+                
+                // Set emergency state
+                manager.triggerEmergency('help', 'snippet', 'transcript', { latitude: 1, longitude: 2 });
+                
+                // Reset
+                manager.resetEmergency();
+                
+                const state = manager.getEmergencyState();
+                
+                const allCleared = 
+                    state.emergencyDetected === false &&
+                    state.emergencyKeyword === null &&
+                    state.emergencySnippet === null &&
+                    state.emergencyTimestamp === null &&
+                    state.evidencePacket === null;
+                
+                if (allCleared) {
+                    addTestResult('Property 17: Reset Clears All State', true, 'All state variables cleared');
+                } else {
+                    addTestResult('Property 17: Reset Clears All State', false, `State not cleared: ${JSON.stringify(state)}`);
+                }
+            } catch (error) {
+                addTestResult('Property 17: Reset Clears All State', false, `Failed: ${error.message}`);
+            }
+        }
+
+        // ========== UNIT TESTS ==========
+
+        function runUnitTests() {
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            section.innerHTML = '<h2>Unit Tests: Keyword Add/Remove Operations</h2>';
+            document.getElementById('results').appendChild(section);
+
+            // Clear localStorage
+            localStorage.removeItem('allsenses_emergency_keywords_test');
+
+            // Test 1: Add valid keyword
+            try {
+                const config = new EmergencyKeywordsConfig();
+                const initialCount = config.getKeywords().length;
+                const added = config.addKeyword('test keyword');
+                const newCount = config.getKeywords().length;
+                
+                if (added && newCount === initialCount + 1) {
+                    addTestResult('Unit Test: Add valid keyword', true);
+                } else {
+                    addTestResult('Unit Test: Add valid keyword', false, `Expected count ${initialCount + 1}, got ${newCount}`);
+                }
+            } catch (error) {
+                addTestResult('Unit Test: Add valid keyword', false, error.message);
+            }
+
+            // Test 2: Reject empty keyword
+            try {
+                const config = new EmergencyKeywordsConfig();
+                const added = config.addKeyword('   ');
+                
+                if (!added) {
+                    addTestResult('Unit Test: Reject empty keyword', true);
+                } else {
+                    addTestResult('Unit Test: Reject empty keyword', false, 'Empty keyword was added');
+                }
+            } catch (error) {
+                addTestResult('Unit Test: Reject empty keyword', false, error.message);
+            }
+
+            // Test 3: Reject duplicate keyword
+            try {
+                const config = new EmergencyKeywordsConfig();
+                config.addKeyword('duplicate');
+                const added = config.addKeyword('duplicate');
+                
+                if (!added) {
+                    addTestResult('Unit Test: Reject duplicate keyword', true);
+                } else {
+                    addTestResult('Unit Test: Reject duplicate keyword', false, 'Duplicate was added');
+                }
+            } catch (error) {
+                addTestResult('Unit Test: Reject duplicate keyword', false, error.message);
+            }
+
+            // Test 4: Remove existing keyword
+            try {
+                const config = new EmergencyKeywordsConfig();
+                config.addKeyword('removeme');
+                const initialCount = config.getKeywords().length;
+                const removed = config.removeKeyword('removeme');
+                const newCount = config.getKeywords().length;
+                
+                if (removed && newCount === initialCount - 1) {
+                    addTestResult('Unit Test: Remove existing keyword', true);
+                } else {
+                    addTestResult('Unit Test: Remove existing keyword', false, `Expected count ${initialCount - 1}, got ${newCount}`);
+                }
+            } catch (error) {
+                addTestResult('Unit Test: Remove existing keyword', false, error.message);
+            }
+
+            // Test 5: Prevent removal of last keyword
+            try {
+                const config = new EmergencyKeywordsConfig();
+                // Remove all but one
+                const keywords = config.getKeywords();
+                for (let i = 0; i < keywords.length - 1; i++) {
+                    config.removeKeyword(keywords[i]);
+                }
+                
+                // Try to remove the last one
+                const lastKeyword = config.getKeywords()[0];
+                const removed = config.removeKeyword(lastKeyword);
+                
+                if (!removed && config.getKeywords().length === 1) {
+                    addTestResult('Unit Test: Prevent removal of last keyword', true);
+                } else {
+                    addTestResult('Unit Test: Prevent removal of last keyword', false, 'Last keyword was removed');
+                }
+            } catch (error) {
+                addTestResult('Unit Test: Prevent removal of last keyword', false, error.message);
+            }
+
+            // Test 6: Keyword detection with special characters
+            try {
+                const detector = new KeywordDetectionEngine(['help!', 'call 911']);
+                const result1 = detector.detectKeyword('I need help! right now');
+                const result2 = detector.detectKeyword('please call 911');
+                
+                if (result1.matched && result2.matched) {
+                    addTestResult('Unit Test: Special characters in keywords', true);
+                } else {
+                    addTestResult('Unit Test: Special characters in keywords', false, 'Failed to match keywords with special chars');
+                }
+            } catch (error) {
+                addTestResult('Unit Test: Special characters in keywords', false, error.message);
+            }
+        }
+            // Test 7: Interim transcript detection
+            try {
+                const detector = new KeywordDetectionEngine(['emergency']);
+                const interimText = 'this is an emergency situation';
+                const result = detector.detectKeyword(interimText);
+                
+                if (result.matched && result.keyword === 'emergency') {
+                    addTestResult('Integration Test: Interim transcript detection', true);
+                } else {
+                    addTestResult('Integration Test: Interim transcript detection', false, 'Failed to detect in interim');
+                }
+            } catch (error) {
+                addTestResult('Integration Test: Interim transcript detection', false, error.message);
+            }
+
+            // Test 8: Final transcript detection
+            try {
+                const detector = new KeywordDetectionEngine(['help']);
+                const finalText = 'I need help right now';
+                const result = detector.detectKeyword(finalText);
+                
+                if (result.matched && result.keyword === 'help') {
+                    addTestResult('Integration Test: Final transcript detection', true);
+                } else {
+                    addTestResult('Integration Test: Final transcript detection', false, 'Failed to detect in final');
+                }
+            } catch (error) {
+                addTestResult('Integration Test: Final transcript detection', false, error.message);
+            }
+
+            // Test 9: Case insensitivity
+            try {
+                const detector = new KeywordDetectionEngine(['danger']);
+                const tests = ['DANGER', 'Danger', 'danger', 'DaNgEr'];
+                let allPassed = true;
+                
+                tests.forEach(text => {
+                    const result = detector.detectKeyword(text);
+                    if (!result.matched) {
+                        allPassed = false;
+                    }
+                });
+                
+                if (allPassed) {
+                    addTestResult('Integration Test: Case insensitivity', true);
+                } else {
+                    addTestResult('Integration Test: Case insensitivity', false, 'Some cases failed');
+                }
+            } catch (error) {
+                addTestResult('Integration Test: Case insensitivity', false, error.message);
+            }
+
+
+        // ========== RUN ALL TESTS ==========
+
+        async function runAllTests() {
+            clearResults();
+            
+            const button = event.target;
+            button.disabled = true;
+            button.textContent = '⏳ Running tests...';
+            
+            // Give UI time to update
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            try {
+                runPropertyTest1();
+                runPropertyTest2();
+                runPropertyTest4();
+                runPropertyTest6();
+                runPropertyTest7();
+                runPropertyTest8();
+                runPropertyTest12();
+                runPropertyTest17();
+                runUnitTests();
+                
+                showSummary();
+            } catch (error) {
+                console.error('Test execution error:', error);
+                addTestResult('Test Suite Error', false, error.message);
+            } finally {
+                button.disabled = false;
+                button.textContent = '▶️ Run All Tests';
+            }
+        }
+
+        // Auto-run on load
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('Test suite loaded. Click "Run All Tests" to begin.');
+        });
+    </script>
+</body>
+</html>

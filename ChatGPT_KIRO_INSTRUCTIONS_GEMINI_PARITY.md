@@ -1,123 +1,225 @@
-# KIRO Instruction Log — ERNIE → GEMINI Product Parity
+KIRO Instruction — Add VISION Mode (Gemini Vision) to AllSensesAI
+Objective
 
-## Context
+Add Visual Context Analysis (Gemini Vision) as an automatic, safety-triggered capability to AllSensesAI.
+The feature must activate only when risk is detected and must explain itself entirely through the UI, for both users in danger and jury observers.
 
-The ERNIE Guardian app established the canonical reference architecture,
-UI flow, and jury-facing narrative for AllSensesAI.
+No additional explanation should be required.
+The product must communicate intent, scope, and safety on its own.
 
-The GEMINI project must **mirror ERNIE exactly** in product structure,
-user experience, and deployment pattern, while replacing ONLY the
-AI analysis engine (ERNIE → Google Gemini).
+Guiding Principles (Non-Negotiable)
 
-This document captures the instruction logic and reasoning sequence
-used when directing KIRO, preserved for future reference.
+Vision is corroboration, not primary input
 
----
+Vision is never manually activated
 
-## Guiding Principle
+Vision never replaces audio or keyword triggers
 
-> **GEMINI should wear ERNIE’s clothes.**
+Safety over spectacle
 
-This is a **product parity task**, not an infrastructure experiment.
+Capture minimal visual evidence
 
----
+Analyze context, not identities
 
-## What Worked (ERNIE Reference)
+Explainability over raw output
 
-The ERNIE app successfully delivered:
+No raw Gemini text dumps
 
-- Clear “AllSensesAI Guardian” positioning
-- Step-by-step emergency workflow
-- Runtime console introspection (“proof of execution”)
-- Architecture transparency (S3, CloudFront, Lambda, DynamoDB, SMS)
-- A single, canonical CloudFront HTTPS URL suitable for jury review
+Structured findings only
 
-This pattern is the baseline.
+User = Jury
 
----
+Treat both as the same first-time viewer
 
-## What NOT to Do
+Everything must be obvious on screen
 
-KIRO must avoid:
+Where VISION Fits in the Pipeline
 
-- Re-inventing UI or flow for GEMINI
-- Creating multiple CloudFront distributions
-- Over-engineering backend infrastructure
-- Treating deployment as the primary goal before product parity
-- Printing placeholder or unverifiable URLs
+Keep the existing 5-step flow:
 
----
+Config
 
-## Correct Task Definition (Product Parity)
+Location
 
-The GEMINI project must:
+Voice
 
-1. **Duplicate the ERNIE Guardian frontend**
-   - Same layout
-   - Same step ordering
-   - Same visual hierarchy
-   - Same runtime proof panels
+Analysis (Enhanced with Vision)
 
-2. **Replace ERNIE references with GEMINI**
-   - Text labels
-   - Model naming
-   - Threat analysis section title
+Alert
 
-3. **Swap ONLY the analysis engine**
-   - ERNIE threat analysis → Gemini threat analysis
-   - Client-side demo logic is acceptable for jury purposes
+VISION is a sub-stage of Step 4.
+Do not add a new step.
 
-4. **Preserve all other functionality**
-   - Location services step
-   - Voice/text capture step
-   - Emergency alert UX
-   - SMS preview
-   - System status checks
-   - Console health/runtime introspection
+Trigger Conditions (Automatic Only)
 
----
+VISION activates when ANY of the following occur:
 
-## Deployment Strategy (Deferred Until Parity)
+Emergency keyword detected
 
-Deployment must only occur **after** UI and flow parity is confirmed.
+Suspicious noise pattern detected (panic, scream, struggle)
 
-When deploying:
+Emergency state flag is set
 
-- Use the **same pattern as ERNIE**
-  - S3 + CloudFront
-  - Single distribution
-  - One canonical HTTPS URL
+No buttons. No toggles. No user decisions.
 
-- Stop immediately after a valid CloudFront domain is produced
-- Do not retry, loop, or create parallel resources
+Step 4 — Threat Analysis (UI Changes Required)
 
----
+Add a new panel:
 
-## Acceptance Criteria
+🔍 Visual Context Analysis (Gemini Vision)
 
-GEMINI Guardian is considered complete when:
+Status flow (visible):
 
-- A user cannot visually distinguish it from ERNIE Guardian
-- The only semantic difference is the AI engine used
-- The app tells the same story to judges
-- One stable HTTPS URL exists for submission
+Waiting for trigger
 
----
+Capturing visual context
 
-## Why This Matters
+Analyzing environment
 
-Preserving parity ensures:
+Analysis complete
 
-- Consistent jury interpretation
-- Comparable evaluation across AI engines
-- Clear narrative of product evolution (ERNIE → GEMINI)
-- Reduced deployment risk
-- Stronger architectural credibility
+What the system does (must be visible in text):
 
----
+Captures 1–3 still frames
 
-## Summary Instruction to KIRO (Canonical)
+Uses front camera first, rear as fallback
 
-> Create a GEMINI version that mirrors ERNIE Guardian 1:1 in UI, flow,
-> and structure. Replace only the threat analysis engine.
-> Do not deploy until parity is confirmed.
+Only during active emergency
+
+No continuous recording
+
+Gemini Vision Analysis Scope (Must Be Explicit in UI)
+
+Show a short label such as:
+
+“Analyzing environment for safety risk indicators”
+
+Gemini must analyze for:
+
+Presence of other people
+
+Signs of physical threat or coercion
+
+Confined or isolated environments
+
+Vehicles or enclosed spaces
+
+Low-light or obstructed visibility
+
+Aggressive posture or proximity
+
+Objects that may indicate danger (non-sensational)
+
+Prompting Rules (For KIRO Implementation)
+
+Gemini Vision prompts must be safety-scoped.
+
+Example instruction (conceptual, not shown to user):
+
+“Analyze this image for indicators of personal danger or distress.
+Identify environmental risk factors only.
+Do not identify individuals.
+Respond with a structured safety assessment.”
+
+Visual Output (Strictly Structured)
+
+The UI must display:
+
+Thumbnail(s) (blurred by default)
+
+Structured findings, e.g.:
+
+“Multiple individuals detected nearby”
+
+“Confined indoor environment”
+
+“Low visibility conditions”
+
+Confidence level: Low / Medium / High
+
+❌ No free-form Gemini paragraphs
+❌ No emotional or speculative language
+
+Evidence Packet Expansion (Critical)
+
+When Vision is triggered, the emergency packet must visibly include:
+
+🎙️ Trigger transcript snippet
+
+📍 Live location (with Google Maps link)
+
+🖼️ Visual context findings
+
+🧠 Combined risk assessment (audio + vision)
+
+Display a label:
+
+“Evidence captured to assist responders”
+
+Privacy & Trust Signals (Must Be Visible)
+
+Without explanation text blocks, include small UI cues:
+
+“Images captured only during emergency”
+
+“No continuous recording”
+
+“Secure analysis”
+
+This reassures both user and jury instantly.
+
+Reset Behavior (Demo & Safety)
+
+“Reset Emergency State” must:
+
+Clear visual findings
+
+Clear captured frames
+
+Return Vision panel to idle state
+
+Vision must not activate again until a new trigger
+
+Acceptance Criteria (What Will Be Verified)
+
+Say emergency keyword → Step 4 auto-shows Vision panel
+
+Visual analysis runs without user input
+
+Findings are understandable in <5 seconds
+
+Jury can explain what Vision does by only reading the screen
+
+Reset clears everything cleanly
+
+No regressions to existing workflow
+
+Naming (Use Consistently)
+
+Use one of the following everywhere:
+
+Visual Context Analysis
+
+Environmental Risk Scan
+
+Avoid:
+
+“Camera Mode”
+
+“Image Capture”
+
+“Vision Mode” (too technical)
+
+Definition of Done
+
+A first-time viewer can clearly understand:
+
+why images were captured,
+
+what was analyzed,
+
+how it helps the person in danger,
+
+and how it strengthens emergency response,
+
+without anyone explaining it verbally.
