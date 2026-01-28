@@ -1,143 +1,204 @@
-📞 SMS Origination & International Routing — GEMINI Design Rationale
-Purpose
+ChatGPT–KIRO Instructions
+GEMINI Parity, Logic Preservation & System State Reference
+1. Purpose of This Document
 
-This section documents why SMS delivery behaves differently for U.S. versus non-U.S. destinations, and how GEMINI correctly handles both cases while maintaining compliance, deliverability, and user trust.
+This document exists to preserve the reasoning sequence that led to the current, stable, jury-ready state of the GEMINI Guardian system.
 
-This is an intentional design decision, not an implementation accident.
+It is not a task list.
+It is not a deployment guide.
+It is a logic anchor.
 
-🇺🇸 United States — Registered Origination (10DLC)
+Future changes must be evaluated against this document to ensure:
 
-In the United States, Application-to-Person (A2P) SMS traffic is regulated by mobile carriers (AT&T, Verizon, T-Mobile).
+parity is preserved
 
-Key characteristics:
+history is respected
 
-Messages must originate from registered 10-digit long codes (10DLC)
+no accidental regressions are introduced
 
-Each origination number is associated with:
+2. Scope Definition (Non-Negotiable)
+Responsibilities
 
-An approved sender identity
+KIRO
 
-A declared messaging use case
+Builds and explains GEMINI app logic
 
-Carrier-reviewed compliance metadata
+Produces technical documentation
 
-Why this matters:
+Reasons about build, runtime, and deployment behavior
 
-Unregistered or generic origination routes are frequently filtered or blocked
+Preserves history and sequence in explanations
 
-Emergency or safety-related notifications require high deliverability and trust
+Human (Repository Owner)
 
-For this reason, GEMINI uses registered U.S. origination numbers when delivering SMS to U.S. recipients.
+Controls repository structure
 
-Important clarification:
-10DLC is not a phone number format.
-It is a U.S.-only regulatory and carrier trust framework.
+Controls commits, tags, and reverts
 
-🌎 International Destinations — E.164 Routing
+Decides what gets saved and where
 
-Outside the United States:
+Explicit Exclusions for KIRO
 
-The 10DLC framework does not exist
+No Git commands
 
-Carrier requirements differ by country
+No repository restructuring
 
-SMS delivery relies on international routing agreements
+No tagging or versioning
 
-For international destinations, GEMINI:
+No file deletion or cleanup
 
-Requires destination numbers in E.164 format
+No historical rewriting
 
-Delegates routing to the messaging provider’s international infrastructure
+3. Current System Status (Source of Truth)
 
-Does not attempt to apply U.S.-specific origination rules
+As of the current state:
 
-Supported international destinations include:
+GEMINI Guardian is deployed and live
 
-🇨🇴 Colombia (+57)
+CloudFront delivery is active
 
-🇲🇽 Mexico (+52)
+Frontend enforces E.164 phone validation
 
-🇻🇪 Venezuela (+58)
+International SMS support is intentional and verified
 
-Unified Input, Country-Aware Execution
+Vision panel is visible and in standby until triggered
 
-At the system boundary, GEMINI uses E.164-formatted phone numbers for all destinations.
+Build and deployment behavior is documented truthfully
 
-Examples:
+Non-blocking issues are explained, not hidden
 
-+14155552671 (United States)
+This state is considered stable.
 
-+573001234567 (Colombia)
+4. Core Logic Pillars (Must Always Hold)
+4.1 Unified Input, Context-Aware Execution
 
-+5215512345678 (Mexico)
+All phone numbers are accepted in E.164 format
 
-+584121234567 (Venezuela)
+The system does not expose regional complexity to the user
 
-Although the input format is unified, execution differs internally based on destination country.
+Routing differences (U.S. vs international) are applied automatically
 
-Provider-Managed Routing (Internal Behavior)
+Validation occurs before submission, not after failure
 
-The messaging provider automatically applies the correct delivery path:
+4.2 Frontend as the First Safety Gate
 
-Destination	Internal Routing Behavior
-🇺🇸 United States	Uses registered U.S. origination (10DLC)
-🌎 Non-U.S.	Uses international SMS routing (E.164-based)
+Invalid phone input is blocked early
 
-As a result:
+Users receive immediate visual feedback
 
-U.S. messages comply with carrier regulations
+Downstream failures are prevented by design
 
-International messages follow country-appropriate routing rules
+4.3 Observable Behavior Over Hidden Magic
 
-No manual branching is required at the application layer
+What the user sees must reflect real system state
 
-Frontend Validation & User Experience
+Standby vs active modes must be visible
 
-To ensure correctness and clarity, GEMINI enforces the following at the UI level:
+The UI must never imply functionality that does not exist
 
-Phone Number Validation
+5. Build & Deployment Reasoning (History Matters)
+What Actually Happened
 
-Required format: E.164
+A first deployment attempt failed due to an incorrect S3 bucket
 
-Regex:
-^\+[1-9]\d{6,14}$
+The bucket and CloudFront distribution were corrected based on prior state
 
-Examples shown to users
+A second deployment succeeded (upload + invalidation)
 
-+1XXXXXXXXXX
+A PowerShell console error occurred after success
 
-+57XXXXXXXXXX
+Cause: instructional text parsed as a command
 
-+52XXXXXXXXXX
+Impact: cosmetic only
 
-+58XXXXXXXXXX
+System state: unaffected
 
-Behavior
+Why This History Is Preserved
 
-Invalid numbers are blocked before submission
+It explains why the current configuration exists
 
-Valid numbers receive immediate confirmation feedback
+It prevents future re-introduction of the same mistake
 
-This prevents downstream delivery failures and improves user trust
+It proves the system was validated under real conditions
 
-Design Principles
+KIRO must never “clean this up” by omission.
 
-✅ Use global standards (E.164) at system boundaries
+6. Documentation Principles (For All Future Docs)
 
-✅ Apply country-specific compliance only where required
+All documentation created by KIRO must:
 
-✅ Delegate carrier-specific logic to the messaging provider
+Be jury-safe
 
-❌ Do not expose regulatory complexity to end users
+Avoid speculation
 
-❌ Do not apply U.S.-only rules to international traffic
+Avoid legacy system names
 
-Authoritative Statement
+Distinguish:
 
-GEMINI automatically applies the correct SMS origination and routing strategy based on the destination country, ensuring regulatory compliance, high deliverability, and consistent behavior across regions.
+design intent
 
-Build Reference
+observed behavior
 
-GEMINI Build: GEMINI3-E164-PARITY-20260128
+non-blocking issues
 
-Scope: U.S. + International SMS delivery
+real failures
+
+Preserve sequence and causality
+
+Be usable without reading code
+
+7. Change Evaluation Checklist (Before Doing Anything)
+
+Before proposing or implementing any change, KIRO must answer:
+
+Does this change preserve existing behavior?
+
+Does it maintain the logic pillars in Section 4?
+
+Does it respect the documented history in Section 5?
+
+Does it improve clarity without hiding reality?
+
+Is this change required, or merely aesthetic?
+
+If any answer is unclear → stop and ask.
+
+8. Definition of “Parity” in This Project
+
+Parity does not mean:
+
+identical code
+
+identical infrastructure
+
+identical tooling
+
+Parity does mean:
+
+identical user experience
+
+identical safety guarantees
+
+identical international behavior
+
+identical failure prevention
+
+identical explainability
+
+9. When This Document Must Be Updated
+
+This document should only be updated if:
+
+a new capability changes system behavior
+
+a deployment mechanism materially changes
+
+a jury-relevant assumption changes
+
+Minor refactors do not qualify.
+
+10. Final Guardrail Statement
+
+If the system works today, the burden of proof is on any change to explain why it should exist.
+
+This document is the reference used to make that decision.
