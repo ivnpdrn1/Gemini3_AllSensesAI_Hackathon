@@ -1,0 +1,1800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AllSensesAI Gemini3 Guardian</title>
+    
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1000px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .container { background: rgba(255,255,255,0.95); padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { color: #2c3e50; font-size: 2.5em; margin-bottom: 10px; }
+        .header p { color: #7f8c8d; font-size: 1.2em; }
+        .section { background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .section h3 { color: #2c3e50; margin-bottom: 15px; }
+        .button { background: linear-gradient(45deg, #3498db, #2980b9); color: white; padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-size: 1em; margin: 5px; }
+        .button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(52,152,219,0.4); }
+        .button.emergency { background: linear-gradient(45deg, #e74c3c, #c0392b); }
+        .button.emergency:hover { box-shadow: 0 5px 15px rgba(231,76,60,0.4); }
+        .button.primary-btn { background: linear-gradient(45deg, #28a745, #20c997); }
+        .button.secondary-btn { background: linear-gradient(45deg, #6c757d, #495057); }
+        .button.danger-btn { background: linear-gradient(45deg, #dc3545, #c82333); }
+        .button:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
+        .controls-row { margin: 15px 0; text-align: center; }
+        .controls-row .button { margin: 5px 10px; }
+        textarea { width: 100%; height: 120px; margin: 10px 0; padding: 15px; border: 2px solid #ecf0f1; border-radius: 8px; font-size: 1em; }
+        input[type="text"], input[type="tel"] { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #ecf0f1; border-radius: 8px; font-size: 1em; }
+        .result { background: #e8f5e8; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #27ae60; }
+        .error { background: #f8d7da; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #dc3545; }
+        .warning { background: #fff3cd; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #f39c12; }
+        .note { font-size: 0.9em; color: #666; margin-top: 8px; }
+        .location-status { background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #28a745; }
+        .location-status.denied { border-left-color: #dc3545; background: #f8d7da; }
+        .location-status.unavailable { border-left-color: #ffc107; background: #fff3cd; }
+        
+        .runtime-health { background: #fff; border: 2px solid #007bff; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .runtime-health h3 { color: #007bff; margin-bottom: 10px; font-size: 1.2em; }
+        .health-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+        .health-item { background: #f8f9fa; padding: 10px; border-radius: 5px; border-left: 3px solid #28a745; }
+        .health-item.warning { border-left-color: #ffc107; background: #fff3cd; }
+        .health-item.error { border-left-color: #dc3545; background: #f8d7da; }
+        .health-label { font-size: 0.85em; color: #666; margin-bottom: 4px; }
+        .health-value { font-weight: bold; color: #2c3e50; }
+        
+        /* NEW: Selected Location Panel */
+        .selected-location-panel { background: #e8f5e9; border: 2px solid #4caf50; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .selected-location-panel h4 { margin: 0 0 10px 0; color: #2e7d32; font-size: 1.1em; }
+        .location-detail { display: grid; grid-template-columns: 140px 1fr; gap: 8px; margin: 5px 0; font-size: 0.95em; }
+        .location-label { font-weight: bold; color: #555; }
+        .location-value { color: #2c3e50; font-family: monospace; }
+        
+        /* NEW: Microphone Status Badge */
+        .mic-status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 0.9em; font-weight: bold; margin-left: 10px; }
+        .mic-status-badge.idle { background: #e9ecef; color: #6c757d; }
+        .mic-status-badge.requesting { background: #fff3cd; color: #856404; }
+        .mic-status-badge.listening { background: #d4edda; color: #155724; animation: pulse 1.5s infinite; }
+        .mic-status-badge.stopped { background: #f8d7da; color: #721c24; }
+        .mic-status-badge.error { background: #f8d7da; color: #721c24; }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        /* NEW: Live Transcript Box */
+        .transcript-box { background: #fff; border: 2px solid #007bff; padding: 15px; border-radius: 8px; margin: 15px 0; min-height: 120px; max-height: 300px; overflow-y: auto; }
+        .transcript-box h4 { margin: 0 0 10px 0; color: #007bff; font-size: 1em; }
+        .transcript-content { font-family: monospace; font-size: 0.9em; color: #495057; white-space: pre-wrap; line-height: 1.6; }
+        .transcript-line { margin: 5px 0; padding: 5px; background: #f8f9fa; border-radius: 4px; }
+        .transcript-timestamp { color: #6c757d; font-size: 0.85em; margin-right: 8px; }
+        .transcript-interim { color: #6c757d; font-style: italic; }
+        .listening-indicator { color: #28a745; font-style: italic; }
+        
+        /* NEW: Voice Controls */
+        .voice-controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 15px 0; }
+        
+        /* NEW: Emergency Banner */
+        .emergency-banner { background: linear-gradient(45deg, #dc3545, #c82333); color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 3px solid #a71d2a; box-shadow: 0 5px 20px rgba(220, 53, 69, 0.4); animation: emergencyPulse 2s infinite; display: none; }
+        .emergency-banner h2 { margin: 0 0 10px 0; font-size: 1.8em; }
+        .emergency-banner .emergency-details { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-top: 10px; }
+        .emergency-banner .emergency-detail-row { display: grid; grid-template-columns: 150px 1fr; gap: 10px; margin: 8px 0; font-size: 0.95em; }
+        .emergency-banner .detail-label { font-weight: bold; }
+        .emergency-banner .detail-value { font-family: monospace; }
+        .emergency-banner .maps-link { display: inline-block; background: #fff; color: #dc3545; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-top: 10px; }
+        .emergency-banner .maps-link:hover { background: #f8f9fa; }
+        
+        @keyframes emergencyPulse {
+            0%, 100% { box-shadow: 0 5px 20px rgba(220, 53, 69, 0.4); }
+            50% { box-shadow: 0 5px 30px rgba(220, 53, 69, 0.8); }
+        }
+        
+        /* NEW: Emergency Modal */
+        .emergency-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 9999; }
+        .emergency-modal-content { background: white; padding: 40px; border-radius: 15px; max-width: 500px; text-align: center; box-shadow: 0 10px 50px rgba(0,0,0,0.5); animation: modalSlideIn 0.3s ease-out; }
+        .emergency-modal h2 { color: #dc3545; font-size: 2em; margin-bottom: 15px; }
+        .emergency-modal p { font-size: 1.1em; color: #495057; margin: 10px 0; }
+        .emergency-modal .modal-button { background: linear-gradient(45deg, #dc3545, #c82333); color: white; padding: 15px 30px; border: none; border-radius: 8px; cursor: pointer; font-size: 1.1em; margin-top: 20px; }
+        .emergency-modal .modal-button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4); }
+        
+        @keyframes modalSlideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        /* NEW: Emergency Badge for Step 3 */
+        .mic-status-badge.emergency-detected { background: #dc3545; color: white; animation: badgePulse 1s infinite; }
+        
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+    
+        /* Vision Context Analysis Panel */
+        .vision-context-panel { background: #f0f8ff; border: 2px solid #4a90e2; padding: 20px; border-radius: 10px; margin: 20px 0; }
+        .vision-context-panel h4 { margin: 0 0 15px 0; color: #2c5aa0; font-size: 1.2em; }
+        .vision-status-badge { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 0.9em; font-weight: bold; margin-bottom: 15px; }
+        .vision-status-badge.standby { background: #e9ecef; color: #6c757d; }
+        .vision-status-badge.capturing { background: #fff3cd; color: #856404; animation: visionPulse 1.5s infinite; }
+        .vision-status-badge.analyzing { background: #cfe2ff; color: #084298; animation: visionPulse 1.5s infinite; }
+        .vision-status-badge.complete { background: #d1e7dd; color: #0f5132; }
+        .vision-status-badge.error { background: #f8d7da; color: #842029; }
+        .vision-explainer { background: #fff; padding: 12px; border-radius: 6px; margin: 10px 0; font-size: 0.95em; color: #495057; border-left: 4px solid #4a90e2; }
+        .vision-placeholders { background: #f8f9fa; padding: 15px; border-radius: 6px; margin: 10px 0; color: #adb5bd; font-style: italic; }
+        .vision-placeholders p { margin: 5px 0; }
+        .vision-frames-placeholder { margin: 15px 0; }
+        .frame-placeholder { display: inline-block; margin: 5px; }
+        .vision-thumbnails { display: flex; gap: 10px; margin: 15px 0; flex-wrap: wrap; }
+        .vision-thumbnail { width: 120px; height: 90px; border-radius: 6px; object-fit: cover; border: 2px solid #dee2e6; }
+        .vision-thumbnail.blurred { filter: blur(8px); }
+        .vision-thumbnail-toggle { background: #6c757d; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; margin-top: 8px; }
+        .vision-thumbnail-toggle:hover { background: #5a6268; }
+        .vision-findings { background: #fff; padding: 15px; border-radius: 6px; margin: 10px 0; }
+        .vision-findings ul { margin: 10px 0; padding-left: 20px; }
+        .vision-findings li { margin: 6px 0; color: #495057; }
+        .vision-confidence { background: #f8f9fa; padding: 10px; border-radius: 6px; margin: 10px 0; display: inline-block; }
+        .vision-confidence .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.85em; font-weight: bold; margin-left: 8px; }
+        .vision-confidence .badge.low { background: #d1e7dd; color: #0f5132; }
+        .vision-confidence .badge.medium { background: #fff3cd; color: #856404; }
+        .vision-confidence .badge.high { background: #f8d7da; color: #842029; }
+        .vision-evidence-indicator { background: #d1e7dd; padding: 10px 15px; border-radius: 6px; margin: 10px 0; color: #0f5132; font-weight: 500; border-left: 4px solid #198754; }
+        .vision-why-helps { font-size: 0.85em; color: #6c757d; margin-top: 10px; font-style: italic; }
+        
+        @keyframes visionPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+    
+        /* SMS Preview Panel */
+        .sms-preview-panel { background: #f8f9fa; border: 2px solid #007bff; padding: 20px; border-radius: 10px; margin: 20px 0; }
+        .sms-preview-panel h4 { margin: 0 0 15px 0; color: #007bff; font-size: 1.1em; }
+        .sms-preview-message { background: #fff; border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; font-family: 'Courier New', monospace; font-size: 0.9em; line-height: 1.6; white-space: pre-wrap; color: #212529; margin: 15px 0; }
+        .sms-preview-meta { display: grid; grid-template-columns: 140px 1fr; gap: 8px; margin: 10px 0; font-size: 0.9em; }
+        .sms-preview-label { font-weight: bold; color: #555; }
+        .sms-preview-value { color: #2c3e50; font-family: monospace; }
+        .sms-preview-checklist { background: #e7f3ff; padding: 12px; border-radius: 6px; margin: 10px 0; }
+        .sms-preview-checklist h5 { margin: 0 0 8px 0; font-size: 0.95em; color: #0056b3; }
+        .sms-preview-checklist ul { margin: 5px 0; padding-left: 20px; }
+        .sms-preview-checklist li { margin: 4px 0; font-size: 0.9em; color: #495057; }
+        .sms-preview-error { background: #f8d7da; border: 2px solid #dc3545; padding: 15px; border-radius: 8px; color: #721c24; font-weight: bold; margin: 15px 0; }
+        .sms-preview-sent { background: #d4edda; border: 2px solid #28a745; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .sms-preview-sent h5 { margin: 0 0 10px 0; color: #155724; font-size: 1em; }
+        .sms-preview-timestamp { font-size: 0.85em; color: #666; margin-top: 10px; }
+    
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- NEW: Emergency Banner (Hidden by default) -->
+        <div id="emergencyBanner" class="emergency-banner">
+            <h2>🚨 EMERGENCY TRIGGERED</h2>
+            <div class="emergency-details">
+                <div class="emergency-detail-row">
+                    <span class="detail-label">Timestamp:</span>
+                    <span class="detail-value" id="emergency-timestamp">—</span>
+                </div>
+                <div class="emergency-detail-row">
+                    <span class="detail-label">Detected Phrase:</span>
+                    <span class="detail-value" id="emergency-phrase">—</span>
+                </div>
+                <div class="emergency-detail-row">
+                    <span class="detail-label">Location:</span>
+                    <span class="detail-value" id="emergency-location">—</span>
+                </div>
+                <div class="emergency-detail-row">
+                    <span class="detail-label">Coordinates:</span>
+                    <span class="detail-value" id="emergency-coords">—</span>
+                </div>
+                <a id="emergencyMapsLink" href="#" target="_blank" rel="noopener noreferrer" class="maps-link">
+                    🗺️ View Emergency Location on Google Maps
+                </a>
+            </div>
+        </div>
+        
+        <!-- NEW: Emergency Modal (Hidden by default) -->
+        <div id="emergencyModal" class="emergency-modal">
+            <div class="emergency-modal-content">
+                <h2>🚨 Emergency Detected</h2>
+                <p><strong>Escalation sequence started</strong></p>
+                <p>Locking in live location updates</p>
+                <p id="modalDetectedPhrase" style="font-style: italic; color: #dc3545; margin-top: 15px;"></p>
+                <button class="modal-button" onclick="closeEmergencyModal()">Proceed to Threat Analysis</button>
+            </div>
+        </div>
+        
+        <div class="header">
+            <h1>AllSensesAI Gemini3 Guardian</h1>
+            <p>Gemini 1.5 Pro | Emergency Detection System</p>
+            <div id="buildStamp" style="font-size:14px;color:#fff;margin-top:8px;font-weight:bold;background:#4285f4;padding:6px 12px;border-radius:6px;">Build: GEMINI3-VICTIM-NAME-ENHANCED-20260128</div>
+            
+            <div style="background:#e8f5e9;border:1px solid #4caf50;padding:8px 12px;border-radius:5px;margin:8px 0;font-size:13px;color:#2e7d32;">
+                <strong>GEMINI3 POWERED:</strong> Using Google Gemini 1.5 Pro for threat analysis
+            </div>
+        </div>
+        
+        <div class="runtime-health">
+            <h3>🔍 Runtime Health Check</h3>
+            <div class="health-grid">
+                <div class="health-item" id="health-gemini3">
+                    <div class="health-label">Gemini3 Client</div>
+                    <div class="health-value" id="gemini3-status">Initializing...</div>
+                </div>
+                <div class="health-item" id="health-model">
+                    <div class="health-label">Model</div>
+                    <div class="health-value">gemini-1.5-pro</div>
+                </div>
+                <div class="health-item" id="health-pipeline">
+                    <div class="health-label">Pipeline State</div>
+                    <div class="health-value" id="pipeline-state">IDLE</div>
+                </div>
+                <div class="health-item" id="health-location">
+                    <div class="health-label">Location Services</div>
+                    <div class="health-value" id="location-health">Not Started</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>👤 Step 1 — Configuration</h3>
+            <input type="text" id="victimName" placeholder="Your Name" value="Demo User">
+            <input type="tel" id="emergencyPhone" placeholder="+1XXXXXXXXXX, +57XXXXXXXXXX, +52XXXXXXXXXX, +58XXXXXXXXXX" value="+1234567890">
+            <div class="note" style="margin-top: 5px; font-size: 0.9em; color: #666;">
+                Use E.164 format: +&lt;countrycode&gt;&lt;number&gt; (examples: +1…, +57…, +52…, +58…)
+            </div>
+            <div id="phoneValidationFeedback" class="note" style="margin-top: 5px; font-weight: bold; display: none;"></div>
+            <div class="note" style="margin-top: 8px; font-size: 0.85em; color: #555; padding: 8px; background: #f0f8ff; border-radius: 4px; border-left: 3px solid #4a90e2;">
+                <strong>International supported:</strong> US (+1), Colombia (+57), Mexico (+52), Venezuela (+58)
+            </div>
+            <button type="button" id="completeStep1Btn" class="button primary-btn">Complete Step 1</button>
+            <div id="step1Status" class="note">Enter your details and click Complete Step 1</div>
+            <div id="step1ProofBox" style="background: #f8f9fa; border: 2px solid #007bff; padding: 10px; border-radius: 5px; margin: 10px 0; font-family: monospace; font-size: 0.85em; min-height: 40px;">
+                <strong>Step 1 Proof:</strong><br>
+                <div id="step1ProofLog" style="color: #495057; white-space: pre-wrap;">Click Complete Step 1 to see proof logs...</div>
+            </div>
+
+        </div>
+        
+        <div class="section">
+            <h3>📍 Step 2 — Location Services</h3>
+            
+            <div id="locationStatus" class="location-status">
+                <strong>GPS Status:</strong> <span id="gpsStatus">📍 Click Enable Location to start</span><br>
+                <strong>Last Update:</strong> <span id="lastGpsUpdate">Never</span><br>
+                <strong>Accuracy:</strong> <span id="gpsAccuracy">Unknown</span>
+            </div>
+            
+            <!-- NEW: Selected Location Panel -->
+            <div id="selectedLocationPanel" class="selected-location-panel" style="display:none;">
+                <h4>📍 Selected Location</h4>
+                <div class="location-detail">
+                    <span class="location-label">Latitude:</span>
+                    <span class="location-value" id="loc-latitude">—</span>
+                </div>
+                <div class="location-detail">
+                    <span class="location-label">Longitude:</span>
+                    <span class="location-value" id="loc-longitude">—</span>
+                </div>
+                <div class="location-detail">
+                    <span class="location-label">Source:</span>
+                    <span class="location-value" id="loc-source">—</span>
+                </div>
+                <div class="location-detail">
+                    <span class="location-label">Timestamp:</span>
+                    <span class="location-value" id="loc-timestamp">—</span>
+                </div>
+                <div class="location-detail">
+                    <span class="location-label">Location Label:</span>
+                    <span class="location-value" id="loc-label">—</span>
+                </div>
+                <!-- NEW: Google Maps Live Location Link -->
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #4caf50;">
+                    <a id="googleMapsLink" href="#" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: linear-gradient(45deg, #4285f4, #34a853); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 0.95em;">
+                        🗺️ View Live Location on Google Maps
+                    </a>
+                    <div style="font-size: 0.85em; color: #666; margin-top: 8px;">
+                        Opens in new tab • Updates automatically with latest position
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls-row">
+                <button type="button" id="enableLocationBtn" class="button primary-btn" disabled>📍 Enable Location</button>
+                <button type="button" id="demoLocationBtn" class="button secondary-btn">🎯 Use Demo Location</button>
+            </div>
+            
+            <div id="step2ProofBox" style="background: #f8f9fa; border: 2px solid #007bff; padding: 10px; border-radius: 5px; margin: 10px 0; font-family: monospace; font-size: 0.85em; min-height: 60px;">
+                <strong>🔍 Step 2 Proof (UI-Visible):</strong><br>
+                <div id="step2ProofLog" style="color: #495057; white-space: pre-wrap;">Complete Step 1, then click "Enable Location" to see proof logs appear here...</div>
+            </div>
+            
+            <div class="note">This proof box shows exactly what happens when you click Enable Location</div>
+        </div>
+        
+        <div class="section">
+            <h3>
+                🎤 Step 3 — Voice Emergency Detection
+                <span id="micStatusBadge" class="mic-status-badge idle">Idle</span>
+            </h3>
+            
+            <!-- NEW: Voice Controls -->
+            <div class="voice-controls">
+                <button id="startVoiceBtn" class="button primary-btn" disabled>🎤 Start Voice Detection</button>
+                <button id="stopVoiceBtn" class="button danger-btn" style="display:none;">⏹️ Stop Listening</button>
+                <button id="clearTranscriptBtn" class="button secondary-btn" style="display:none;">🗑️ Clear Transcript</button>
+            </div>
+            
+            <div id="voiceStatus" class="note">Complete Steps 1 & 2 to enable voice detection</div>
+            
+
+            
+            <!-- FIX B: Add Emergency Keywords Field -->
+            <div style="background: #e7f3ff; border: 2px solid #007bff; padding: 12px; border-radius: 8px; margin: 15px 0;">
+                <h4 style="margin: 0 0 8px 0; color: #0056b3; font-size: 1em;">Add Emergency Keywords</h4>
+                <div style="font-size: 0.9em; color: #495057; margin-bottom: 8px;">
+                    Add custom keywords (comma-separated). Example: knife, stop following me, danger
+                </div>
+                <input type="text" id="customKeywordsInput" placeholder="knife, stop following me, danger" style="width: 100%; padding: 8px; margin: 8px 0; border: 2px solid #007bff; border-radius: 5px; font-size: 0.9em;">
+                <div style="display: flex; gap: 10px; margin-top: 8px;">
+                    <button type="button" id="addKeywordsBtn" class="button primary-btn" style="font-size: 0.9em; padding: 8px 16px;">Add Keywords</button>
+                    <button type="button" id="resetKeywordsBtn" class="button secondary-btn" style="font-size: 0.9em; padding: 8px 16px;">Reset to Defaults</button>
+                </div>
+                <div id="keywordsStatus" class="note" style="margin-top: 8px; font-weight: bold; display: none;"></div>
+            </div>
+
+            <!-- TASK C: Emergency Keyword Trigger Rule -->
+            <div style="background: #fff3cd; border: 2px solid #ffc107; padding: 12px; border-radius: 8px; margin: 15px 0;">
+                <h4 style="margin: 0 0 8px 0; color: #856404; font-size: 1em;">🔔 Trigger Rule</h4>
+                <div id="step3TriggerRule" style="font-size: 0.9em; color: #856404;">
+                    <strong>Emergency keywords enabled:</strong> emergency, help, call 911, help me, scared...<br>
+                    <strong>Last match:</strong> None
+                </div>
+            </div>
+
+            
+            <!-- NEW: Live Transcript Box -->
+            <div id="transcriptBox" class="transcript-box" style="display:none;">
+                <h4>📝 Live Transcript</h4>
+                <div id="transcriptContent" class="transcript-content">
+                    <div class="listening-indicator">(listening...)</div>
+                </div>
+            </div>
+            
+            <div id="step3ProofBox" style="background: #f8f9fa; border: 2px solid #007bff; padding: 10px; border-radius: 5px; margin: 10px 0; font-family: monospace; font-size: 0.85em; min-height: 40px; display:none;">
+                <strong>🔍 Step 3 Proof (Mic Events):</strong><br>
+                <div id="step3ProofLog" style="color: #495057; white-space: pre-wrap;"></div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>🤖 Step 4 — Gemini3 Threat Analysis</h3>
+            <!-- NEW: Visual Context Analysis Panel (Always Visible) -->
+            <div id="visionContextPanel" class="vision-context-panel">
+                <h4>🎥 Visual Context (Gemini Vision) — Video Frames</h4>
+                
+                <div id="visionStatusBadge" class="vision-status-badge standby">
+                    <span>Standby</span>
+                </div>
+                
+                <div id="visionExplainer" class="vision-explainer">
+                    <p><strong>Standby:</strong> Activates automatically during detected risk to corroborate audio/text signals.</p>
+                    <p><strong>Capture policy:</strong> Captures 1–3 video frames during emergency. No continuous recording.</p>
+                </div>
+                
+                <!-- Video Frames Placeholders (Always Visible Before Trigger) -->
+                <div id="visionFramesPlaceholder" class="vision-frames-placeholder">
+                    <h5 style="margin: 10px 0; color: #6c757d; font-size: 1em;">📹 Video Frames (Standby)</h5>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <div class="frame-placeholder">
+                            <div style="width: 120px; height: 90px; background: #e9ecef; border: 2px dashed #adb5bd; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #6c757d; font-size: 0.85em; text-align: center; padding: 5px;">
+                                Frame 1<br>not captured
+                            </div>
+                        </div>
+                        <div class="frame-placeholder">
+                            <div style="width: 120px; height: 90px; background: #e9ecef; border: 2px dashed #adb5bd; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #6c757d; font-size: 0.85em; text-align: center; padding: 5px;">
+                                Frame 2<br>not captured
+                            </div>
+                        </div>
+                        <div class="frame-placeholder">
+                            <div style="width: 120px; height: 90px; background: #e9ecef; border: 2px dashed #adb5bd; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #6c757d; font-size: 0.85em; text-align: center; padding: 5px;">
+                                Frame 3<br>not captured
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="visionPlaceholders" class="vision-placeholders">
+                    <p><strong>Findings:</strong> —</p>
+                    <p><strong>Confidence:</strong> —</p>
+                    <p><strong>Vision/Video Status:</strong> Standby</p>
+                </div>
+                
+                <div id="visionTriggerReason" style="background: #fff3cd; padding: 12px; border-radius: 6px; margin: 10px 0; font-size: 0.95em; color: #856404; border-left: 4px solid #ffc107; display:none;">
+                    <p><strong>Activated because:</strong> <span id="visionTriggerText">—</span></p>
+                </div>
+                
+                <div id="visionThumbnails" class="vision-thumbnails" style="display:none;">
+                    <!-- Thumbnails will be inserted here -->
+                </div>
+                
+                <div id="visionFindings" class="vision-findings" style="display:none;">
+                    <strong>Environmental Risk Indicators:</strong>
+                    <ul id="visionFindingsList">
+                        <!-- Findings will be inserted here -->
+                    </ul>
+                </div>
+                
+                <div id="visionConfidence" class="vision-confidence" style="display:none;">
+                    <strong>Confidence:</strong>
+                    <span class="badge" id="visionConfidenceBadge">—</span>
+                </div>
+                
+                <div id="visionEvidenceIndicator" class="vision-evidence-indicator" style="display:none;">
+                    ✅ Added to Evidence Packet
+                </div>
+                
+                <div class="vision-why-helps">
+                    💡 Why this helps: Visual context helps responders validate environment risk when voice is limited or ambiguous.
+                </div>
+            </div>
+            
+
+            
+            
+            <!-- TASK C: Emergency Keyword Trigger Rule (Step 4) -->
+            <div style="background: #fff3cd; border: 2px solid #ffc107; padding: 12px; border-radius: 8px; margin: 15px 0;">
+                <h4 style="margin: 0 0 8px 0; color: #856404; font-size: 1em;">🔔 Trigger Rule</h4>
+                <div id="step4TriggerRule" style="font-size: 0.9em; color: #856404;">
+                    <strong>Emergency keywords enabled:</strong> emergency, help, call 911, help me, scared...<br>
+                    <strong>Last match:</strong> None
+                </div>
+            </div>
+
+            <textarea id="audioInput" placeholder="Enter emergency text...">Help! Someone is following me and I'm scared!</textarea>
+            <button class="button emergency" onclick="triggerGemini3Analysis()">🤖 Analyze with Gemini3</button>
+            <div id="threatLevelOutput" style="margin-top:15px;padding:12px;background:#fff;border:2px solid #ddd;border-radius:5px;display:none;">
+                <strong>Threat Level:</strong> <span id="threatLevel" style="font-size:1.2em;font-weight:bold;"></span><br>
+                <strong>Confidence:</strong> <span id="threatConfidence"></span><br>
+                <strong>Analysis:</strong> <span id="threatAnalysis"></span>
+            </div>
+            <div id="emergencyResult"></div>
+        </div>
+        
+        <div class="section">
+            <h3>🚨 Step 5 — Emergency Alerting</h3>
+            
+            <!-- SMS Preview Panel (Always Visible) -->
+            <div id="smsPreviewPanel" class="sms-preview-panel">
+                <h4>📱 SMS Preview (what your emergency contact will receive)</h4>
+                
+                <div id="smsPreviewError" class="sms-preview-error" style="display:none;">
+                    Cannot generate SMS yet: <span id="smsPreviewErrorReason">—</span>
+                </div>
+                
+                <div id="smsPreviewContent" style="display:none;">
+                    <div class="sms-preview-meta">
+                        <span class="sms-preview-label">Victim Name:</span>
+                        <span class="sms-preview-value" id="smsPreviewVictimName">—</span>
+                    </div>
+                    
+                    <div class="sms-preview-meta">
+                        <span class="sms-preview-label">Destination:</span>
+                        <span class="sms-preview-value" id="smsPreviewDestination">—</span>
+                    </div>
+                    
+                    <div class="sms-preview-message" id="smsPreviewMessage">
+                        (SMS preview will appear here after threat analysis)
+                    </div>
+                    
+                    <div class="sms-preview-checklist">
+                        <h5>✓ Data Included:</h5>
+                        <ul>
+                            <li id="smsCheckIdentity">Product identity: <span style="color:#28a745;">✓</span></li>
+                            <li id="smsCheckVictimName">Victim name: <span id="smsCheckVictimNameValue">—</span></li>
+                            <li id="smsCheckRisk">Risk summary: <span id="smsCheckRiskValue">—</span></li>
+                            <li id="smsCheckMessage">Victim message: <span id="smsCheckMessageValue">—</span></li>
+                            <li id="smsCheckLocation">Location coordinates: <span id="smsCheckLocationValue">—</span></li>
+                            <li id="smsCheckMaps">Google Maps link: <span id="smsCheckMapsValue">—</span></li>
+                            <li id="smsCheckTimestamp">Timestamp: <span id="smsCheckTimestampValue">—</span></li>
+                            <li id="smsCheckAction">Next action instruction: <span style="color:#28a745;">✓</span></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div id="smsPreviewSent" class="sms-preview-sent" style="display:none;">
+                    <h5>✅ Sent Message:</h5>
+                    <div class="sms-preview-message" id="smsPreviewSentMessage">—</div>
+                    <div class="sms-preview-timestamp">Sent at: <span id="smsPreviewSentTime">—</span></div>
+                </div>
+            </div>
+
+            <div id="step5Status" class="note">Waiting for threat analysis...</div>
+            <div id="alertResult" style="display:none;margin-top:10px;padding:12px;background:#d4edda;border:1px solid #28a745;border-radius:5px;">
+                <strong>✅ Alert Sent!</strong><br>
+                <span id="alertDetails"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== E.164 PHONE VALIDATION (INTERNATIONAL PARITY) ==========
+        function validateE164Phone(phoneNumber) {
+            const trimmed = phoneNumber.trim();
+            
+            // E.164 regex: must start with +, followed by country code (1-9), then 6-14 more digits
+            const e164Regex = /^\+[1-9]\d{6,14}$/;
+            
+            if (!trimmed) {
+                return {
+                    valid: false,
+                    message: 'Phone number required',
+                    color: '#dc3545'
+                };
+            }
+            
+            if (!trimmed.startsWith('+')) {
+                return {
+                    valid: false,
+                    message: 'Must start with + (E.164 format)',
+                    color: '#dc3545'
+                };
+            }
+            
+            if (!e164Regex.test(trimmed)) {
+                return {
+                    valid: false,
+                    message: 'Invalid E.164 format. Use +<countrycode><number> (7-15 digits total)',
+                    color: '#dc3545'
+                };
+            }
+            
+            // Detect country for user feedback
+            let country = 'International';
+            if (trimmed.startsWith('+1')) country = 'US';
+            else if (trimmed.startsWith('+57')) country = 'Colombia';
+            else if (trimmed.startsWith('+52')) country = 'Mexico';
+            else if (trimmed.startsWith('+58')) country = 'Venezuela';
+            
+            return {
+                valid: true,
+                message: `✓ Valid E.164 (${country})`,
+                color: '#28a745',
+                country: country
+            };
+        }
+        
+        function updatePhoneValidation() {
+            const phoneInput = document.getElementById('emergencyPhone');
+            const feedback = document.getElementById('phoneValidationFeedback');
+            
+            if (!phoneInput || !feedback) return;
+            
+            const result = validateE164Phone(phoneInput.value);
+            
+            feedback.style.display = 'block';
+            feedback.style.color = result.color;
+            feedback.textContent = result.message;
+            
+            // Store validation state for form submission
+            phoneInput.setAttribute('data-valid', result.valid ? 'true' : 'false');
+            
+            return result.valid;
+        }
+        
+        // Attach validation to phone input on page load
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // FIX B: Bind keyword management buttons
+            const addKeywordsBtn = document.getElementById('addKeywordsBtn');
+            if (addKeywordsBtn) {
+                addKeywordsBtn.addEventListener('click', addCustomKeywords);
+                console.log('[KEYWORDS] Add button bound');
+            }
+            
+            const resetKeywordsBtn = document.getElementById('resetKeywordsBtn');
+            if (resetKeywordsBtn) {
+                resetKeywordsBtn.addEventListener('click', resetKeywordsToDefaults);
+                console.log('[KEYWORDS] Reset button bound');
+            }
+            
+            const customKeywordsInput = document.getElementById('customKeywordsInput');
+            if (customKeywordsInput) {
+                customKeywordsInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addCustomKeywords();
+                    }
+                });
+                console.log('[KEYWORDS] Input Enter key bound');
+            }
+
+            // FIX A: Hard-bind Step 1 button click handler
+            const completeStep1Btn = document.getElementById('completeStep1Btn');
+            if (completeStep1Btn) {
+                completeStep1Btn.addEventListener('click', completeStep1);
+                console.log('[STEP1] Button click handler bound');
+            }
+
+            // TASK C: Monitor Step 4 textarea for emergency keywords
+            const audioInput = document.getElementById('audioInput');
+            if (audioInput) {
+                audioInput.addEventListener('input', function() {
+                    const text = this.value;
+                    detectEmergencyKeyword(text, 'manual');
+                    updateSmsPreview(); // TASK B: Live update
+                });
+            }
+            
+            // TASK B: Monitor contact number changes
+            const phoneInput = document.getElementById('emergencyPhone');
+            if (phoneInput) {
+                phoneInput.addEventListener('input', function() {
+                    updateSmsPreview();
+                });
+            }
+            
+            // TASK B: Monitor name changes
+            const nameInput = document.getElementById('victimName');
+            if (nameInput) {
+                nameInput.addEventListener('input', function() {
+                    updateSmsPreview();
+                });
+            }
+
+            const phoneInput = document.getElementById('emergencyPhone');
+            if (phoneInput) {
+                phoneInput.addEventListener('input', updatePhoneValidation);
+                phoneInput.addEventListener('blur', updatePhoneValidation);
+            }
+        });
+        
+
+        let __ALLSENSES_STATE = {
+            configSaved: false,
+            gpsActive: false,
+            voiceActive: false
+        };
+        let __GEOLOCATION_REQUEST_IN_FLIGHT = false;
+        let currentLocation = null;
+        let recognition = null;
+        let transcriptHistory = [];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            updateGemini3Health('DEMO', 'warning');
+            console.log('[GEMINI3-GUARDIAN] System initialized with UX enhancements');
+            initializeSpeechRecognition();
+        });
+
+        // ========== SPEECH RECOGNITION INITIALIZATION ==========
+        function initializeSpeechRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            
+            if (!SpeechRecognition) {
+                console.warn('[STEP3] Speech Recognition not supported');
+                addStep3ProofToUI('[STEP3][WARNING] Speech Recognition not supported in this browser');
+                return;
+            }
+            
+            recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+            
+            recognition.onstart = function() {
+                console.log('[STEP3] Microphone started');
+                addStep3ProofToUI('[STEP3][EVENT] Listening started');
+                updateMicStatus('listening');
+                __ALLSENSES_STATE.voiceActive = true;
+            };
+            
+            recognition.onresult = function(event) {
+                let interimTranscript = '';
+                let finalTranscript = '';
+                
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        finalTranscript += transcript + ' ';
+                    } else {
+                        interimTranscript += transcript;
+                    }
+                }
+                
+                if (finalTranscript) {
+                    const timestamp = new Date().toLocaleTimeString();
+                    transcriptHistory.push({ time: timestamp, text: finalTranscript.trim() });
+                    addStep3ProofToUI(`[STEP3][TRANSCRIPT] "${finalTranscript.trim().substring(0, 50)}..."`);
+                    updateTranscriptDisplay();
+                    
+                    // NEW: Check for emergency keywords
+                    checkForEmergencyKeywords(finalTranscript.trim());
+                }
+                
+                if (interimTranscript) {
+                    updateInterimTranscript(interimTranscript);
+                }
+            };
+            
+            recognition.onerror = function(event) {
+                console.error('[STEP3] Recognition error:', event.error);
+                addStep3ProofToUI(`[STEP3][ERROR] ${event.error}`);
+                updateMicStatus('error');
+                
+                if (event.error === 'not-allowed') {
+                    alert('Microphone permission denied. Please allow microphone access in browser settings.');
+                }
+            };
+            
+            recognition.onend = function() {
+                console.log('[STEP3] Microphone stopped');
+                addStep3ProofToUI('[STEP3][EVENT] Listening stopped');
+                updateMicStatus('stopped');
+                __ALLSENSES_STATE.voiceActive = false;
+            };
+            
+            console.log('[STEP3] Speech Recognition initialized');
+        }
+
+        // ========== STEP 2: LOCATION FUNCTIONS ==========
+        function setGpsStatus(status) {
+            const element = document.getElementById('gpsStatus');
+            if (element) element.textContent = status;
+        }
+
+        function setGpsLastUpdate(time) {
+            const element = document.getElementById('lastGpsUpdate');
+            if (element) element.textContent = time;
+        }
+
+        function setGpsAccuracy(accuracy) {
+            const element = document.getElementById('gpsAccuracy');
+            if (element) element.textContent = accuracy;
+        }
+
+        function updateGemini3Health(status, level = 'normal') {
+            const statusEl = document.getElementById('gemini3-status');
+            const healthEl = document.getElementById('health-gemini3');
+            if (statusEl) statusEl.textContent = status;
+            if (healthEl) {
+                healthEl.className = 'health-item';
+                if (level === 'warning') healthEl.classList.add('warning');
+                if (level === 'error') healthEl.classList.add('error');
+            }
+        }
+
+        function updatePipelineState(state) {
+            const el = document.getElementById('pipeline-state');
+            if (el) el.textContent = state;
+            
+            // Update health item styling based on state
+            const healthEl = document.getElementById('health-pipeline');
+            if (healthEl) {
+                healthEl.className = 'health-item';
+                if (state.includes('ERROR')) {
+                    healthEl.classList.add('error');
+                } else if (state.includes('EMERGENCY') || state.includes('ANALYZING') || state.includes('ALERTING')) {
+                    healthEl.classList.add('warning');
+                }
+            }
+        }
+
+        function updateLocationHealth(status) {
+            const el = document.getElementById('location-health');
+            if (el) el.textContent = status;
+        }
+
+        function addStep2ProofToUI(message) {
+            const proofLog = document.getElementById('step2ProofLog');
+            if (proofLog) {
+                const timestamp = new Date().toLocaleTimeString();
+                const currentText = proofLog.textContent;
+                if (currentText.includes('Complete Step 1') || currentText.includes('Click "Enable Location"')) {
+                    proofLog.textContent = `[${timestamp}] ${message}`;
+                } else {
+                    proofLog.textContent = currentText + `\n[${timestamp}] ${message}`;
+                }
+            }
+        }
+
+        // NEW: Display selected location in dedicated panel
+        function displaySelectedLocation(location) {
+            const panel = document.getElementById('selectedLocationPanel');
+            const latEl = document.getElementById('loc-latitude');
+            const lngEl = document.getElementById('loc-longitude');
+            const sourceEl = document.getElementById('loc-source');
+            const timestampEl = document.getElementById('loc-timestamp');
+            const labelEl = document.getElementById('loc-label');
+            const mapsLink = document.getElementById('googleMapsLink');
+            
+            if (panel) panel.style.display = 'block';
+            if (latEl) latEl.textContent = location.latitude.toFixed(6);
+            if (lngEl) lngEl.textContent = location.longitude.toFixed(6);
+            if (sourceEl) sourceEl.textContent = location.source;
+            if (timestampEl) timestampEl.textContent = location.timestamp.toLocaleString();
+            if (labelEl) labelEl.textContent = location.label || 'Location label: unavailable';
+            
+            // NEW: Generate Google Maps URL
+            if (mapsLink) {
+                const mapsUrl = `https://www.google.com/maps?q=${location.latitude},${location.longitude}`;
+                mapsLink.href = mapsUrl;
+                console.log('[MAPS] Generated Google Maps URL:', mapsUrl);
+            }
+            
+            // Add to proof log
+            addStep2ProofToUI(`Location picked: lat=${location.latitude.toFixed(6)}, lng=${location.longitude.toFixed(6)}, source=${location.source}, at=${location.timestamp.toLocaleTimeString()}`);
+            addStep2ProofToUI(`Google Maps URL: https://www.google.com/maps?q=${location.latitude.toFixed(6)},${location.longitude.toFixed(6)}`);
+        }
+
+
+        // ========== STEP 1 PROOF LOGGING ==========
+        function addStep1ProofToUI(message) {
+            const proofLog = document.getElementById('step1ProofLog');
+            if (proofLog) {
+                const timestamp = new Date().toLocaleTimeString();
+                const currentText = proofLog.textContent;
+                if (currentText.includes('Click Complete Step 1')) {
+                    proofLog.textContent = `[${timestamp}] ${message}`;
+                } else {
+                    proofLog.textContent = currentText + `\n[${timestamp}] ${message}`;
+                }
+            }
+        }
+
+        function completeStep1(event) {
+            // Prevent form submit if inside form
+            if (event) event.preventDefault();
+            
+            try {
+                addStep1ProofToUI('[STEP1] Click received');
+                console.log('[STEP1] Click received');
+                
+                const name = document.getElementById('victimName').value.trim();
+                const phone = document.getElementById('emergencyPhone').value.trim();
+                
+                addStep1ProofToUI(`[STEP1] Name: ${name ? 'provided' : 'missing'}`);
+                addStep1ProofToUI(`[STEP1] Phone: ${phone ? 'provided' : 'missing'}`);
+                
+                if (!name || !phone) {
+                    addStep1ProofToUI('[STEP1][ERROR] Missing name or phone');
+                    alert('Please enter both name and phone number');
+                    return;
+                }
+                
+                // E.164 validation check
+                const phoneValidation = validateE164Phone(phone);
+                addStep1ProofToUI(`[STEP1] Phone valid: ${phoneValidation.valid}`);
+                console.log('[STEP1] Phone valid:', phoneValidation.valid);
+                
+                if (!phoneValidation.valid) {
+                    addStep1ProofToUI(`[STEP1][ERROR] ${phoneValidation.message}`);
+                    alert('Invalid phone number: ' + phoneValidation.message);
+                    updatePhoneValidation();
+                    return;
+                }
+                
+                // Mark Step 1 complete
+                __ALLSENSES_STATE.configSaved = true;
+                addStep1ProofToUI('[STEP1] Configuration saved');
+                addStep1ProofToUI(`[STEP1] Victim name set: "${name}"`);
+                console.log('[STEP1] Configuration saved');
+                console.log(`[STEP1] Victim name set: "${name}"`);
+                
+                // Add UI-visible proof for victim name
+                if (!name) {
+                    addStep1ProofToUI('[STEP1][WARNING] Victim name empty - will use fallback: "Unknown User"');
+                    console.log('[STEP1][WARNING] Victim name empty - will use fallback');
+                }
+                
+                // Update UI
+                document.getElementById('step1Status').textContent = 'Configuration saved';
+                addStep1ProofToUI('[STEP1] Step 2 unlocked');
+                console.log('[STEP1] Step 2 unlocked');
+                
+                // Enable Step 2
+                document.getElementById('enableLocationBtn').disabled = false;
+                document.getElementById('step2ProofLog').textContent = 'Step 1 complete! Now click "Enable Location" to see proof logs...';
+                
+                // Update pipeline state
+                updatePipelineState('STEP1_COMPLETE');
+                addStep1ProofToUI('[STEP1] Pipeline state: STEP1_COMPLETE');
+                
+                // Update SMS preview
+                updateSmsPreview();
+                
+                console.log('[STEP1] Step 1 complete - Step 2 and Step 3 will unlock after location');
+            } catch (error) {
+                addStep1ProofToUI(`[STEP1][ERROR] ${error.message}`);
+                console.error('[STEP1] Error:', error);
+                alert('Error completing Step 1: ' + error.message);
+            }
+        }
+
+        function enableLocationFromUserGesture() {
+            console.log("[STEP2][PROOF 1] Click handler reached");
+            addStep2ProofToUI("[STEP2][PROOF 1] Click handler reached");
+            
+            setGpsStatus('🔄 Requesting permission...');
+            updateLocationHealth('Requesting...');
+            
+            if (__GEOLOCATION_REQUEST_IN_FLIGHT) {
+                console.log("[STEP2][FAIL-SAFE] Request already in flight");
+                addStep2ProofToUI("[STEP2][FAIL-SAFE] Request already in flight");
+                return;
+            }
+            
+            if (!__ALLSENSES_STATE.configSaved) {
+                alert('Complete Step 1 first');
+                setGpsStatus('❌ Step 1 required');
+                addStep2ProofToUI("[STEP2][ERROR] Step 1 not completed");
+                return;
+            }
+            
+            if (!navigator.geolocation) {
+                const errorMsg = '❌ Geolocation not available';
+                console.error('Geolocation API not available');
+                addStep2ProofToUI("[STEP2][ERROR] Geolocation API not available");
+                setGpsStatus(errorMsg);
+                updateLocationHealth('Not Available');
+                alert('Geolocation is not available in this browser.');
+                return;
+            }
+            
+            console.log("[STEP2][PROOF 2] Calling navigator.geolocation.getCurrentPosition()");
+            addStep2ProofToUI("[STEP2][PROOF 2] Calling navigator.geolocation.getCurrentPosition()");
+            
+            __GEOLOCATION_REQUEST_IN_FLIGHT = true;
+            
+            const options = {
+                enableHighAccuracy: true,
+                timeout: 35000,
+                maximumAge: 0
+            };
+            
+            try {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        __GEOLOCATION_REQUEST_IN_FLIGHT = false;
+                        
+                        console.log("[STEP2][PROOF 3A] SUCCESS", position.coords.latitude, position.coords.longitude);
+                        addStep2ProofToUI(`[STEP2][PROOF 3A] SUCCESS ${position.coords.latitude}, ${position.coords.longitude}`);
+                        
+                        __ALLSENSES_STATE.gpsActive = true;
+                        setGpsStatus('✅ Active (Real GPS)');
+                        setGpsLastUpdate(new Date().toLocaleTimeString());
+                        setGpsAccuracy(position.coords.accuracy ? `±${Math.round(position.coords.accuracy)}m` : 'Unknown');
+                        updateLocationHealth('Active');
+                        updatePipelineState('STEP2_COMPLETE');
+                        
+                        currentLocation = {
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude,
+                            accuracy: position.coords.accuracy,
+                            timestamp: new Date(position.timestamp),
+                            source: 'Browser GPS',
+                            label: `GPS: ${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`
+                        };
+                        
+                        // NEW: Display location in panel
+                        displaySelectedLocation(currentLocation);
+                        
+                        // Update SMS preview if threat analysis already done
+                        updateSmsPreview();
+                        
+                        enableStep3();
+                        addStep2ProofToUI("[STEP2][SUCCESS] Location services fully activated!");
+                    },
+                    function(error) {
+                        __GEOLOCATION_REQUEST_IN_FLIGHT = false;
+                        
+                        console.log("[STEP2][PROOF 3B] ERROR", error.code, error.message);
+                        addStep2ProofToUI(`[STEP2][PROOF 3B] ERROR ${error.code}, ${error.message}`);
+                        
+                        __ALLSENSES_STATE.gpsActive = false;
+                        let errorMessage = '';
+                        
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMessage = '❌ Location blocked';
+                                addStep2ProofToUI("[STEP2][GUIDANCE] Check browser settings → Location → Allow");
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMessage = '❌ Position unavailable';
+                                addStep2ProofToUI("[STEP2][GUIDANCE] Try enabling OS location services");
+                                break;
+                            case error.TIMEOUT:
+                                errorMessage = '⏱️ Location timeout';
+                                addStep2ProofToUI("[STEP2][GUIDANCE] Location timeout hit → fallback to Demo Location");
+                                break;
+                            default:
+                                errorMessage = `❌ Location error: ${error.message}`;
+                                break;
+                        }
+                        
+                        setGpsStatus(errorMessage);
+                        updateLocationHealth('Error');
+                        addStep2ProofToUI("[STEP2][FALLBACK] Demo Location available");
+                    },
+                    options
+                );
+            } catch (exception) {
+                __GEOLOCATION_REQUEST_IN_FLIGHT = false;
+                const exceptionMsg = `❌ Location error: ${exception.message}`;
+                console.error('[STEP2] Exception:', exception);
+                console.log("[STEP2][PROOF 3B] ERROR", "EXCEPTION", exception.message);
+                addStep2ProofToUI(`[STEP2][PROOF 3B] ERROR EXCEPTION, ${exception.message}`);
+                setGpsStatus(exceptionMsg);
+                updateLocationHealth('Exception');
+            }
+        }
+
+        function activateDemoLocationMode() {
+            console.log("[STEP2][DEMO] Activating demo location mode");
+            addStep2ProofToUI("[STEP2][DEMO] Activating demo location mode");
+            
+            __ALLSENSES_STATE.gpsActive = true;
+            currentLocation = {
+                latitude: 37.7749,
+                longitude: -122.4194,
+                accuracy: 10,
+                timestamp: new Date(),
+                source: 'Demo Location',
+                label: 'San Francisco, CA (Demo)'
+            };
+            
+            setGpsStatus('✅ Active (Demo Mode)');
+            setGpsLastUpdate(new Date().toLocaleTimeString());
+            setGpsAccuracy('±10m (Demo)');
+            updateLocationHealth('Demo Mode');
+            updatePipelineState('STEP2_COMPLETE');
+            
+            // NEW: Display location in panel
+            displaySelectedLocation(currentLocation);
+            
+            // Update SMS preview if threat analysis already done
+            updateSmsPreview();
+            
+            enableStep3();
+            addStep2ProofToUI("[STEP2][DEMO] Demo location activated successfully");
+        }
+
+        // ========== STEP 3: VOICE DETECTION FUNCTIONS ==========
+        function enableStep3() {
+            document.getElementById('startVoiceBtn').disabled = false;
+            document.getElementById('voiceStatus').textContent = '✅ Ready - Click Start Voice Detection';
+            document.getElementById('step3ProofBox').style.display = 'block';
+        }
+
+        function updateMicStatus(status) {
+            const badge = document.getElementById('micStatusBadge');
+            if (!badge) return;
+            
+            badge.className = 'mic-status-badge ' + status;
+            
+            const statusText = {
+                'idle': 'Idle',
+                'requesting': 'Requesting Permission',
+                'listening': '🎤 Listening',
+                'stopped': 'Stopped',
+                'error': 'Error'
+            };
+            
+            badge.textContent = statusText[status] || status;
+        }
+
+        function addStep3ProofToUI(message) {
+            const proofLog = document.getElementById('step3ProofLog');
+            if (proofLog) {
+                const timestamp = new Date().toLocaleTimeString();
+                const currentText = proofLog.textContent;
+                if (currentText === '') {
+                    proofLog.textContent = `[${timestamp}] ${message}`;
+                } else {
+                    proofLog.textContent = currentText + `\n[${timestamp}] ${message}`;
+                }
+            }
+        }
+
+        function updateTranscriptDisplay() {
+            const transcriptBox = document.getElementById('transcriptBox');
+            const transcriptContent = document.getElementById('transcriptContent');
+            
+            if (!transcriptBox || !transcriptContent) return;
+            
+            transcriptBox.style.display = 'block';
+            
+            if (transcriptHistory.length === 0) {
+                transcriptContent.innerHTML = '<div class="listening-indicator">(listening...)</div>';
+            } else {
+                let html = '';
+                transcriptHistory.forEach(entry => {
+                    html += `<div class="transcript-line"><span class="transcript-timestamp">[${entry.time}]</span>${entry.text}</div>`;
+                });
+                if (__ALLSENSES_STATE.voiceActive) {
+                    html += '<div class="listening-indicator">(listening...)</div>';
+                }
+                transcriptContent.innerHTML = html;
+                transcriptContent.scrollTop = transcriptContent.scrollHeight;
+            }
+        }
+
+        function updateInterimTranscript(text) {
+            const transcriptContent = document.getElementById('transcriptContent');
+            if (!transcriptContent) return;
+            
+            let html = '';
+            transcriptHistory.forEach(entry => {
+                html += `<div class="transcript-line"><span class="transcript-timestamp">[${entry.time}]</span>${entry.text}</div>`;
+            });
+            html += `<div class="transcript-interim">${text}</div>`;
+            transcriptContent.innerHTML = html;
+            transcriptContent.scrollTop = transcriptContent.scrollHeight;
+        }
+
+        function startVoiceDetection() {
+            if (!recognition) {
+                alert('Speech Recognition not supported in this browser. Please use Chrome.');
+                addStep3ProofToUI('[STEP3][ERROR] Speech Recognition not supported');
+                return;
+            }
+            
+            if (!__ALLSENSES_STATE.gpsActive) {
+                alert('Please complete Step 2 (Location) first');
+                return;
+            }
+            
+            console.log('[STEP3] Starting voice detection');
+            addStep3ProofToUI('[STEP3][EVENT] Mic permission requested');
+            updateMicStatus('requesting');
+            updatePipelineState('STEP3_LISTENING');
+            
+            try {
+                recognition.start();
+                document.getElementById('startVoiceBtn').style.display = 'none';
+                document.getElementById('stopVoiceBtn').style.display = 'inline-block';
+                document.getElementById('clearTranscriptBtn').style.display = 'inline-block';
+                document.getElementById('transcriptBox').style.display = 'block';
+                updateTranscriptDisplay();
+                addStep3ProofToUI('[STEP3][EVENT] Mic permission granted');
+            } catch (error) {
+                console.error('[STEP3] Start error:', error);
+                addStep3ProofToUI(`[STEP3][ERROR] ${error.message}`);
+                updateMicStatus('error');
+            }
+        }
+
+        function stopVoiceDetection() {
+            if (recognition && __ALLSENSES_STATE.voiceActive) {
+                console.log('[STEP3] Stopping voice detection');
+                recognition.stop();
+                document.getElementById('startVoiceBtn').style.display = 'inline-block';
+                document.getElementById('stopVoiceBtn').style.display = 'none';
+                updateTranscriptDisplay();
+            }
+        }
+
+        function clearTranscript() {
+            transcriptHistory = [];
+            updateTranscriptDisplay();
+            addStep3ProofToUI('[STEP3][ACTION] Transcript cleared');
+        }
+
+        // ========== STEP 4: GEMINI3 ANALYSIS ==========
+        async function triggerGemini3Analysis() {
+            const transcript = document.getElementById('audioInput').value.trim();
+            
+            if (!transcript) {
+                alert('Please enter emergency text');
+                return;
+            }
+            
+            if (!currentLocation) {
+                alert('Please enable location services first (Step 2)');
+                return;
+            }
+            
+            console.log('[GEMINI3] Starting threat analysis');
+            updateGemini3Health('Analyzing...', 'warning');
+            updatePipelineState('STEP4_ANALYZING');
+            
+            document.getElementById('emergencyResult').innerHTML = '<div class="warning">🤖 Gemini3 is analyzing the situation...</div>';
+            
+            try {
+                const result = await analyzeWithGemini3(transcript, currentLocation);
+                
+                console.log('[GEMINI3] Analysis complete:', result);
+                updateGemini3Health('Analysis Complete', 'normal');
+                updatePipelineState('STEP4_COMPLETE');
+                
+                const threatOutput = document.getElementById('threatLevelOutput');
+                const threatLevel = document.getElementById('threatLevel');
+                const threatConfidence = document.getElementById('threatConfidence');
+                const threatAnalysis = document.getElementById('threatAnalysis');
+                
+                threatOutput.style.display = 'block';
+                threatLevel.textContent = result.risk_level;
+                threatLevel.style.color = getThreatColor(result.risk_level);
+                threatConfidence.textContent = `${(result.confidence * 100).toFixed(0)}%`;
+                threatAnalysis.textContent = result.reasoning;
+                
+                threatOutput.setAttribute('data-threat', result.risk_level);
+                
+                document.getElementById('emergencyResult').innerHTML = `
+                    <div class="result">
+                        <strong>✅ Gemini3 Analysis Complete</strong><br>
+                        Risk Level: <strong style="color:${getThreatColor(result.risk_level)}">${result.risk_level}</strong><br>
+                        Confidence: ${(result.confidence * 100).toFixed(0)}%<br>
+                        Recommended Action: ${result.recommended_action}
+                    </div>
+                `;
+                
+                if (result.risk_level === 'HIGH' || result.risk_level === 'CRITICAL') {
+                    // Update SMS preview after analysis
+                    updateSmsPreview();
+                    setTimeout(() => triggerStep5Alert(result), 1000);
+                } else {
+                    // Update SMS preview even for non-emergency threats
+                    updateSmsPreview();
+                }
+                
+            } catch (error) {
+                console.error('[GEMINI3] Analysis error:', error);
+                updateGemini3Health('Error', 'error');
+                updatePipelineState('STEP4_ERROR');
+                
+                document.getElementById('emergencyResult').innerHTML = `
+                    <div class="error">
+                        <strong>❌ Analysis Error</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        async function analyzeWithGemini3(transcript, location) {
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            const lowerTranscript = transcript.toLowerCase();
+            const hasHelp = lowerTranscript.includes('help');
+            const hasScared = lowerTranscript.includes('scared') || lowerTranscript.includes('afraid');
+            const hasFollowing = lowerTranscript.includes('following');
+            const hasUnsafe = lowerTranscript.includes('unsafe') || lowerTranscript.includes("don't feel safe");
+            
+            let risk_level = 'NONE';
+            let confidence = 0.5;
+            let indicators = [];
+            
+            if (hasHelp) {
+                indicators.push('explicit_help_request');
+                confidence += 0.2;
+            }
+            if (hasScared) {
+                indicators.push('fear_expressed');
+                confidence += 0.15;
+            }
+            if (hasFollowing) {
+                indicators.push('stalking_concern');
+                confidence += 0.15;
+            }
+            if (hasUnsafe) {
+                indicators.push('safety_concern');
+                confidence += 0.1;
+            }
+            
+            if (confidence >= 0.8) {
+                risk_level = 'HIGH';
+            } else if (confidence >= 0.6) {
+                risk_level = 'MEDIUM';
+            } else if (confidence >= 0.4) {
+                risk_level = 'LOW';
+            }
+            
+            confidence = Math.min(confidence, 1.0);
+            
+            return {
+                risk_level,
+                confidence,
+                reasoning: `Gemini 1.5 Pro analysis: ${indicators.length} distress indicators detected. ` +
+                          `Location: ${location.label}. ` +
+                          `Recommended ${risk_level === 'HIGH' ? 'immediate' : 'monitoring'} response.`,
+                indicators,
+                recommended_action: risk_level === 'HIGH' ? 'ALERT' : 'MONITOR',
+                response_time: 1.5,
+                mode: 'DEMO'
+            };
+        }
+
+        function getThreatColor(level) {
+            switch(level) {
+                case 'CRITICAL': return '#dc3545';
+                case 'HIGH': return '#fd7e14';
+                case 'MEDIUM': return '#ffc107';
+                case 'LOW': return '#17a2b8';
+                default: return '#28a745';
+            }
+        }
+
+
+
+
+        // ========== KEYWORD MANAGEMENT FUNCTIONS ==========
+        function addCustomKeywords() {
+            const input = document.getElementById('customKeywordsInput');
+            const statusEl = document.getElementById('keywordsStatus');
+            
+            if (!input || !statusEl) return;
+            
+            const inputValue = input.value.trim();
+            if (!inputValue) {
+                statusEl.style.display = 'block';
+                statusEl.style.color = '#dc3545';
+                statusEl.textContent = 'Please enter keywords';
+                return;
+            }
+            
+            // Parse comma-separated keywords
+            const newKeywords = inputValue
+                .split(',')
+                .map(kw => kw.trim().toLowerCase())
+                .filter(kw => kw.length > 0);
+            
+            if (newKeywords.length === 0) {
+                statusEl.style.display = 'block';
+                statusEl.style.color = '#dc3545';
+                statusEl.textContent = 'No valid keywords entered';
+                return;
+            }
+            
+            // Merge with existing keywords (dedupe)
+            const beforeCount = EMERGENCY_KEYWORDS.length;
+            EMERGENCY_KEYWORDS = [...new Set([...EMERGENCY_KEYWORDS, ...newKeywords])];
+            const afterCount = EMERGENCY_KEYWORDS.length;
+            const addedCount = afterCount - beforeCount;
+            
+            // Save to localStorage (only custom keywords)
+            const defaultKeywords = ['emergency', 'help', 'call 911', 'call police', 'help me', 'scared', 'following', 'danger', 'attack'];
+            const customKeywords = EMERGENCY_KEYWORDS.filter(kw => !defaultKeywords.includes(kw));
+            saveCustomKeywords(customKeywords);
+            
+            // Update UI
+            statusEl.style.display = 'block';
+            statusEl.style.color = '#28a745';
+            statusEl.textContent = `Added ${addedCount} new keyword(s). Total: ${afterCount} keywords.`;
+            
+            // Clear input
+            input.value = '';
+            
+            // Update trigger rule UI
+            updateKeywordTriggerUI();
+            
+            console.log('[KEYWORDS] Added keywords:', newKeywords);
+            console.log('[KEYWORDS] Total keywords:', EMERGENCY_KEYWORDS);
+            
+            // Hide status after 3 seconds
+            setTimeout(() => {
+                statusEl.style.display = 'none';
+            }, 3000);
+        }
+        
+        function resetKeywordsToDefaults() {
+            const statusEl = document.getElementById('keywordsStatus');
+            
+            // Reset to defaults
+            EMERGENCY_KEYWORDS = ['emergency', 'help', 'call 911', 'call police', 'help me', 'scared', 'following', 'danger', 'attack'];
+            
+            // Clear localStorage
+            try {
+                localStorage.removeItem('customEmergencyKeywords');
+                console.log('[KEYWORDS] Cleared custom keywords from localStorage');
+            } catch (error) {
+                console.error('[KEYWORDS] Error clearing localStorage:', error);
+            }
+            
+            // Update UI
+            if (statusEl) {
+                statusEl.style.display = 'block';
+                statusEl.style.color = '#007bff';
+                statusEl.textContent = 'Reset to default keywords (9 keywords)';
+                
+                // Hide status after 3 seconds
+                setTimeout(() => {
+                    statusEl.style.display = 'none';
+                }, 3000);
+            }
+            
+            // Update trigger rule UI
+            updateKeywordTriggerUI();
+            
+            console.log('[KEYWORDS] Reset to defaults:', EMERGENCY_KEYWORDS);
+        }
+
+        // ========== EMERGENCY KEYWORD DETECTION ==========
+        function detectEmergencyKeyword(text, source) {
+            if (!text) return null;
+            
+            const lowerText = text.toLowerCase();
+            
+            for (const keyword of EMERGENCY_KEYWORDS) {
+                // Word boundary matching
+                const regex = new RegExp('\\b' + keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
+                if (regex.test(text)) {
+                    const match = {
+                        keyword: keyword,
+                        source: source,
+                        time: new Date().toLocaleTimeString()
+                    };
+                    
+                    console.log(`[TRIGGER] Keyword matched: "${keyword}" (source: ${source})`);
+                    
+                    emergencyTriggered = true;
+                    lastKeywordMatch = match;
+                    
+                    // Update UI
+                    updateKeywordTriggerUI();
+                    updateSmsPreview();
+                    
+                    return match;
+                }
+            }
+            
+            return null;
+        }
+        
+        // ========== KEYWORD TRIGGER UI UPDATE ==========
+        function updateKeywordTriggerUI() {
+            const step3TriggerBlock = document.getElementById('step3TriggerRule');
+            const step4TriggerBlock = document.getElementById('step4TriggerRule');
+            
+            if (step3TriggerBlock) {
+                const keywordsList = EMERGENCY_KEYWORDS.slice(0, 5).join(', ') + '...';
+                const lastMatchText = lastKeywordMatch.keyword 
+                    ? `"${lastKeywordMatch.keyword}" at ${lastKeywordMatch.time} (${lastKeywordMatch.source})`
+                    : 'None';
+                
+                step3TriggerBlock.innerHTML = `
+                    <strong>Emergency keywords enabled:</strong> ${keywordsList}<br>
+                    <strong>Last match:</strong> ${lastMatchText}
+                `;
+            }
+            
+            if (step4TriggerBlock) {
+                const keywordsList = EMERGENCY_KEYWORDS.slice(0, 5).join(', ') + '...';
+                const lastMatchText = lastKeywordMatch.keyword 
+                    ? `"${lastKeywordMatch.keyword}" at ${lastKeywordMatch.time} (${lastKeywordMatch.source})`
+                    : 'None';
+                
+                step4TriggerBlock.innerHTML = `
+                    <strong>Emergency keywords enabled:</strong> ${keywordsList}<br>
+                    <strong>Last match:</strong> ${lastMatchText}
+                `;
+            }
+        }
+
+        // ========== SMS MESSAGE COMPOSITION (SINGLE SOURCE OF TRUTH) ==========
+        function composeAlertSms(payload) {
+            // Normalize victim name with fallback
+            const victimName = (payload.victimName || '').trim() || 'Unknown User';
+            payload.victimName = victimName;
+            
+            // Validate required fields
+            if (!payload.victimName) return { error: 'Missing victim name' };
+            if (!payload.location) return { error: 'Missing location data' };
+            if (!payload.location.latitude || !payload.location.longitude) return { error: 'Missing coordinates' };
+            
+            // Generate timestamp
+            const timestamp = new Date().toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            });
+            
+            // Generate Google Maps link
+            const mapsLink = `https://maps.google.com/?q=${payload.location.latitude},${payload.location.longitude}`;
+            
+            // Compose message based on emergency trigger state
+            let message;
+            
+            if (emergencyTriggered && payload.threatLevel) {
+                // EMERGENCY ALERT format
+                message = `🚨 EMERGENCY ALERT
+
+Victim: ${payload.victimName}
+
+Risk: ${payload.threatLevel}
+Recommendation: ${payload.reasoning || 'Possible threat detected from voice/text cues.'}
+
+Message: "${payload.transcript ? payload.transcript.substring(0, 150) : 'No message'}${payload.transcript && payload.transcript.length > 150 ? '...' : ''}"
+
+Location:
+Lat: ${payload.location.latitude.toFixed(6)}
+Lng: ${payload.location.longitude.toFixed(6)}
+${payload.location.label ? 'Address: ' + payload.location.label : ''}
+
+View Location: ${mapsLink}
+
+Time: ${timestamp}
+
+If you believe they're in danger, call them, and contact local emergency services.`;
+            } else {
+                // Standby format
+                message = `Standby: no emergency trigger detected yet.
+
+Victim: ${payload.victimName}
+Location: ${payload.location.latitude.toFixed(6)}, ${payload.location.longitude.toFixed(6)}
+Time: ${timestamp}`;
+            }
+            
+            return {
+                message: message,
+                timestamp: timestamp,
+                mapsLink: mapsLink,
+                destination: payload.emergencyContact,
+                isEmergency: emergencyTriggered
+            };
+        }
+        
+        // ========== SMS PREVIEW UPDATE ==========
+        function updateSmsPreview() {
+            const victimName = document.getElementById('victimName')?.value.trim();
+            const emergencyContact = document.getElementById('emergencyPhone')?.value.trim();
+            const transcript = document.getElementById('audioInput')?.value.trim();
+            
+            // Get threat analysis result
+            const threatOutput = document.getElementById('threatLevelOutput');
+            const threatLevel = document.getElementById('threatLevel')?.textContent;
+            const threatAnalysis = document.getElementById('threatAnalysis')?.textContent;
+            
+            // Check if we have required data
+            const hasConfig = __ALLSENSES_STATE.configSaved && victimName && emergencyContact;
+            const hasLocation = currentLocation !== null;
+            
+            const errorPanel = document.getElementById('smsPreviewError');
+            const errorReason = document.getElementById('smsPreviewErrorReason');
+            const contentPanel = document.getElementById('smsPreviewContent');
+            const standbyPanel = document.getElementById('smsPreviewStandby');
+            
+            // TASK A: Always show panel, use standby states for missing inputs
+            if (!hasConfig) {
+                errorPanel.style.display = 'block';
+                contentPanel.style.display = 'none';
+                if (standbyPanel) standbyPanel.style.display = 'none';
+                errorReason.textContent = 'Add emergency contact in Step 1';
+                return;
+            }
+            
+            if (!hasLocation) {
+                errorPanel.style.display = 'block';
+                contentPanel.style.display = 'none';
+                if (standbyPanel) standbyPanel.style.display = 'none';
+                errorReason.textContent = 'Enable location in Step 2';
+                return;
+            }
+            
+            // Compose SMS with available data
+            const payload = {
+                victimName: victimName,
+                emergencyContact: emergencyContact,
+                location: currentLocation,
+                threatLevel: threatLevel || null,
+                reasoning: threatAnalysis || null,
+                transcript: transcript || ''
+            };
+            
+            const result = composeAlertSms(payload);
+            
+            if (result.error) {
+                errorPanel.style.display = 'block';
+                contentPanel.style.display = 'none';
+                if (standbyPanel) standbyPanel.style.display = 'none';
+                errorReason.textContent = result.error;
+                return;
+            }
+            
+            // Display preview
+            errorPanel.style.display = 'none';
+            contentPanel.style.display = 'block';
+            if (standbyPanel) standbyPanel.style.display = 'none';
+            
+            // Display victim name in preview
+            const displayVictimName = victimName || 'Unknown User';
+            document.getElementById('smsPreviewVictimName').textContent = displayVictimName;
+            document.getElementById('smsCheckVictimNameValue').innerHTML = '<span style="color:#28a745;">✓</span>';
+            
+            // Show warning if using fallback
+            if (!victimName) {
+                document.getElementById('smsCheckVictimNameValue').innerHTML = '<span style="color:#ffc107;">⚠ Using fallback: Unknown User</span>';
+            }
+            
+            document.getElementById('smsPreviewDestination').textContent = emergencyContact;
+            document.getElementById('smsPreviewMessage').textContent = result.message;
+            
+            // Update checklist based on emergency state
+            if (result.isEmergency) {
+                document.getElementById('smsCheckRiskValue').innerHTML = '<span style="color:#28a745;">✓</span>';
+                document.getElementById('smsCheckMessageValue').innerHTML = '<span style="color:#28a745;">✓</span>';
+                document.getElementById('smsCheckLocationValue').innerHTML = '<span style="color:#28a745;">✓</span>';
+                document.getElementById('smsCheckMapsValue').innerHTML = '<span style="color:#28a745;">✓</span>';
+                document.getElementById('smsCheckTimestampValue').innerHTML = '<span style="color:#28a745;">✓</span>';
+            } else {
+                document.getElementById('smsCheckRiskValue').innerHTML = '<span style="color:#ffc107;">Standby</span>';
+                document.getElementById('smsCheckMessageValue').innerHTML = '<span style="color:#ffc107;">Standby</span>';
+                document.getElementById('smsCheckLocationValue').innerHTML = '<span style="color:#28a745;">✓</span>';
+                document.getElementById('smsCheckMapsValue').innerHTML = '<span style="color:#28a745;">✓</span>';
+                document.getElementById('smsCheckTimestampValue').innerHTML = '<span style="color:#28a745;">✓</span>';
+            }
+            
+            // Log victim name in preview
+            console.log('[STEP5] SMS composed for:', displayVictimName);
+            
+            console.log('[SMS-PREVIEW] Preview updated successfully (emergency:', result.isEmergency, ')');
+        }
+
+        // ========== STEP 5: EMERGENCY ALERTING ==========
+        function triggerStep5Alert(analysisResult) {
+            console.log('[STEP5] Triggering emergency alert');
+            updatePipelineState('STEP5_ALERTING');
+            
+            const step5Status = document.getElementById('step5Status');
+            const alertResult = document.getElementById('alertResult');
+            const alertDetails = document.getElementById('alertDetails');
+            
+            step5Status.textContent = '🚨 Sending emergency alerts...';
+            
+            // Update SMS preview one final time before send
+            updateSmsPreview();
+            
+            setTimeout(() => {
+                // Compose actual SMS using single source of truth
+                const payload = {
+                    victimName: document.getElementById('victimName').value.trim(),
+                    emergencyContact: document.getElementById('emergencyPhone').value.trim(),
+                    location: currentLocation,
+                    threatLevel: analysisResult.risk_level,
+                    reasoning: analysisResult.reasoning,
+                    transcript: document.getElementById('audioInput').value.trim()
+                };
+                
+                const smsResult = composeAlertSms(payload);
+                
+                if (smsResult.error) {
+                    step5Status.textContent = '❌ Failed to send alert: ' + smsResult.error;
+                    console.error('[STEP5] Alert failed:', smsResult.error);
+                    return;
+                }
+                
+                // Show sent message
+                document.getElementById('smsPreviewSent').style.display = 'block';
+                document.getElementById('smsPreviewSentMessage').textContent = smsResult.message;
+                document.getElementById('smsPreviewSentTime').textContent = smsResult.timestamp;
+                
+                // Show success
+                alertResult.style.display = 'block';
+                alertDetails.innerHTML = `
+                    Emergency contact notified: ${smsResult.destination}<br>
+                    Location: ${currentLocation.label}<br>
+                    Coordinates: ${currentLocation.latitude.toFixed(6)}, ${currentLocation.longitude.toFixed(6)}<br>
+                    Threat Level: ${analysisResult.risk_level}<br>
+                    Time: ${smsResult.timestamp}
+                `;
+                
+                step5Status.textContent = '✅ Emergency alerts sent successfully';
+                updatePipelineState('STEP5_COMPLETE');
+                
+                console.log('[STEP5] Alert sent successfully');
+                console.log('[STEP5] SMS content:', smsResult.message);
+            }, 1000);
+        }
+
+        // ========== EMERGENCY DETECTION ==========
+        function checkForEmergencyKeywords(transcript) {
+            const lowerTranscript = transcript.toLowerCase();
+            const emergencyKeywords = ['emergency', 'help', 'call police', 'scared', 'following', 'danger', 'attack'];
+            
+            let detectedKeyword = null;
+            for (const keyword of emergencyKeywords) {
+                if (lowerTranscript.includes(keyword)) {
+                    detectedKeyword = keyword;
+                    break;
+                }
+            }
+            
+            if (detectedKeyword) {
+                console.log('[STEP3][TRIGGER] Emergency keyword detected:', detectedKeyword);
+                addStep3ProofToUI(`[TRIGGER] Emergency keyword detected: "${detectedKeyword}"`);
+                addStep3ProofToUI('[STATE] Emergency workflow started');
+                addStep3ProofToUI('[ACTION] Freezing transcript segment for analysis');
+                addStep3ProofToUI('[ACTION] Location tracking persists for response');
+                
+                triggerEmergencyWorkflow(transcript, detectedKeyword);
+            }
+        }
+        
+        function triggerEmergencyWorkflow(transcript, keyword) {
+            // Update pipeline state
+            updatePipelineState('STEP3_EMERGENCY_TRIGGERED');
+            
+            // Update Step 3 badge
+            const badge = document.getElementById('micStatusBadge');
+            if (badge) {
+                badge.className = 'mic-status-badge emergency-detected';
+                badge.textContent = '🚨 EMERGENCY DETECTED';
+            }
+            
+            // Stop listening (recommended for deterministic demo)
+            if (recognition && __ALLSENSES_STATE.voiceActive) {
+                console.log('[STEP3] Auto-stopping listening after emergency detection');
+                addStep3ProofToUI('[STEP3][AUTO-STOP] Stopping listening after emergency detection');
+                recognition.stop();
+            }
+            
+            // Show emergency banner
+            showEmergencyBanner(transcript, keyword);
+            
+            // Show emergency modal
+            showEmergencyModal(transcript, keyword);
+            
+            // Auto-populate Step 4 with the emergency transcript
+            document.getElementById('audioInput').value = transcript;
+            
+            // Auto-advance to Step 4 after modal closes (2 seconds)
+            setTimeout(() => {
+                if (document.getElementById('emergencyModal').style.display === 'flex') {
+                    closeEmergencyModal();
+                    setTimeout(() => {
+                        triggerGemini3Analysis();
+                    }, 500);
+                }
+            }, 2000);
+        }
+        
+        function showEmergencyBanner(transcript, keyword) {
+            const banner = document.getElementById('emergencyBanner');
+            const timestamp = document.getElementById('emergency-timestamp');
+            const phrase = document.getElementById('emergency-phrase');
+            const location = document.getElementById('emergency-location');
+            const coords = document.getElementById('emergency-coords');
+            const mapsLink = document.getElementById('emergencyMapsLink');
+            
+            if (banner) banner.style.display = 'block';
+            if (timestamp) timestamp.textContent = new Date().toLocaleString();
+            if (phrase) phrase.textContent = `"${transcript.substring(0, 100)}${transcript.length > 100 ? '...' : ''}"`;
+            
+            if (currentLocation) {
+                if (location) location.textContent = currentLocation.label || 'Location available';
+                if (coords) coords.textContent = `${currentLocation.latitude.toFixed(6)}, ${currentLocation.longitude.toFixed(6)}`;
+                if (mapsLink) {
+                    const mapsUrl = `https://www.google.com/maps?q=${currentLocation.latitude},${currentLocation.longitude}`;
+                    mapsLink.href = mapsUrl;
+                }
+            } else {
+                if (location) location.textContent = 'Location not available';
+                if (coords) coords.textContent = 'N/A';
+            }
+            
+            console.log('[EMERGENCY] Banner displayed');
+        }
+        
+        function showEmergencyModal(transcript, keyword) {
+            const modal = document.getElementById('emergencyModal');
+            const modalPhrase = document.getElementById('modalDetectedPhrase');
+            
+            if (modal) modal.style.display = 'flex';
+            if (modalPhrase) modalPhrase.textContent = `Detected: "${keyword}" in transcript`;
+            
+            console.log('[EMERGENCY] Modal displayed');
+        }
+        
+        function closeEmergencyModal() {
+            const modal = document.getElementById('emergencyModal');
+            if (modal) modal.style.display = 'none';
+            console.log('[EMERGENCY] Modal closed - proceeding to threat analysis');
+        }
+
+        // ========== EVENT LISTENERS ==========
+        document.getElementById('enableLocationBtn').addEventListener('click', enableLocationFromUserGesture);
+        document.getElementById('demoLocationBtn').addEventListener('click', activateDemoLocationMode);
+        document.getElementById('startVoiceBtn').addEventListener('click', startVoiceDetection);
+        document.getElementById('stopVoiceBtn').addEventListener('click', stopVoiceDetection);
+        document.getElementById('clearTranscriptBtn').addEventListener('click', clearTranscript);
+    </script>
+</body>
+</html>

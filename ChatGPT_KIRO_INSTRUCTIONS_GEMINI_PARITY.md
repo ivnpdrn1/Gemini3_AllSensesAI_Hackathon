@@ -1,204 +1,322 @@
-ChatGPT–KIRO Instructions
-GEMINI Parity, Logic Preservation & System State Reference
-1. Purpose of This Document
+ChatGPT_KIRO_INSTRUCTIONS_GEMINI_PARITY.md
+Purpose
 
-This document exists to preserve the reasoning sequence that led to the current, stable, jury-ready state of the GEMINI Guardian system.
+This document defines the authoritative logic sequence, design constraints, and acceptance rules governing the current AllSensesAI Gemini3 Guardian implementation.
 
-It is not a task list.
-It is not a deployment guide.
-It is a logic anchor.
+It exists to:
 
-Future changes must be evaluated against this document to ensure:
+Preserve build logic history
 
-parity is preserved
+Prevent accidental regression
 
-history is respected
+Ensure jury-safe parity
 
-no accidental regressions are introduced
+Define what “working” means — objectively and visibly
 
-2. Scope Definition (Non-Negotiable)
-Responsibilities
+This is not a to-do list.
+This is a state lock.
 
-KIRO
+Roles & Responsibility Boundary
+KIRO (Assistant)
 
-Builds and explains GEMINI app logic
+KIRO is responsible for:
 
-Produces technical documentation
+Building the Gemini Guardian application
 
-Reasons about build, runtime, and deployment behavior
+Implementing UI, logic, validation, and behavior
 
-Preserves history and sequence in explanations
+Generating documentation artifacts
 
-Human (Repository Owner)
+Producing deployable HTML builds
 
-Controls repository structure
+Ensuring runtime correctness
 
-Controls commits, tags, and reverts
+Providing jury-verifiable proof
 
-Decides what gets saved and where
+KIRO is not responsible for:
 
-Explicit Exclusions for KIRO
+Git operations
 
-No Git commands
+Repository structure
 
-No repository restructuring
+Branching, tagging, or commits
 
-No tagging or versioning
+File placement decisions
 
-No file deletion or cleanup
+Human Operator
 
-No historical rewriting
+The human operator is responsible for:
 
-3. Current System Status (Source of Truth)
+Saving documentation into the repository
 
-As of the current state:
+Running deployment scripts
 
-GEMINI Guardian is deployed and live
+Managing version control
 
-CloudFront delivery is active
+Approving final builds
 
-Frontend enforces E.164 phone validation
+This separation is intentional and must be preserved.
 
-International SMS support is intentional and verified
+Canonical System Flow (Must Not Change)
 
-Vision panel is visible and in standby until triggered
+The Guardian follows a 5-step linear workflow.
+Each step must unlock the next and remain independently observable.
 
-Build and deployment behavior is documented truthfully
+Step 1 — Configuration
 
-Non-blocking issues are explained, not hidden
+Step 2 — Location Services
 
-This state is considered stable.
+Step 3 — Voice Emergency Detection
 
-4. Core Logic Pillars (Must Always Hold)
-4.1 Unified Input, Context-Aware Execution
+Step 4 — Gemini Threat Analysis
 
-All phone numbers are accepted in E.164 format
+Step 5 — Emergency Alerting
 
-The system does not expose regional complexity to the user
+Any build that violates this flow is invalid.
 
-Routing differences (U.S. vs international) are applied automatically
+Step 1 — Configuration (Critical Gate)
+Required Behavior
 
-Validation occurs before submission, not after failure
+Collect Victim Name
 
-4.2 Frontend as the First Safety Gate
+Collect Emergency Contact Phone
 
-Invalid phone input is blocked early
+Enforce E.164 validation
+Regex: ^\+[1-9]\d{6,14}$
 
-Users receive immediate visual feedback
+Provide visible success/error feedback
 
-Downstream failures are prevented by design
+Log proof output in a visible Step 1 Proof box
 
-4.3 Observable Behavior Over Hidden Magic
+Button Rules
 
-What the user sees must reflect real system state
+“Complete Step 1” must work
 
-Standby vs active modes must be visible
+Button must be type="button"
 
-The UI must never imply functionality that does not exist
+Must not submit a form
 
-5. Build & Deployment Reasoning (History Matters)
-What Actually Happened
+Must prevent default behavior
 
-A first deployment attempt failed due to an incorrect S3 bucket
+Must unlock Step 2 on success
 
-The bucket and CloudFront distribution were corrected based on prior state
+A non-responsive Step 1 button is a hard failure.
 
-A second deployment succeeded (upload + invalidation)
+Step 2 — Location Services
+Required Behavior
 
-A PowerShell console error occurred after success
+Must show Selected Location
 
-Cause: instructional text parsed as a command
+Must display:
 
-Impact: cosmetic only
+Latitude
 
-System state: unaffected
+Longitude
 
-Why This History Is Preserved
+Timestamp
 
-It explains why the current configuration exists
+Source (Browser GPS / Demo)
 
-It prevents future re-introduction of the same mistake
+Must provide a Google Maps link
 
-It proves the system was validated under real conditions
+Must show real-time proof logs
 
-KIRO must never “clean this up” by omission.
+Location must remain available for later steps.
 
-6. Documentation Principles (For All Future Docs)
+Step 3 — Voice Emergency Detection
+Required Behavior
 
-All documentation created by KIRO must:
+Microphone activation with permission handling
 
-Be jury-safe
+Live transcript display
 
-Avoid speculation
+Emergency keyword detection
 
-Avoid legacy system names
+Automatic emergency trigger on keyword match
 
-Distinguish:
+Configurable Emergency Keywords (Required)
 
-design intent
+UI to add/remove keywords
 
-observed behavior
+Default keywords preloaded
 
-non-blocking issues
+Persistence via localStorage
 
-real failures
+Real-time update of detection logic
 
-Preserve sequence and causality
+Display of enabled keywords in Trigger Rule panel
 
-Be usable without reading code
+Regression of configurable keywords is not allowed.
 
-7. Change Evaluation Checklist (Before Doing Anything)
+Step 4 — Gemini Threat Analysis
+Required Behavior
 
-Before proposing or implementing any change, KIRO must answer:
+Uses Gemini 1.5 Pro
 
-Does this change preserve existing behavior?
+Accepts transcript + context
 
-Does it maintain the logic pillars in Section 4?
+Produces:
 
-Does it respect the documented history in Section 5?
+Risk level
 
-Does it improve clarity without hiding reality?
+Confidence
 
-Is this change required, or merely aesthetic?
+Recommendation
 
-If any answer is unclear → stop and ask.
+Displays results visibly in UI
 
-8. Definition of “Parity” in This Project
+Preserves proof logs
 
-Parity does not mean:
+This step does not send alerts — it informs Step 5.
 
-identical code
+Step 5 — Emergency Alerting (Non-Negotiable Rules)
+Always Visible (Even Before Emergency)
 
-identical infrastructure
+The SMS Preview panel must always be visible, even when empty.
 
-identical tooling
+The following 8 fields must render with placeholders (“—”) on page load:
 
-Parity does mean:
+Victim
 
-identical user experience
+Risk
 
-identical safety guarantees
+Recommendation
 
-identical international behavior
+Message
 
-identical failure prevention
+Location
 
-identical explainability
+Map Link
 
-9. When This Document Must Be Updated
+Time
 
-This document should only be updated if:
+Action
 
-a new capability changes system behavior
+This is victim trust UX — users must see what will be sent before it is sent.
 
-a deployment mechanism materially changes
+Victim Name
 
-a jury-relevant assumption changes
+Comes from Step 1
 
-Minor refactors do not qualify.
+Fallback: "Unknown User"
 
-10. Final Guardrail Statement
+Must appear in:
 
-If the system works today, the burden of proof is on any change to explain why it should exist.
+Structured preview fields
 
-This document is the reference used to make that decision.
+Raw SMS text
+
+Any sent message simulation
+
+Deterministic SMS Rule (Single Source of Truth)
+
+The system must use one shared logic path for preview and sending.
+
+The following functions must exist exactly once in the final build:
+
+composeAlertPayload()
+
+composeAlertSms(payload)
+
+renderSmsPreviewFields(payload)
+
+updateSmsPreview(reason)
+
+Rules:
+
+Preview === Sent message
+
+Same inputs → same output
+
+No duplication, no divergence
+
+Step 5 Update Triggers (Must Exist)
+
+updateSmsPreview() must be called when:
+
+Page loads
+
+Step 1 completes
+
+Location updates (Step 2)
+
+Threat analysis completes (Step 4)
+
+Emergency trigger fires
+
+Build Identity Proof (Jury Requirement)
+
+Every deployable build must display a Build ID in two places:
+
+Top build banner
+
+Runtime Health Check panel
+
+Format:
+
+Build: GEMINI3-JURY-READY-YYYYMMDD-vN
+
+
+This allows:
+
+Screenshot verification
+
+Cache validation
+
+Jury trust
+
+Regression detection
+
+A build without visible identity is not acceptable.
+
+Build Validation Rules (Fail-Hard)
+
+Before declaring any build complete, validation must confirm:
+
+Step 1 button is functional
+
+All required functions exist exactly once
+
+Step 5 fields render on load
+
+No JavaScript runtime errors
+
+Build ID visible in two locations
+
+If any check fails, the build is invalid and must not be deployed.
+
+Deployment Truth Rules
+
+CloudFront URL must be reachable
+
+Deployed page must match local build
+
+No “it should be” claims — only visible proof
+
+Any cosmetic errors must be documented explicitly
+
+Blocking errors must stop deployment
+
+Definition of Done (This State)
+
+The system is considered complete and correct when:
+
+Step 1 works reliably
+
+Step 2–4 execute in order
+
+Step 5 always shows structured preview
+
+SMS content is deterministic and transparent
+
+Victim name is visible and correct
+
+Emergency keywords are configurable
+
+Build identity is undeniable
+
+Jury can verify behavior without explanation
+
+This document reflects a known-good, jury-ready state.
+
+Any future change must preserve these guarantees.
