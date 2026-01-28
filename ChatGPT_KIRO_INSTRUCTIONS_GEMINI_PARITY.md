@@ -1,180 +1,73 @@
-ChatGPT_KIRO_INSTRUCTIONS_GEMINI_PARITY.md
-Purpose
+AllSensesAI Gemini3 Guardian — KIRO Instruction Log (Parity + Jury-Ready Baseline)
+Purpose of this document
 
-This document defines the authoritative logic sequence, design constraints, and acceptance rules governing the current AllSensesAI Gemini3 Guardian implementation.
+This file preserves the exact instruction logic and reasoning sequence used to reach the current working, jury-ready production state of the AllSensesAI Gemini3 Guardian, and defines the next build objective while protecting the existing baseline.
 
-It exists to:
+This is a product parity and jury-proof effort:
 
-Preserve build logic history
+Keep the end-to-end 5-step workflow stable.
 
-Prevent accidental regression
+Preserve proof visibility and determinism.
 
-Ensure jury-safe parity
+Extend capability without regressions.
 
-Define what “working” means — objectively and visibly
+Current Verified Baseline (DO NOT BREAK)
+Production URL (current working)
 
-This is not a to-do list.
-This is a state lock.
+CloudFront: https://dfc8ght8abwqc.cloudfront.net/
 
-Roles & Responsibility Boundary
-KIRO (Assistant)
+Build Identity Proof (must remain visible)
 
-KIRO is responsible for:
+Build ID displayed in two places:
 
-Building the Gemini Guardian application
+Top build stamp near header
 
-Implementing UI, logic, validation, and behavior
+Runtime Health Check panel (“Loaded Build ID”)
 
-Generating documentation artifacts
+Current observed Build ID:
 
-Producing deployable HTML builds
+GEMINI3-JURY-READY-20260128-v1
 
-Ensuring runtime correctness
+This dual-display build identity is mandatory for jury verification.
 
-Providing jury-verifiable proof
+What is confirmed working (baseline acceptance)
+Step 1 — Configuration (working)
 
-KIRO is not responsible for:
+Name field + E.164 phone field
 
-Git operations
+“Complete Step 1” works (no dead button)
 
-Repository structure
+E.164 validation enforced (must keep)
 
-Branching, tagging, or commits
+Saves configuration and unlocks Step 2
 
-File placement decisions
+Step 2 — Location Services (working)
 
-Human Operator
+Real GPS capture + displayed “Selected Location”
 
-The human operator is responsible for:
+Proof log shows location events and Google Maps link
 
-Saving documentation into the repository
+Demo location option exists
 
-Running deployment scripts
+Step 3 — Voice Emergency Detection (working)
 
-Managing version control
+Microphone listening state + live transcript + proof log
 
-Approving final builds
+Configurable emergency keywords UI (chips + add/remove) persists (localStorage)
 
-This separation is intentional and must be preserved.
+Trigger detection drives emergency workflow
 
-Canonical System Flow (Must Not Change)
+Step 4 — Gemini Threat Analysis (working)
 
-The Guardian follows a 5-step linear workflow.
-Each step must unlock the next and remain independently observable.
+Analysis button produces threat/risk outputs
 
-Step 1 — Configuration
+Pipeline state progresses to STEP4_COMPLETE
 
-Step 2 — Location Services
+Output supports Step 5 preview
 
-Step 3 — Voice Emergency Detection
+Step 5 — Emergency Alerting (working + complete UI)
 
-Step 4 — Gemini Threat Analysis
-
-Step 5 — Emergency Alerting
-
-Any build that violates this flow is invalid.
-
-Step 1 — Configuration (Critical Gate)
-Required Behavior
-
-Collect Victim Name
-
-Collect Emergency Contact Phone
-
-Enforce E.164 validation
-Regex: ^\+[1-9]\d{6,14}$
-
-Provide visible success/error feedback
-
-Log proof output in a visible Step 1 Proof box
-
-Button Rules
-
-“Complete Step 1” must work
-
-Button must be type="button"
-
-Must not submit a form
-
-Must prevent default behavior
-
-Must unlock Step 2 on success
-
-A non-responsive Step 1 button is a hard failure.
-
-Step 2 — Location Services
-Required Behavior
-
-Must show Selected Location
-
-Must display:
-
-Latitude
-
-Longitude
-
-Timestamp
-
-Source (Browser GPS / Demo)
-
-Must provide a Google Maps link
-
-Must show real-time proof logs
-
-Location must remain available for later steps.
-
-Step 3 — Voice Emergency Detection
-Required Behavior
-
-Microphone activation with permission handling
-
-Live transcript display
-
-Emergency keyword detection
-
-Automatic emergency trigger on keyword match
-
-Configurable Emergency Keywords (Required)
-
-UI to add/remove keywords
-
-Default keywords preloaded
-
-Persistence via localStorage
-
-Real-time update of detection logic
-
-Display of enabled keywords in Trigger Rule panel
-
-Regression of configurable keywords is not allowed.
-
-Step 4 — Gemini Threat Analysis
-Required Behavior
-
-Uses Gemini 1.5 Pro
-
-Accepts transcript + context
-
-Produces:
-
-Risk level
-
-Confidence
-
-Recommendation
-
-Displays results visibly in UI
-
-Preserves proof logs
-
-This step does not send alerts — it informs Step 5.
-
-Step 5 — Emergency Alerting (Non-Negotiable Rules)
-Always Visible (Even Before Emergency)
-
-The SMS Preview panel must always be visible, even when empty.
-
-The following 8 fields must render with placeholders (“—”) on page load:
+Always-visible SMS Preview panel with structured fields:
 
 Victim
 
@@ -186,137 +79,61 @@ Message
 
 Location
 
-Map Link
+Map
 
 Time
 
 Action
 
-This is victim trust UX — users must see what will be sent before it is sent.
+Includes “SMS Text Preview” block
 
-Victim Name
+Preview updates deterministically based on current state
 
-Comes from Step 1
+Victim name (owner of phone / user) is explicitly shown
 
-Fallback: "Unknown User"
+Key guarantee: preview matches what would be sent.
 
-Must appear in:
+Non-goals and boundaries (KIRO must comply)
 
-Structured preview fields
+Do not provide Git instructions.
 
-Raw SMS text
+Do not request repository actions.
 
-Any sent message simulation
+Do not change bucket/distribution unless explicitly instructed.
 
-Deterministic SMS Rule (Single Source of Truth)
+Do not remove working proof logs or jury-visible panels.
 
-The system must use one shared logic path for preview and sending.
+Do not degrade the 5-step UX parity.
 
-The following functions must exist exactly once in the final build:
+I (Ivan) will handle repository commits/tags.
 
-composeAlertPayload()
+How we got here (high-level sequence)
 
-composeAlertSms(payload)
+Implemented E.164 parity for international SMS destinations.
 
-renderSmsPreviewFields(payload)
+Added Step 5 “SMS Preview” concept, but had early builds where functions were missing or Step 1 broke.
 
-updateSmsPreview(reason)
+Iterated until the app had:
 
-Rules:
+Step 1 reliable click behavior
 
-Preview === Sent message
+deterministic SMS composition
 
-Same inputs → same output
+Step 5 structured preview always visible
 
-No duplication, no divergence
+configurable emergency keywords UI
 
-Step 5 Update Triggers (Must Exist)
+jury-proof Build ID visibility (header + runtime panel)
 
-updateSmsPreview() must be called when:
+Deployed the final working baseline to CloudFront:
 
-Page loads
+dfc8ght8abwqc.cloudfront.net
 
-Step 1 completes
+Current Gap (Next Feature)
+Missing feature vs prior version: VIDEO / VISION panel
 
-Location updates (Step 2)
+AllSensesAI is “all senses”, and the prior version demonstrated a Visual Context (Gemini Vision) — Video Frames panel.
 
-Threat analysis completes (Step 4)
+That panel is not present in the current jury-ready build.
 
-Emergency trigger fires
-
-Build Identity Proof (Jury Requirement)
-
-Every deployable build must display a Build ID in two places:
-
-Top build banner
-
-Runtime Health Check panel
-
-Format:
-
-Build: GEMINI3-JURY-READY-YYYYMMDD-vN
-
-
-This allows:
-
-Screenshot verification
-
-Cache validation
-
-Jury trust
-
-Regression detection
-
-A build without visible identity is not acceptable.
-
-Build Validation Rules (Fail-Hard)
-
-Before declaring any build complete, validation must confirm:
-
-Step 1 button is functional
-
-All required functions exist exactly once
-
-Step 5 fields render on load
-
-No JavaScript runtime errors
-
-Build ID visible in two locations
-
-If any check fails, the build is invalid and must not be deployed.
-
-Deployment Truth Rules
-
-CloudFront URL must be reachable
-
-Deployed page must match local build
-
-No “it should be” claims — only visible proof
-
-Any cosmetic errors must be documented explicitly
-
-Blocking errors must stop deployment
-
-Definition of Done (This State)
-
-The system is considered complete and correct when:
-
-Step 1 works reliably
-
-Step 2–4 execute in order
-
-Step 5 always shows structured preview
-
-SMS content is deterministic and transparent
-
-Victim name is visible and correct
-
-Emergency keywords are configurable
-
-Build identity is undeniable
-
-Jury can verify behavior without explanation
-
-This document reflects a known-good, jury-ready state.
-
-Any future change must preserve these guarantees.
+We must re-introduce the VIDEO feature without changing or breaking anything that currently works.
