@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E.164 Validation Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        .test-case { background: #f8f9fa; padding: 15px; margin: 10px 0; border-radius: 8px; }
+        .test-case h3 { margin: 0 0 10px 0; color: #2c3e50; }
+        input[type="tel"] { width: 100%; padding: 10px; margin: 5px 0; border: 2px solid #ecf0f1; border-radius: 4px; font-size: 1em; }
+        .result { padding: 10px; margin: 10px 0; border-radius: 4px; font-weight: bold; }
+        .valid { background: #d4edda; color: #155724; }
+        .invalid { background: #f8d7da; color: #721c24; }
+        button { background: #3498db; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin: 5px; }
+        button:hover { background: #2980b9; }
+    </style>
+</head>
+<body>
+    <h1>🧪 E.164 Validation Test Suite</h1>
+    <p>Testing ERNIE → GEMINI parity for international phone numbers</p>
+    
+    <div class="test-case">
+        <h3>✅ Valid Test Cases</h3>
+        <button onclick="testPhone('+14155552671', 'US')">+14155552671 (US)</button>
+        <button onclick="testPhone('+573001234567', 'Colombia')">+573001234567 (Colombia)</button>
+        <button onclick="testPhone('+5215512345678', 'Mexico')">+5215512345678 (Mexico)</button>
+        <button onclick="testPhone('+584121234567', 'Venezuela')">+584121234567 (Venezuela)</button>
+    </div>
+    
+    <div class="test-case">
+        <h3>❌ Invalid Test Cases</h3>
+        <button onclick="testPhone('14155552671', 'Missing +')">14155552671 (Missing +)</button>
+        <button onclick="testPhone('+1', 'Too short')">+1 (Too short)</button>
+        <button onclick="testPhone('+57 3001234567', 'Spaces')">+57 3001234567 (Spaces)</button>
+        <button onclick="testPhone('+52-55-1234-5678', 'Dashes')">+52-55-1234-5678 (Dashes)</button>
+        <button onclick="testPhone('(415) 555-2671', 'Parentheses')">(415) 555-2671 (Parentheses)</button>
+    </div>
+    
+    <div class="test-case">
+        <h3>📝 Manual Test</h3>
+        <input type="tel" id="manualInput" placeholder="Enter phone number to test">
+        <button onclick="testManual()">Test Manual Input</button>
+    </div>
+    
+    <div id="results"></div>
+
+    <script>
+        // E.164 validation function (from GEMINI Guardian)
+        function validateE164Phone(phoneNumber) {
+            const trimmed = phoneNumber.trim();
+            
+            // E.164 regex: ^\+[1-9]\d{6,14}$
+            const e164Regex = /^\+[1-9]\d{6,14}$/;
+            
+            if (!trimmed) {
+                return {
+                    valid: false,
+                    message: 'Phone number required',
+                    color: '#dc3545'
+                };
+            }
+            
+            if (!trimmed.startsWith('+')) {
+                return {
+                    valid: false,
+                    message: 'Must start with + (E.164 format)',
+                    color: '#dc3545'
+                };
+            }
+            
+            if (!e164Regex.test(trimmed)) {
+                return {
+                    valid: false,
+                    message: 'Invalid E.164 format. Use +<countrycode><number> (7-15 digits total)',
+                    color: '#dc3545'
+                };
+            }
+            
+            // Detect country
+            let country = 'International';
+            if (trimmed.startsWith('+1')) country = 'US';
+            else if (trimmed.startsWith('+57')) country = 'Colombia';
+            else if (trimmed.startsWith('+52')) country = 'Mexico';
+            else if (trimmed.startsWith('+58')) country = 'Venezuela';
+            
+            return {
+                valid: true,
+                message: `✓ Valid E.164 (${country})`,
+                color: '#28a745',
+                country: country
+            };
+        }
+        
+        function testPhone(phone, label) {
+            const result = validateE164Phone(phone);
+            const resultsDiv = document.getElementById('results');
+            
+            const resultHtml = `
+                <div class="result ${result.valid ? 'valid' : 'invalid'}">
+                    <strong>${label}:</strong> ${phone}<br>
+                    ${result.message}
+                </div>
+            `;
+            
+            resultsDiv.innerHTML = resultHtml + resultsDiv.innerHTML;
+        }
+        
+        function testManual() {
+            const input = document.getElementById('manualInput');
+            testPhone(input.value, 'Manual Test');
+        }
+    </script>
+</body>
+</html>

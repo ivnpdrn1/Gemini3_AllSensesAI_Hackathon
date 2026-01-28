@@ -1,225 +1,143 @@
-KIRO Instruction — Add VISION Mode (Gemini Vision) to AllSensesAI
-Objective
+📞 SMS Origination & International Routing — GEMINI Design Rationale
+Purpose
 
-Add Visual Context Analysis (Gemini Vision) as an automatic, safety-triggered capability to AllSensesAI.
-The feature must activate only when risk is detected and must explain itself entirely through the UI, for both users in danger and jury observers.
+This section documents why SMS delivery behaves differently for U.S. versus non-U.S. destinations, and how GEMINI correctly handles both cases while maintaining compliance, deliverability, and user trust.
 
-No additional explanation should be required.
-The product must communicate intent, scope, and safety on its own.
+This is an intentional design decision, not an implementation accident.
 
-Guiding Principles (Non-Negotiable)
+🇺🇸 United States — Registered Origination (10DLC)
 
-Vision is corroboration, not primary input
+In the United States, Application-to-Person (A2P) SMS traffic is regulated by mobile carriers (AT&T, Verizon, T-Mobile).
 
-Vision is never manually activated
+Key characteristics:
 
-Vision never replaces audio or keyword triggers
+Messages must originate from registered 10-digit long codes (10DLC)
 
-Safety over spectacle
+Each origination number is associated with:
 
-Capture minimal visual evidence
+An approved sender identity
 
-Analyze context, not identities
+A declared messaging use case
 
-Explainability over raw output
+Carrier-reviewed compliance metadata
 
-No raw Gemini text dumps
+Why this matters:
 
-Structured findings only
+Unregistered or generic origination routes are frequently filtered or blocked
 
-User = Jury
+Emergency or safety-related notifications require high deliverability and trust
 
-Treat both as the same first-time viewer
+For this reason, GEMINI uses registered U.S. origination numbers when delivering SMS to U.S. recipients.
 
-Everything must be obvious on screen
+Important clarification:
+10DLC is not a phone number format.
+It is a U.S.-only regulatory and carrier trust framework.
 
-Where VISION Fits in the Pipeline
+🌎 International Destinations — E.164 Routing
 
-Keep the existing 5-step flow:
+Outside the United States:
 
-Config
+The 10DLC framework does not exist
 
-Location
+Carrier requirements differ by country
 
-Voice
+SMS delivery relies on international routing agreements
 
-Analysis (Enhanced with Vision)
+For international destinations, GEMINI:
 
-Alert
+Requires destination numbers in E.164 format
 
-VISION is a sub-stage of Step 4.
-Do not add a new step.
+Delegates routing to the messaging provider’s international infrastructure
 
-Trigger Conditions (Automatic Only)
+Does not attempt to apply U.S.-specific origination rules
 
-VISION activates when ANY of the following occur:
+Supported international destinations include:
 
-Emergency keyword detected
+🇨🇴 Colombia (+57)
 
-Suspicious noise pattern detected (panic, scream, struggle)
+🇲🇽 Mexico (+52)
 
-Emergency state flag is set
+🇻🇪 Venezuela (+58)
 
-No buttons. No toggles. No user decisions.
+Unified Input, Country-Aware Execution
 
-Step 4 — Threat Analysis (UI Changes Required)
+At the system boundary, GEMINI uses E.164-formatted phone numbers for all destinations.
 
-Add a new panel:
+Examples:
 
-🔍 Visual Context Analysis (Gemini Vision)
++14155552671 (United States)
 
-Status flow (visible):
++573001234567 (Colombia)
 
-Waiting for trigger
++5215512345678 (Mexico)
 
-Capturing visual context
++584121234567 (Venezuela)
 
-Analyzing environment
+Although the input format is unified, execution differs internally based on destination country.
 
-Analysis complete
+Provider-Managed Routing (Internal Behavior)
 
-What the system does (must be visible in text):
+The messaging provider automatically applies the correct delivery path:
 
-Captures 1–3 still frames
+Destination	Internal Routing Behavior
+🇺🇸 United States	Uses registered U.S. origination (10DLC)
+🌎 Non-U.S.	Uses international SMS routing (E.164-based)
 
-Uses front camera first, rear as fallback
+As a result:
 
-Only during active emergency
+U.S. messages comply with carrier regulations
 
-No continuous recording
+International messages follow country-appropriate routing rules
 
-Gemini Vision Analysis Scope (Must Be Explicit in UI)
+No manual branching is required at the application layer
 
-Show a short label such as:
+Frontend Validation & User Experience
 
-“Analyzing environment for safety risk indicators”
+To ensure correctness and clarity, GEMINI enforces the following at the UI level:
 
-Gemini must analyze for:
+Phone Number Validation
 
-Presence of other people
+Required format: E.164
 
-Signs of physical threat or coercion
+Regex:
+^\+[1-9]\d{6,14}$
 
-Confined or isolated environments
+Examples shown to users
 
-Vehicles or enclosed spaces
++1XXXXXXXXXX
 
-Low-light or obstructed visibility
++57XXXXXXXXXX
 
-Aggressive posture or proximity
++52XXXXXXXXXX
 
-Objects that may indicate danger (non-sensational)
++58XXXXXXXXXX
 
-Prompting Rules (For KIRO Implementation)
+Behavior
 
-Gemini Vision prompts must be safety-scoped.
+Invalid numbers are blocked before submission
 
-Example instruction (conceptual, not shown to user):
+Valid numbers receive immediate confirmation feedback
 
-“Analyze this image for indicators of personal danger or distress.
-Identify environmental risk factors only.
-Do not identify individuals.
-Respond with a structured safety assessment.”
+This prevents downstream delivery failures and improves user trust
 
-Visual Output (Strictly Structured)
+Design Principles
 
-The UI must display:
+✅ Use global standards (E.164) at system boundaries
 
-Thumbnail(s) (blurred by default)
+✅ Apply country-specific compliance only where required
 
-Structured findings, e.g.:
+✅ Delegate carrier-specific logic to the messaging provider
 
-“Multiple individuals detected nearby”
+❌ Do not expose regulatory complexity to end users
 
-“Confined indoor environment”
+❌ Do not apply U.S.-only rules to international traffic
 
-“Low visibility conditions”
+Authoritative Statement
 
-Confidence level: Low / Medium / High
+GEMINI automatically applies the correct SMS origination and routing strategy based on the destination country, ensuring regulatory compliance, high deliverability, and consistent behavior across regions.
 
-❌ No free-form Gemini paragraphs
-❌ No emotional or speculative language
+Build Reference
 
-Evidence Packet Expansion (Critical)
+GEMINI Build: GEMINI3-E164-PARITY-20260128
 
-When Vision is triggered, the emergency packet must visibly include:
-
-🎙️ Trigger transcript snippet
-
-📍 Live location (with Google Maps link)
-
-🖼️ Visual context findings
-
-🧠 Combined risk assessment (audio + vision)
-
-Display a label:
-
-“Evidence captured to assist responders”
-
-Privacy & Trust Signals (Must Be Visible)
-
-Without explanation text blocks, include small UI cues:
-
-“Images captured only during emergency”
-
-“No continuous recording”
-
-“Secure analysis”
-
-This reassures both user and jury instantly.
-
-Reset Behavior (Demo & Safety)
-
-“Reset Emergency State” must:
-
-Clear visual findings
-
-Clear captured frames
-
-Return Vision panel to idle state
-
-Vision must not activate again until a new trigger
-
-Acceptance Criteria (What Will Be Verified)
-
-Say emergency keyword → Step 4 auto-shows Vision panel
-
-Visual analysis runs without user input
-
-Findings are understandable in <5 seconds
-
-Jury can explain what Vision does by only reading the screen
-
-Reset clears everything cleanly
-
-No regressions to existing workflow
-
-Naming (Use Consistently)
-
-Use one of the following everywhere:
-
-Visual Context Analysis
-
-Environmental Risk Scan
-
-Avoid:
-
-“Camera Mode”
-
-“Image Capture”
-
-“Vision Mode” (too technical)
-
-Definition of Done
-
-A first-time viewer can clearly understand:
-
-why images were captured,
-
-what was analyzed,
-
-how it helps the person in danger,
-
-and how it strengthens emergency response,
-
-without anyone explaining it verbally.
+Scope: U.S. + International SMS delivery
