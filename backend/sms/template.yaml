@@ -1,0 +1,90 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: AllSensesAI Gemini3 Guardian - SMS Sending Backend
+
+Parameters:
+  Environment:
+    Type: String
+    Default: prod
+    AllowedValues:
+      - dev
+      - prod
+    Description: Environment name
+
+Resources:
+  # Lambda Function for SMS Sending
+  SmsSenderFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub 'gemini3-sms-sender-${Environment}'
+      Description: Sends emergency SMS alerts via AWS SNS
+      Runtime: python3.11
+      Handler: lambda_handler.handler
+      CodeUri: .
+      MemorySize: 256
+      Timeout: 30
+      Environment:
+        Variables:
+          ENVIRONMENT: !Ref Environment
+      Policies:
+        - SNSPublishMessagePolicy:
+            TopicName: '*'
+        - Statement:
+            - Effect: Allow
+              Action:
+                - sns:Publish
+              Resource: '*'
+      Events:
+        SendSmsApi:
+          Type: HttpApi
+          Properties:
+            Path: /send-sms
+            Method: post
+            ApiId: !Ref SmsHttpApi
+        OptionsApi:
+          Type: HttpApi
+          Properties:
+            Path: /send-sms
+            Method: options
+            ApiId: !Ref SmsHttpApi
+
+  # HTTP API Gateway
+  SmsHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: !Ref Environment
+      CorsConfiguration:
+        AllowOrigins:
+          - '*'
+        AllowMethods:
+          - POST
+          - OPTIONS
+        AllowHeaders:
+          - Content-Type
+        MaxAge: 300
+
+  # CloudWatch Log Group
+  SmsSenderLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/gemini3-sms-sender-${Environment}'
+      RetentionInDays: 7
+
+Outputs:
+  SmsApiUrl:
+    Description: SMS API Endpoint URL
+    Value: !Sub 'https://${SmsHttpApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/send-sms'
+    Export:
+      Name: !Sub '${AWS::StackName}-SmsApiUrl'
+  
+  SmsFunctionArn:
+    Description: SMS Sender Lambda Function ARN
+    Value: !GetAtt SmsSenderFunction.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-SmsFunctionArn'
+  
+  SmsFunctionName:
+    Description: SMS Sender Lambda Function Name
+    Value: !Ref SmsSenderFunction
+    Export:
+      Name: !Sub '${AWS::StackName}-SmsFunctionName'

@@ -222,7 +222,7 @@
         <div class="header">
             <h1>AllSensesAI Gemini3 Guardian</h1>
             <p>Gemini 1.5 Pro | Emergency Detection System</p>
-            <div id="buildStamp" style="font-size:14px;color:#fff;margin-top:8px;font-weight:bold;background:#4285f4;padding:6px 12px;border-radius:6px;">Build: GEMINI3-GUARDIAN-PRODUCTION-SMS-20260129-v1</div>
+            <div id="buildStamp" style="font-size:14px;color:#fff;margin-top:8px;font-weight:bold;background:#4285f4;padding:6px 12px;border-radius:6px;">Build: GEMINI3-JURY-READY-VIDEO-SMS-20260128-v3</div>
             
             <div style="background:#e8f5e9;border:1px solid #4caf50;padding:8px 12px;border-radius:5px;margin:8px 0;font-size:13px;color:#2e7d32;">
                 <strong>GEMINI3 POWERED:</strong> Using Google Gemini 1.5 Pro for threat analysis
@@ -250,7 +250,7 @@
                 </div>
                 <div class="health-item live" id="health-loaded-build">
                     <div class="health-label">Loaded Build ID</div>
-                    <div class="health-value" style="font-family: monospace; font-size: 12px;">GEMINI3-GUARDIAN-PRODUCTION-SMS-20260129-v1</div>
+                    <div class="health-value" style="font-family: monospace; font-size: 12px;">GEMINI3-JURY-READY-VIDEO-SMS-20260128-v3</div>
                 </div>
             </div>
         </div>
@@ -566,7 +566,7 @@
             <!-- NEW: Manual Test SMS Button (v3 - NO RISK GATING) -->
             <div id="manualSmsTestSection" style="margin: 15px 0; display:none;">
                 <button type="button" class="button secondary-btn" onclick="sendTestSms()">📤 Send Test SMS</button>
-                <div class="note">Test SMS delivery to your emergency contact. Works regardless of risk level (production safe).</div>
+                <div class="note">Test SMS delivery to your emergency contact. Works regardless of risk level (jury demo safe).</div>
             </div>
             
 </div>
@@ -906,12 +906,10 @@
         let recognition = null;
         let transcriptHistory = [];
 
-        // ========== GLOBAL CONFIGURATION ==========
-        const BUILD_ID = 'GEMINI3-GUARDIAN-PRODUCTION-SMS-20260129-v1';
-        const SMS_API_URL = 'https://q4ouvfydgod6o734zbfipyi45q0lyuhx.lambda-url.us-east-1.on.aws/';
-
         window.addEventListener('DOMContentLoaded', () => {
-        console.log('[SMS-CONFIG] Build ID:', BUILD_ID);
+        // ========== SMS API CONFIGURATION ==========
+        const BUILD_ID = 'GEMINI3-JURY-READY-VIDEO-SMS-20260128-v3';
+        const SMS_API_URL = 'https://YOUR_API_GATEWAY_URL_HERE/prod/send-sms';
         console.log('[SMS-CONFIG] API URL:', SMS_API_URL);
         
 
@@ -1942,7 +1940,7 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
                 console.log('[BUILD-VALIDATION] PASSED - All required DOM elements present');
             }
             
-            console.log('[BUILD-VALIDATION] Build: GEMINI3-GUARDIAN-PRODUCTION-SMS-20260129-v1');
+            console.log('[BUILD-VALIDATION] Build: GEMINI3-JURY-READY-VIDEO-SMS-20260128-v3');
         });
 
     
@@ -2248,7 +2246,7 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
         
         /**
          * Send test SMS (manual trigger) - v3: NO RISK GATING
-         * Works regardless of risk level for production reliability
+         * Works regardless of risk level for jury demo reliability
          */
         async function sendTestSms() {
             console.log('[SMS][TEST] Manual test SMS triggered');
@@ -2276,7 +2274,7 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
             }
             
             // Confirm with user
-            const confirmed = confirm('Send test SMS to ' + payload.emergencyPhone + '?\n\nThis will send a real SMS message.\n\nNote: Works regardless of risk level (production safe).');
+            const confirmed = confirm('Send test SMS to ' + payload.emergencyPhone + '?\n\nThis will send a real SMS message.\n\nNote: Works regardless of risk level (jury demo safe).');
             if (!confirmed) {
                 console.log('[SMS][TEST] User cancelled test SMS');
                 return;
