@@ -1569,8 +1569,9 @@
         }
 
         // ========== STEP 5: EMERGENCY ALERTING ==========
-        function triggerStep5Alert(analysisResult) {
+        async function triggerStep5Alert(analysisResult) {
             console.log('[STEP5] Triggering emergency alert');
+            console.log('[STEP5][AUTO] Emergency-cycle SMS sending started');
             updatePipelineState('STEP5_ALERTING');
             
             const step5Status = document.getElementById('step5Status');
@@ -1582,21 +1583,52 @@
             // Final SMS preview update before sending
             updateSmsPreview();
             
-            setTimeout(() => {
-                alertResult.style.display = 'block';
+            // Compose payload
+            const payload = composeAlertPayload();
+            
+            console.log('[STEP5][AUTO] Calling sendSms() with payload:', payload);
+            
+            // Send SMS (isManualTest = false for AUTO trigger)
+            const result = await sendSms(payload, false);
+            
+            console.log('[STEP5][AUTO] sendSms() returned:', result);
+            
+            // Update UI based on actual result
+            alertResult.style.display = 'block';
+            
+            if (result.ok) {
                 alertDetails.innerHTML = `
+                    <strong>✅ Emergency SMS Sent Successfully</strong><br>
                     Emergency contact notified: ${document.getElementById('emergencyPhone').value}<br>
                     Location: ${currentLocation.label}<br>
                     Coordinates: ${currentLocation.latitude.toFixed(6)}, ${currentLocation.longitude.toFixed(6)}<br>
                     Threat Level: ${analysisResult.risk_level}<br>
+                    Message ID: ${result.messageId}<br>
                     Time: ${new Date().toLocaleTimeString()}
                 `;
                 
                 step5Status.textContent = '✅ Emergency alerts sent successfully';
+                step5Status.style.color = '#28a745';
                 updatePipelineState('STEP5_COMPLETE');
                 
-                console.log('[STEP5] Alert sent successfully');
-            }, 1000);
+                console.log('[STEP5][AUTO] Emergency SMS sent successfully, MessageId:', result.messageId);
+            } else {
+                alertDetails.innerHTML = `
+                    <strong>❌ Emergency SMS Failed</strong><br>
+                    Error: ${result.error}<br>
+                    Destination: ${document.getElementById('emergencyPhone').value}<br>
+                    Threat Level: ${analysisResult.risk_level}<br>
+                    Time: ${new Date().toLocaleTimeString()}<br>
+                    <br>
+                    <em>Check SMS Delivery Proof panel below for details</em>
+                `;
+                
+                step5Status.textContent = '❌ SMS sending failed: ' + result.error;
+                step5Status.style.color = '#dc3545';
+                updatePipelineState('STEP5_FAILED');
+                
+                console.error('[STEP5][AUTO] Emergency SMS failed:', result.error);
+            }
         }
 
         // ========== EMERGENCY DETECTION ==========
