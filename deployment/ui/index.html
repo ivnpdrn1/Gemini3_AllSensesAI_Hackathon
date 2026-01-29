@@ -2116,17 +2116,19 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
             addVisionProofLog('[UI] Vision findings displayed to user');
         }
     
-        // ========== SMS SENDING FUNCTIONS (v3 - Enhanced) ==========
+        // ========== SMS SENDING FUNCTIONS (v4 - Production Hardened) ==========
         
         /**
-         * Send SMS via backend API (v3 - Enhanced logging, no risk gating for manual)
+         * Send SMS via backend API (v4 - Production hardened with timeout & error diagnosis)
          * @param {Object} payload - Alert payload from composeAlertPayload()
          * @param {boolean} isManualTest - True if triggered by manual test button
          * @returns {Promise<Object>} - {ok: boolean, messageId?: string, error?: string}
          */
         async function sendSms(payload, isManualTest = false) {
             const triggerType = isManualTest ? 'MANUAL' : 'AUTO';
-            console.log(`[SMS][REQUEST] Sending SMS (${triggerType})...`, payload);
+            console.log(`[SMS][REQUEST] Sending SMS (${triggerType})...`);
+            console.log(`[SMS][CONFIG] Using SMS_API_URL: ${SMS_API_URL}`);
+            console.log(`[SMS][PAYLOAD]`, payload);
             
             // Update delivery status
             updateDeliveryStatus('SENDING', payload.emergencyPhone, null, triggerType);
@@ -2146,7 +2148,7 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
                         confidence: document.getElementById('threatConfidence')?.textContent || '—',
                         recommendation: payload.recommendation,
                         triggerMessage: payload.message,
-                        triggerType: triggerType,  // NEW: Track manual vs auto
+                        triggerType: triggerType,  // Track manual vs auto
                         lat: currentLocation?.latitude || 0,
                         lng: currentLocation?.longitude || 0,
                         mapUrl: payload.map,
@@ -2157,39 +2159,143 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
                 
                 console.log('[SMS][REQUEST] Request body:', requestBody);
                 console.log('[SMS][REQUEST] Message length:', smsText.length, 'chars');
+                console.log('[SMS][REQUEST] Destination:', payload.emergencyPhone);
                 
-                // Send to backend
+                // Create AbortController for timeout (30 seconds)
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => {
+                    controller.abort();
+                    console.error('[SMS][TIMEOUT] Request aborted after 30 seconds');
+                }, 30000);
+                
+                // Send to backend with timeout
                 const startTime = Date.now();
-                const response = await fetch(SMS_API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(requestBody)
-                });
+                console.log('[SMS][FETCH] Starting fetch request...');
+                
+                let response;
+                try {
+                    response = await fetch(SMS_API_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestBody),
+                        signal: controller.signal
+                    });
+                    clearTimeout(timeoutId);
+                } catch (fetchError) {
+                    clearTimeout(timeoutId);
+                    
+                    // Distinguish between different fetch errors
+                    if (fetchError.name === 'AbortError') {
+                        console.error('[SMS][ERROR] Request timeout after 30 seconds');
+                        const errorResult = {
+                            ok: false,
+                            provider: 'sns',
+                            errorCode: 'TIMEOUT',
+                            errorMessage: 'Request timeout after 30 seconds',
+                            httpStatus: 0
+                        };
+                        updateDeliveryStatus('FAILED', payload.emergencyPhone, errorResult, triggerType);
+                        return { ok: false, error: 'Request timeout after 30 seconds', result: errorResult };
+                    } else if (fetchError.message.includes('Failed to fetch')) {
+                        console.error('[SMS][ERROR] CORS or network error - Failed to fetch');
+                        console.error('[SMS][ERROR] This usually means:');
+                        console.error('[SMS][ERROR] 1. CORS headers missing from Lambda response');
+                        console.error('[SMS][ERROR] 2. Lambda URL is incorrect or unreachable');
+                        console.error('[SMS][ERROR] 3. Network connectivity issue');
+                        console.error('[SMS][ERROR] 4. Browser blocking the request');
+                        console.error('[SMS][ERROR] Full error:', fetchError);
+                        
+                        const errorResult = {
+                            ok: false,
+                            provider: 'sns',
+                            errorCode: 'FETCH_EXCEPTION',
+                            errorMessage: `Failed to fetch: ${fetchError.message}. Likely CORS or network issue.`,
+                            httpStatus: 0,
+                            details: {
+                                errorName: fetchError.name,
+                                errorMessage: fetchError.message,
+                                url: SMS_API_URL,
+                                triggerType: triggerType
+                            }
+                        };
+                        updateDeliveryStatus('FAILED', payload.emergencyPhone, errorResult, triggerType);
+                        return { ok: false, error: errorResult.errorMessage, result: errorResult };
+                    } else {
+                        console.error('[SMS][ERROR] Unexpected fetch error:', fetchError);
+                        const errorResult = {
+                            ok: false,
+                            provider: 'sns',
+                            errorCode: 'FETCH_EXCEPTION',
+                            errorMessage: `Fetch error: ${fetchError.message}`,
+                            httpStatus: 0
+                        };
+                        updateDeliveryStatus('FAILED', payload.emergencyPhone, errorResult, triggerType);
+                        return { ok: false, error: fetchError.message, result: errorResult };
+                    }
+                }
                 
                 const responseTime = Date.now() - startTime;
-                const result = await response.json();
+                console.log(`[SMS][RESPONSE] HTTP ${response.status} in ${responseTime}ms`);
+                console.log(`[SMS][RESPONSE] Status text: ${response.statusText}`);
+                console.log(`[SMS][RESPONSE] Headers:`, {
+                    'content-type': response.headers.get('content-type'),
+                    'access-control-allow-origin': response.headers.get('access-control-allow-origin'),
+                    'access-control-allow-methods': response.headers.get('access-control-allow-methods')
+                });
                 
-                console.log(`[SMS][RESPONSE] HTTP ${response.status} in ${responseTime}ms:`, result);
+                // Parse response
+                let result;
+                try {
+                    const responseText = await response.text();
+                    console.log('[SMS][RESPONSE] Raw body:', responseText);
+                    result = JSON.parse(responseText);
+                    console.log('[SMS][RESPONSE] Parsed JSON:', result);
+                } catch (parseError) {
+                    console.error('[SMS][ERROR] Failed to parse response JSON:', parseError);
+                    const errorResult = {
+                        ok: false,
+                        provider: 'sns',
+                        errorCode: 'PARSE_ERROR',
+                        errorMessage: `Failed to parse response: ${parseError.message}`,
+                        httpStatus: response.status
+                    };
+                    updateDeliveryStatus('FAILED', payload.emergencyPhone, errorResult, triggerType);
+                    return { ok: false, error: errorResult.errorMessage, result: errorResult };
+                }
                 
-                if (result.ok) {
+                // Check if response is successful
+                if (response.ok && result.ok) {
                     console.log('[SMS][SUCCESS] SMS sent successfully:', result);
                     updateDeliveryStatus('SENT', result.toMasked, result, triggerType);
                     return { ok: true, messageId: result.messageId, result: result };
                 } else {
-                    console.error('[SMS][ERROR] SMS sending failed:', result.errorMessage);
-                    updateDeliveryStatus('FAILED', payload.emergencyPhone, result, triggerType);
-                    return { ok: false, error: result.errorMessage, result: result };
+                    // HTTP error or API error
+                    const errorMessage = result.errorMessage || result.error || `HTTP ${response.status}: ${response.statusText}`;
+                    console.error('[SMS][ERROR] SMS sending failed:', errorMessage);
+                    console.error('[SMS][ERROR] Full response:', result);
+                    
+                    const errorResult = {
+                        ok: false,
+                        provider: result.provider || 'sns',
+                        errorCode: result.errorCode || 'HTTP_ERROR',
+                        errorMessage: errorMessage,
+                        httpStatus: response.status,
+                        responseBody: result
+                    };
+                    updateDeliveryStatus('FAILED', payload.emergencyPhone, errorResult, triggerType);
+                    return { ok: false, error: errorMessage, result: errorResult };
                 }
                 
             } catch (error) {
-                console.error('[SMS][ERROR] Network error:', error);
+                console.error('[SMS][ERROR] Unexpected error in sendSms():', error);
+                console.error('[SMS][ERROR] Error stack:', error.stack);
                 const errorResult = {
                     ok: false,
                     provider: 'sns',
-                    errorCode: 'NETWORK_ERROR',
-                    errorMessage: error.message,
+                    errorCode: 'UNEXPECTED_ERROR',
+                    errorMessage: `Unexpected error: ${error.message}`,
                     httpStatus: 0
                 };
                 updateDeliveryStatus('FAILED', payload.emergencyPhone, errorResult, triggerType);
