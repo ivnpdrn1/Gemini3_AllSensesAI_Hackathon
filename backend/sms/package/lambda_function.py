@@ -186,6 +186,33 @@ def error_response(status_code, message):
         'timestamp': datetime.utcnow().isoformat()
     })
 
+def cors_response(status_code, body_dict):
+    """
+    Create HTTP response with CORS headers
+    CRITICAL: CORS headers MUST be on ALL responses (success + error)
+    """
+    return {
+        'statusCode': status_code,
+        'headers': {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type'
+        },
+        'body': json.dumps(body_dict, default=str)
+    }
+
+
+def error_response(status_code, message):
+    """
+    DEPRECATED: Use cors_response() instead
+    Kept for backward compatibility
+    """
+    return cors_response(status_code, {
+        'error': message,
+        'timestamp': datetime.utcnow().isoformat()
+    })
+
 def error_response(status_code, message):
     """Return error response with CORS headers"""
     return {
