@@ -1,7 +1,7 @@
-#!/usr/bin/env python3
+#!/Internationalr/bin/env python3
 """
 Add E.164 International Calling Parity to GEMINI Guardian
-Matches ERNIE's phone number behavior for US + International (Colombia, Mexico, Venezuela)
+Matches ERNIE's phone number behavior for International
 """
 
 import re
@@ -26,11 +26,11 @@ def add_e164_parity(input_file, output_file):
     phone_input_pattern = r'(<input type="tel" id="emergencyPhone"[^>]+>)'
     helper_text = r'''\1
             <div class="note" style="margin-top: 5px; font-size: 0.9em; color: #666;">
-                Use E.164 format: +&lt;countrycode&gt;&lt;number&gt; (examples: +1…, +57…, +52…, +58…)
+                Internationale E.164 format: +&lt;countrycode&gt;&lt;number&gt; (examples: +1…, +57…, +52…, +58…)
             </div>
             <div id="phoneValidationFeedback" class="note" style="margin-top: 5px; font-weight: bold; display: none;"></div>
-            <div class="note" style="margin-top: 8px; font-size: 0.85em; color: #555; padding: 8px; background: #f0f8ff; border-radius: 4px; border-left: 3px solid #4a90e2;">
-                <strong>International supported:</strong> US (+1), Colombia (+57), Mexico (+52), Venezuela (+58)
+            <div class="note" style="margin-top: 8px; font-size: 0.85em; color: #555; padding: 8px; background: #f0f8ff; border-radiInternational: 4px; border-left: 3px solid #4a90e2;">
+                <strong>International supported:</strong> International, International, International, International
             </div>'''
     
     content = re.sub(phone_input_pattern, helper_text, content)
@@ -45,7 +45,7 @@ def add_e164_parity(input_file, output_file):
             const trimmed = phoneNumber.trim();
             
             // E.164 regex: ^\+[1-9]\d{6,14}$
-            // Must start with +, followed by country code (1-9), then 6-14 more digits
+            // MInternationalt start with +, followed by country code (1-9), then 6-14 more digits
             const e164Regex = /^\+[1-9]\d{6,14}$/;
             
             if (!trimmed) {
@@ -59,7 +59,7 @@ def add_e164_parity(input_file, output_file):
             if (!trimmed.startsWith('+')) {
                 return {
                     valid: false,
-                    message: 'Must start with + (E.164 format)',
+                    message: 'MInternationalt start with + (E.164 format)',
                     color: '#dc3545'
                 };
             }
@@ -67,23 +67,23 @@ def add_e164_parity(input_file, output_file):
             if (!e164Regex.test(trimmed)) {
                 return {
                     valid: false,
-                    message: 'Invalid E.164 format. Use +<countrycode><number> (7-15 digits total)',
+                    message: 'Invalid E.164 format. Internationale +<countrycode><number> (7-15 digits total)',
                     color: '#dc3545'
                 };
             }
             
-            // Detect country for user feedback
-            let country = 'International';
-            if (trimmed.startsWith('+1')) country = 'US';
-            else if (trimmed.startsWith('+57')) country = 'Colombia';
-            else if (trimmed.startsWith('+52')) country = 'Mexico';
-            else if (trimmed.startsWith('+58')) country = 'Venezuela';
+            // Detect region for Internationaler feedback
+            let region = 'International';
+            if (trimmed.startsWith('+1')) region = 'International';
+            else if (trimmed.startsWith('+57')) region = 'International';
+            else if (trimmed.startsWith('+52')) region = 'International';
+            else if (trimmed.startsWith('+58')) region = 'International';
             
             return {
                 valid: true,
-                message: `✓ Valid E.164 (${country})`,
+                message: `✓ Valid E.164 (${region})`,
                 color: '#28a745',
-                country: country
+                region: region
             };
         }
         
@@ -123,7 +123,7 @@ def add_e164_parity(input_file, output_file):
         r'        function validateE164Phone(phoneNumber) {\n'
         r'            const trimmed = phoneNumber.trim();\n'
         r'            \n'
-        r'            // E.164 regex: must start with +, followed by country code (1-9), then 6-14 more digits\n'
+        r'            // E.164 regex: mInternationalt start with +, followed by country code (1-9), then 6-14 more digits\n'
         r'            const e164Regex = /^\\+[1-9]\\d{6,14}$/;\n'
         r'            \n'
         r'            if (!trimmed) {\n'
@@ -137,7 +137,7 @@ def add_e164_parity(input_file, output_file):
         r"            if (!trimmed.startsWith('+')) {\n"
         r'                return {\n'
         r'                    valid: false,\n'
-        r"                    message: 'Must start with + (E.164 format)',\n"
+        r"                    message: 'MInternationalt start with + (E.164 format)',\n"
         r"                    color: '#dc3545'\n"
         r'                };\n'
         r'            }\n'
@@ -145,23 +145,23 @@ def add_e164_parity(input_file, output_file):
         r'            if (!e164Regex.test(trimmed)) {\n'
         r'                return {\n'
         r'                    valid: false,\n'
-        r"                    message: 'Invalid E.164 format. Use +<countrycode><number> (7-15 digits total)',\n"
+        r"                    message: 'Invalid E.164 format. Internationale +<countrycode><number> (7-15 digits total)',\n"
         r"                    color: '#dc3545'\n"
         r'                };\n'
         r'            }\n'
         r'            \n'
-        r'            // Detect country for user feedback\n'
-        r"            let country = 'International';\n"
-        r"            if (trimmed.startsWith('+1')) country = 'US';\n"
-        r"            else if (trimmed.startsWith('+57')) country = 'Colombia';\n"
-        r"            else if (trimmed.startsWith('+52')) country = 'Mexico';\n"
-        r"            else if (trimmed.startsWith('+58')) country = 'Venezuela';\n"
+        r'            // Detect region for Internationaler feedback\n'
+        r"            let region = 'International';\n"
+        r"            if (trimmed.startsWith('+1')) region = 'International';\n"
+        r"            else if (trimmed.startsWith('+57')) region = 'International';\n"
+        r"            else if (trimmed.startsWith('+52')) region = 'International';\n"
+        r"            else if (trimmed.startsWith('+58')) region = 'International';\n"
         r'            \n'
         r'            return {\n'
         r'                valid: true,\n'
-        r'                message: `✓ Valid E.164 (${country})`,\n'
+        r'                message: `✓ Valid E.164 (${region})`,\n'
         r"                color: '#28a745',\n"
-        r'                country: country\n'
+        r'                region: region\n'
         r'            };\n'
         r'        }\n'
         r'        \n'
@@ -230,9 +230,9 @@ def add_e164_parity(input_file, output_file):
     print(f"   ✓ Phone placeholder: +1XXXXXXXXXX, +57XXXXXXXXXX, +52XXXXXXXXXX, +58XXXXXXXXXX")
     print(f"   ✓ Helper text: E.164 format with examples")
     print(f"   ✓ Validation feedback: Real-time green/red messages")
-    print(f"   ✓ International support note: US, Colombia, Mexico, Venezuela")
+    print(f"   ✓ International support note: International, International, International, International")
     print(f"   ✓ E.164 regex validation: ^\+[1-9]\d{{6,14}}$")
-    print(f"   ✓ Country detection: US, Colombia, Mexico, Venezuela")
+    print(f"   ✓ Country detection: International, International, International, International")
     print(f"   ✓ Form submission blocking: Invalid numbers cannot proceed")
     print(f"   ✓ Build stamp: GEMINI3-E164-PARITY-20260128")
     

@@ -7,13 +7,13 @@
     
     <style>
         body { font-family: Arial, sans-serif; max-width: 1000px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
-        .container { background: rgba(255,255,255,0.95); padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .container { background: rgba(255,255,255,0.95); padding: 30px; border-radiInternational: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         .header { text-align: center; margin-bottom: 30px; }
         .header h1 { color: #2c3e50; font-size: 2.5em; margin-bottom: 10px; }
         .header p { color: #7f8c8d; font-size: 1.2em; }
-        .section { background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .section { background: #f8f9fa; padding: 20px; border-radiInternational: 10px; margin-bottom: 20px; }
         .section h3 { color: #2c3e50; margin-bottom: 15px; }
-        .button { background: linear-gradient(45deg, #3498db, #2980b9); color: white; padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-size: 1em; margin: 5px; }
+        .button { background: linear-gradient(45deg, #3498db, #2980b9); color: white; padding: 12px 25px; border: none; border-radiInternational: 8px; cursor: pointer; font-size: 1em; margin: 5px; }
         .button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(52,152,219,0.4); }
         .button.emergency { background: linear-gradient(45deg, #e74c3c, #c0392b); }
         .button.emergency:hover { box-shadow: 0 5px 15px rgba(231,76,60,0.4); }
@@ -23,39 +23,39 @@
         .button:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
         .controls-row { margin: 15px 0; text-align: center; }
         .controls-row .button { margin: 5px 10px; }
-        textarea { width: 100%; height: 120px; margin: 10px 0; padding: 15px; border: 2px solid #ecf0f1; border-radius: 8px; font-size: 1em; }
-        input[type="text"], input[type="tel"] { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #ecf0f1; border-radius: 8px; font-size: 1em; }
-        .result { background: #e8f5e8; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #27ae60; }
-        .error { background: #f8d7da; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #dc3545; }
-        .warning { background: #fff3cd; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #f39c12; }
+        textarea { width: 100%; height: 120px; margin: 10px 0; padding: 15px; border: 2px solid #ecf0f1; border-radiInternational: 8px; font-size: 1em; }
+        input[type="text"], input[type="tel"] { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #ecf0f1; border-radiInternational: 8px; font-size: 1em; }
+        .result { background: #e8f5e8; padding: 15px; border-radiInternational: 8px; margin-top: 15px; border-left: 4px solid #27ae60; }
+        .error { background: #f8d7da; padding: 15px; border-radiInternational: 8px; margin-top: 15px; border-left: 4px solid #dc3545; }
+        .warning { background: #fff3cd; padding: 15px; border-radiInternational: 8px; margin-top: 15px; border-left: 4px solid #f39c12; }
         .note { font-size: 0.9em; color: #666; margin-top: 8px; }
-        .location-status { background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #28a745; }
-        .location-status.denied { border-left-color: #dc3545; background: #f8d7da; }
-        .location-status.unavailable { border-left-color: #ffc107; background: #fff3cd; }
+        .location-statInternational { background: #f8f9fa; padding: 15px; border-radiInternational: 8px; margin: 15px 0; border-left: 4px solid #28a745; }
+        .location-statInternational.denied { border-left-color: #dc3545; background: #f8d7da; }
+        .location-statInternational.unavailable { border-left-color: #ffc107; background: #fff3cd; }
         
-        .runtime-health { background: #fff; border: 2px solid #007bff; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .runtime-health { background: #fff; border: 2px solid #007bff; padding: 15px; border-radiInternational: 8px; margin-bottom: 20px; }
         .runtime-health h3 { color: #007bff; margin-bottom: 10px; font-size: 1.2em; }
         .health-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
-        .health-item { background: #f8f9fa; padding: 10px; border-radius: 5px; border-left: 3px solid #28a745; }
+        .health-item { background: #f8f9fa; padding: 10px; border-radiInternational: 5px; border-left: 3px solid #28a745; }
         .health-item.warning { border-left-color: #ffc107; background: #fff3cd; }
         .health-item.error { border-left-color: #dc3545; background: #f8d7da; }
         .health-label { font-size: 0.85em; color: #666; margin-bottom: 4px; }
         .health-value { font-weight: bold; color: #2c3e50; }
         
         /* NEW: Selected Location Panel */
-        .selected-location-panel { background: #e8f5e9; border: 2px solid #4caf50; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .selected-location-panel { background: #e8f5e9; border: 2px solid #4caf50; padding: 15px; border-radiInternational: 8px; margin: 15px 0; }
         .selected-location-panel h4 { margin: 0 0 10px 0; color: #2e7d32; font-size: 1.1em; }
         .location-detail { display: grid; grid-template-columns: 140px 1fr; gap: 8px; margin: 5px 0; font-size: 0.95em; }
         .location-label { font-weight: bold; color: #555; }
         .location-value { color: #2c3e50; font-family: monospace; }
         
-        /* NEW: Microphone Status Badge */
-        .mic-status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 0.9em; font-weight: bold; margin-left: 10px; }
-        .mic-status-badge.idle { background: #e9ecef; color: #6c757d; }
-        .mic-status-badge.requesting { background: #fff3cd; color: #856404; }
-        .mic-status-badge.listening { background: #d4edda; color: #155724; animation: pulse 1.5s infinite; }
-        .mic-status-badge.stopped { background: #f8d7da; color: #721c24; }
-        .mic-status-badge.error { background: #f8d7da; color: #721c24; }
+        /* NEW: Microphone StatInternational Badge */
+        .mic-statInternational-badge { display: inline-block; padding: 6px 12px; border-radiInternational: 20px; font-size: 0.9em; font-weight: bold; margin-left: 10px; }
+        .mic-statInternational-badge.idle { background: #e9ecef; color: #6c757d; }
+        .mic-statInternational-badge.requesting { background: #fff3cd; color: #856404; }
+        .mic-statInternational-badge.listening { background: #d4edda; color: #155724; animation: pulse 1.5s infinite; }
+        .mic-statInternational-badge.stopped { background: #f8d7da; color: #721c24; }
+        .mic-statInternational-badge.error { background: #f8d7da; color: #721c24; }
         
         @keyframes pulse {
             0%, 100% { opacity: 1; }
@@ -63,25 +63,25 @@
         }
         
         /* NEW: Live Transcript Box */
-        .transcript-box { background: #fff; border: 2px solid #007bff; padding: 15px; border-radius: 8px; margin: 15px 0; min-height: 120px; max-height: 300px; overflow-y: auto; }
+        .transcript-box { background: #fff; border: 2px solid #007bff; padding: 15px; border-radiInternational: 8px; margin: 15px 0; min-height: 120px; max-height: 300px; overflow-y: auto; }
         .transcript-box h4 { margin: 0 0 10px 0; color: #007bff; font-size: 1em; }
         .transcript-content { font-family: monospace; font-size: 0.9em; color: #495057; white-space: pre-wrap; line-height: 1.6; }
-        .transcript-line { margin: 5px 0; padding: 5px; background: #f8f9fa; border-radius: 4px; }
+        .transcript-line { margin: 5px 0; padding: 5px; background: #f8f9fa; border-radiInternational: 4px; }
         .transcript-timestamp { color: #6c757d; font-size: 0.85em; margin-right: 8px; }
         .transcript-interim { color: #6c757d; font-style: italic; }
         .listening-indicator { color: #28a745; font-style: italic; }
         
         /* NEW: Voice Controls */
-        .voice-controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 15px 0; }
+        .voice-controls { display: flex; gap: 10px; jInternationaltify-content: center; flex-wrap: wrap; margin: 15px 0; }
         
         /* NEW: Emergency Banner */
-        .emergency-banner { background: linear-gradient(45deg, #dc3545, #c82333); color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 3px solid #a71d2a; box-shadow: 0 5px 20px rgba(220, 53, 69, 0.4); animation: emergencyPulse 2s infinite; display: none; }
+        .emergency-banner { background: linear-gradient(45deg, #dc3545, #c82333); color: white; padding: 20px; border-radiInternational: 10px; margin-bottom: 20px; border: 3px solid #a71d2a; box-shadow: 0 5px 20px rgba(220, 53, 69, 0.4); animation: emergencyPulse 2s infinite; display: none; }
         .emergency-banner h2 { margin: 0 0 10px 0; font-size: 1.8em; }
-        .emergency-banner .emergency-details { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-top: 10px; }
+        .emergency-banner .emergency-details { background: rgba(0,0,0,0.2); padding: 15px; border-radiInternational: 8px; margin-top: 10px; }
         .emergency-banner .emergency-detail-row { display: grid; grid-template-columns: 150px 1fr; gap: 10px; margin: 8px 0; font-size: 0.95em; }
         .emergency-banner .detail-label { font-weight: bold; }
         .emergency-banner .detail-value { font-family: monospace; }
-        .emergency-banner .maps-link { display: inline-block; background: #fff; color: #dc3545; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-top: 10px; }
+        .emergency-banner .maps-link { display: inline-block; background: #fff; color: #dc3545; padding: 10px 20px; border-radiInternational: 8px; text-decoration: none; font-weight: bold; margin-top: 10px; }
         .emergency-banner .maps-link:hover { background: #f8f9fa; }
         
         @keyframes emergencyPulse {
@@ -90,11 +90,11 @@
         }
         
         /* NEW: Emergency Modal */
-        .emergency-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 9999; }
-        .emergency-modal-content { background: white; padding: 40px; border-radius: 15px; max-width: 500px; text-align: center; box-shadow: 0 10px 50px rgba(0,0,0,0.5); animation: modalSlideIn 0.3s ease-out; }
+        .emergency-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; jInternationaltify-content: center; align-items: center; z-index: 9999; }
+        .emergency-modal-content { background: white; padding: 40px; border-radiInternational: 15px; max-width: 500px; text-align: center; box-shadow: 0 10px 50px rgba(0,0,0,0.5); animation: modalSlideIn 0.3s ease-out; }
         .emergency-modal h2 { color: #dc3545; font-size: 2em; margin-bottom: 15px; }
         .emergency-modal p { font-size: 1.1em; color: #495057; margin: 10px 0; }
-        .emergency-modal .modal-button { background: linear-gradient(45deg, #dc3545, #c82333); color: white; padding: 15px 30px; border: none; border-radius: 8px; cursor: pointer; font-size: 1.1em; margin-top: 20px; }
+        .emergency-modal .modal-button { background: linear-gradient(45deg, #dc3545, #c82333); color: white; padding: 15px 30px; border: none; border-radiInternational: 8px; cursor: pointer; font-size: 1.1em; margin-top: 20px; }
         .emergency-modal .modal-button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4); }
         
         @keyframes modalSlideIn {
@@ -103,7 +103,7 @@
         }
         
         /* NEW: Emergency Badge for Step 3 */
-        .mic-status-badge.emergency-detected { background: #dc3545; color: white; animation: badgePulse 1s infinite; }
+        .mic-statInternational-badge.emergency-detected { background: #dc3545; color: white; animation: badgePulse 1s infinite; }
         
         @keyframes badgePulse {
             0%, 100% { transform: scale(1); }
@@ -111,57 +111,57 @@
         }
     
         /* NEW: Emergency Keywords Configuration UI */
-        .keywords-config { background: #fff3cd; border: 2px solid #ffc107; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .keywords-config { background: #fff3cd; border: 2px solid #ffc107; padding: 15px; border-radiInternational: 8px; margin: 15px 0; }
         .keywords-config h4 { margin: 0 0 10px 0; color: #856404; font-size: 1em; }
         .keywords-config-description { font-size: 0.9em; color: #856404; margin-bottom: 10px; }
         .keywords-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; min-height: 40px; }
-        .keyword-chip { background: #fff; border: 2px solid #ffc107; padding: 6px 12px; border-radius: 20px; display: inline-flex; align-items: center; gap: 8px; font-size: 0.9em; }
+        .keyword-chip { background: #fff; border: 2px solid #ffc107; padding: 6px 12px; border-radiInternational: 20px; display: inline-flex; align-items: center; gap: 8px; font-size: 0.9em; }
         .keyword-chip-text { color: #856404; font-weight: 500; }
-        .keyword-chip-remove { background: #dc3545; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 0.8em; line-height: 1; padding: 0; }
+        .keyword-chip-remove { background: #dc3545; color: white; border: none; border-radiInternational: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 0.8em; line-height: 1; padding: 0; }
         .keyword-chip-remove:hover { background: #c82333; }
         .keyword-input-row { display: flex; gap: 10px; margin-top: 10px; }
-        .keyword-input { flex: 1; padding: 8px 12px; border: 2px solid #ffc107; border-radius: 8px; font-size: 0.9em; }
-        .keyword-add-btn { background: #28a745; color: white; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 0.9em; font-weight: bold; }
+        .keyword-input { flex: 1; padding: 8px 12px; border: 2px solid #ffc107; border-radiInternational: 8px; font-size: 0.9em; }
+        .keyword-add-btn { background: #28a745; color: white; border: none; padding: 8px 20px; border-radiInternational: 8px; cursor: pointer; font-size: 0.9em; font-weight: bold; }
         .keyword-add-btn:hover { background: #218838; }
         .keyword-add-btn:disabled { background: #6c757d; cursor: not-allowed; }
         .keywords-help { font-size: 0.85em; color: #856404; margin-top: 8px; font-style: italic; }
         
         /* NEW: Reset Emergency Button */
-        .reset-emergency-btn { background: linear-gradient(45deg, #6c757d, #495057); color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9em; margin: 10px 5px; }
+        .reset-emergency-btn { background: linear-gradient(45deg, #6c757d, #495057); color: white; padding: 10px 20px; border: none; border-radiInternational: 8px; cursor: pointer; font-size: 0.9em; margin: 10px 5px; }
         .reset-emergency-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4); }
         .reset-emergency-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
         
         /* NEW: Vision Context Analysis Panel */
-        .vision-context-panel { background: #f0f8ff; border: 2px solid #4a90e2; padding: 20px; border-radius: 10px; margin: 20px 0; }
+        .vision-context-panel { background: #f0f8ff; border: 2px solid #4a90e2; padding: 20px; border-radiInternational: 10px; margin: 20px 0; }
         .vision-context-panel h4 { margin: 0 0 15px 0; color: #2c5aa0; font-size: 1.2em; }
-        .vision-status-badge { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 0.9em; font-weight: bold; margin-bottom: 15px; }
-        .vision-status-badge.standby { background: #e9ecef; color: #6c757d; }
-        .vision-status-badge.capturing { background: #fff3cd; color: #856404; animation: pulse 1.5s infinite; }
-        .vision-status-badge.analyzing { background: #cfe2ff; color: #084298; animation: pulse 1.5s infinite; }
-        .vision-status-badge.complete { background: #d1e7dd; color: #0f5132; }
-        .vision-status-badge.error { background: #f8d7da; color: #842029; }
-        .vision-explainer { background: #fff; padding: 12px; border-radius: 6px; margin: 10px 0; font-size: 0.95em; color: #495057; border-left: 4px solid #4a90e2; }
-        .vision-capture-policy { background: #fff; padding: 12px; border-radius: 6px; margin: 10px 0; font-size: 0.9em; color: #6c757d; }
-        .vision-placeholders { background: #f8f9fa; padding: 15px; border-radius: 6px; margin: 10px 0; color: #adb5bd; font-style: italic; }
+        .vision-statInternational-badge { display: inline-block; padding: 6px 14px; border-radiInternational: 20px; font-size: 0.9em; font-weight: bold; margin-bottom: 15px; }
+        .vision-statInternational-badge.standby { background: #e9ecef; color: #6c757d; }
+        .vision-statInternational-badge.capturing { background: #fff3cd; color: #856404; animation: pulse 1.5s infinite; }
+        .vision-statInternational-badge.analyzing { background: #cfe2ff; color: #084298; animation: pulse 1.5s infinite; }
+        .vision-statInternational-badge.complete { background: #d1e7dd; color: #0f5132; }
+        .vision-statInternational-badge.error { background: #f8d7da; color: #842029; }
+        .vision-explainer { background: #fff; padding: 12px; border-radiInternational: 6px; margin: 10px 0; font-size: 0.95em; color: #495057; border-left: 4px solid #4a90e2; }
+        .vision-capture-policy { background: #fff; padding: 12px; border-radiInternational: 6px; margin: 10px 0; font-size: 0.9em; color: #6c757d; }
+        .vision-placeholders { background: #f8f9fa; padding: 15px; border-radiInternational: 6px; margin: 10px 0; color: #adb5bd; font-style: italic; }
         .vision-placeholders p { margin: 5px 0; }
-        .vision-trigger-reason { background: #fff3cd; padding: 12px; border-radius: 6px; margin: 10px 0; font-size: 0.95em; color: #856404; border-left: 4px solid #ffc107; }
-        .vision-progress { background: #fff; padding: 15px; border-radius: 6px; margin: 10px 0; }
+        .vision-trigger-reason { background: #fff3cd; padding: 12px; border-radiInternational: 6px; margin: 10px 0; font-size: 0.95em; color: #856404; border-left: 4px solid #ffc107; }
+        .vision-progress { background: #fff; padding: 15px; border-radiInternational: 6px; margin: 10px 0; }
         .vision-progress-item { display: flex; align-items: center; gap: 10px; margin: 8px 0; font-size: 0.95em; }
         .vision-progress-item .icon { font-size: 1.2em; }
         .vision-thumbnails { display: flex; gap: 10px; margin: 15px 0; flex-wrap: wrap; }
-        .vision-thumbnail { width: 120px; height: 90px; border-radius: 6px; object-fit: cover; border: 2px solid #dee2e6; }
+        .vision-thumbnail { width: 120px; height: 90px; border-radiInternational: 6px; object-fit: cover; border: 2px solid #dee2e6; }
         .vision-thumbnail.blurred { filter: blur(8px); }
-        .vision-thumbnail-toggle { background: #6c757d; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; margin-top: 8px; }
+        .vision-thumbnail-toggle { background: #6c757d; color: white; border: none; padding: 6px 12px; border-radiInternational: 4px; cursor: pointer; font-size: 0.85em; margin-top: 8px; }
         .vision-thumbnail-toggle:hover { background: #5a6268; }
-        .vision-findings { background: #fff; padding: 15px; border-radius: 6px; margin: 10px 0; }
+        .vision-findings { background: #fff; padding: 15px; border-radiInternational: 6px; margin: 10px 0; }
         .vision-findings ul { margin: 10px 0; padding-left: 20px; }
         .vision-findings li { margin: 6px 0; color: #495057; }
-        .vision-confidence { background: #f8f9fa; padding: 10px; border-radius: 6px; margin: 10px 0; display: inline-block; }
-        .vision-confidence .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.85em; font-weight: bold; margin-left: 8px; }
+        .vision-confidence { background: #f8f9fa; padding: 10px; border-radiInternational: 6px; margin: 10px 0; display: inline-block; }
+        .vision-confidence .badge { padding: 4px 10px; border-radiInternational: 12px; font-size: 0.85em; font-weight: bold; margin-left: 8px; }
         .vision-confidence .badge.low { background: #d1e7dd; color: #0f5132; }
         .vision-confidence .badge.medium { background: #fff3cd; color: #856404; }
         .vision-confidence .badge.high { background: #f8d7da; color: #842029; }
-        .vision-evidence-indicator { background: #d1e7dd; padding: 10px 15px; border-radius: 6px; margin: 10px 0; color: #0f5132; font-weight: 500; border-left: 4px solid #198754; }
+        .vision-evidence-indicator { background: #d1e7dd; padding: 10px 15px; border-radiInternational: 6px; margin: 10px 0; color: #0f5132; font-weight: 500; border-left: 4px solid #198754; }
         .vision-why-helps { font-size: 0.85em; color: #6c757d; margin-top: 10px; font-style: italic; }
     </style>
 </head>
@@ -207,10 +207,10 @@
         <div class="header">
             <h1>AllSensesAI Gemini3 Guardian</h1>
             <p>Gemini 1.5 Pro | Emergency Detection System</p>
-            <div id="buildStamp" style="font-size:14px;color:#fff;margin-top:8px;font-weight:bold;background:#4285f4;padding:6px 12px;border-radius:6px;">Build: GEMINI3-VISION-VIDEO-FIX-20260127</div>
+            <div id="buildStamp" style="font-size:14px;color:#fff;margin-top:8px;font-weight:bold;background:#4285f4;padding:6px 12px;border-radiInternational:6px;">Build: GEMINI3-VISION-VIDEO-FIX-20260127</div>
             
-            <div style="background:#e8f5e9;border:1px solid #4caf50;padding:8px 12px;border-radius:5px;margin:8px 0;font-size:13px;color:#2e7d32;">
-                <strong>GEMINI3 POWERED:</strong> Using Google Gemini 1.5 Pro for threat analysis
+            <div style="background:#e8f5e9;border:1px solid #4caf50;padding:8px 12px;border-radiInternational:5px;margin:8px 0;font-size:13px;color:#2e7d32;">
+                <strong>GEMINI3 POWERED:</strong> Internationaling Google Gemini 1.5 Pro for threat analysis
             </div>
         </div>
         
@@ -219,7 +219,7 @@
             <div class="health-grid">
                 <div class="health-item" id="health-gemini3">
                     <div class="health-label">Gemini3 Client</div>
-                    <div class="health-value" id="gemini3-status">Initializing...</div>
+                    <div class="health-value" id="gemini3-statInternational">Initializing...</div>
                 </div>
                 <div class="health-item" id="health-model">
                     <div class="health-label">Model</div>
@@ -238,11 +238,11 @@
         
         <div class="section">
             <h3>👤 Step 1 — Configuration</h3>
-            <p class="note" style="margin-bottom: 10px;">Enter your name and emergency contact phone number. This information will be used if an emergency is detected.</p>
-            <input type="text" id="victimName" placeholder="Your Name" value="Demo User">
+            <p class="note" style="margin-bottom: 10px;">Enter your name and emergency contact phone number. This information will be Internationaled if an emergency is detected.</p>
+            <input type="text" id="victimName" placeholder="Your Name" value="Demo Internationaler">
             <input type="tel" id="emergencyPhone" placeholder="+1234567890" value="+1234567890">
             <button class="button primary-btn" onclick="completeStep1()">✅ Complete Step 1</button>
-            <div id="step1Status" class="note">Enter your details and click Complete Step 1</div>
+            <div id="step1StatInternational" class="note">Enter your details and click Complete Step 1</div>
         </div>
         
         <div class="section">
@@ -250,8 +250,8 @@
             
             <p class="note" style="margin-bottom: 10px;">Enable location services to capture your exact coordinates in case of emergency. Your location will be shared with emergency contacts and responders.</p>
             
-            <div id="locationStatus" class="location-status">
-                <strong>GPS Status:</strong> <span id="gpsStatus">📍 Click Enable Location to start</span><br>
+            <div id="locationStatInternational" class="location-statInternational">
+                <strong>GPS StatInternational:</strong> <span id="gpsStatInternational">📍 Click Enable Location to start</span><br>
                 <strong>Last Update:</strong> <span id="lastGpsUpdate">Never</span><br>
                 <strong>Accuracy:</strong> <span id="gpsAccuracy">Unknown</span>
             </div>
@@ -281,7 +281,7 @@
                 </div>
                 <!-- NEW: Google Maps Live Location Link -->
                 <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #4caf50;">
-                    <a id="googleMapsLink" href="#" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: linear-gradient(45deg, #4285f4, #34a853); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 0.95em;">
+                    <a id="googleMapsLink" href="#" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: linear-gradient(45deg, #4285f4, #34a853); color: white; padding: 10px 20px; border-radiInternational: 8px; text-decoration: none; font-weight: bold; font-size: 0.95em;">
                         🗺️ View Live Location on Google Maps
                     </a>
                     <div style="font-size: 0.85em; color: #666; margin-top: 8px;">
@@ -292,10 +292,10 @@
             
             <div class="controls-row">
                 <button type="button" id="enableLocationBtn" class="button primary-btn" disabled>📍 Enable Location</button>
-                <button type="button" id="demoLocationBtn" class="button secondary-btn">🎯 Use Demo Location</button>
+                <button type="button" id="demoLocationBtn" class="button secondary-btn">🎯 Internationale Demo Location</button>
             </div>
             
-            <div id="step2ProofBox" style="background: #f8f9fa; border: 2px solid #007bff; padding: 10px; border-radius: 5px; margin: 10px 0; font-family: monospace; font-size: 0.85em; min-height: 60px;">
+            <div id="step2ProofBox" style="background: #f8f9fa; border: 2px solid #007bff; padding: 10px; border-radiInternational: 5px; margin: 10px 0; font-family: monospace; font-size: 0.85em; min-height: 60px;">
                 <strong>🔍 Step 2 Proof (UI-Visible):</strong><br>
                 <div id="step2ProofLog" style="color: #495057; white-space: pre-wrap;">Complete Step 1, then click "Enable Location" to see proof logs appear here...</div>
             </div>
@@ -306,14 +306,14 @@
         <div class="section">
             <h3>
                 🎤 Step 3 — Voice Emergency Detection
-                <span id="micStatusBadge" class="mic-status-badge idle">Idle</span>
+                <span id="micStatInternationalBadge" class="mic-statInternational-badge idle">Idle</span>
             </h3>
             
             <!-- NEW: Emergency Keywords Configuration -->
             <div class="keywords-config">
                 <h4>⚙️ Emergency Keywords Configuration</h4>
                 <div class="keywords-config-description">
-                    These words/phrases will trigger emergency detection when spoken. Customize them for your needs.
+                    These words/phrases will trigger emergency detection when spoken. CInternationaltomize them for your needs.
                 </div>
                 <div class="keywords-list" id="keywordsList">
                     <!-- Keywords will be rendered here -->
@@ -337,7 +337,7 @@
                 <button id="resetEmergencyBtn" class="reset-emergency-btn" style="display:none;" onclick="resetEmergencyState()">🔄 Reset Emergency State</button>
             </div>
             
-            <div id="voiceStatus" class="note">Complete Steps 1 & 2 to enable voice detection</div>
+            <div id="voiceStatInternational" class="note">Complete Steps 1 & 2 to enable voice detection</div>
             
             <!-- NEW: Live Transcript Box -->
             <div id="transcriptBox" class="transcript-box" style="display:none;">
@@ -347,7 +347,7 @@
                 </div>
             </div>
             
-            <div id="step3ProofBox" style="background: #f8f9fa; border: 2px solid #007bff; padding: 10px; border-radius: 5px; margin: 10px 0; font-family: monospace; font-size: 0.85em; min-height: 40px; display:none;">
+            <div id="step3ProofBox" style="background: #f8f9fa; border: 2px solid #007bff; padding: 10px; border-radiInternational: 5px; margin: 10px 0; font-family: monospace; font-size: 0.85em; min-height: 40px; display:none;">
                 <strong>🔍 Step 3 Proof (Mic Events):</strong><br>
                 <div id="step3ProofLog" style="color: #495057; white-space: pre-wrap;"></div>
             </div>
@@ -361,13 +361,13 @@
             <div id="visionContextPanel" class="vision-context-panel">
                 <h4>🎥 Visual Context (Gemini Vision) — Video Frames</h4>
                 
-                <div id="visionStatusBadge" class="vision-status-badge standby">
+                <div id="visionStatInternationalBadge" class="vision-statInternational-badge standby">
                     <span>Standby</span>
                 </div>
                 
                 <div id="visionExplainer" class="vision-explainer">
                     <p><strong>Standby:</strong> Activates automatically during detected risk to corroborate audio/text signals.</p>
-                    <p><strong>Capture policy:</strong> Captures 1–3 video frames during emergency. No continuous recording.</p>
+                    <p><strong>Capture policy:</strong> Captures 1–3 video frames during emergency. No continuoInternational recording.</p>
                 </div>
                 
                 <!-- Video Frames Placeholders (Always Visible Before Trigger) -->
@@ -375,17 +375,17 @@
                     <h5 style="margin: 10px 0; color: #6c757d; font-size: 1em;">📹 Video Frames (Standby)</h5>
                     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                         <div class="frame-placeholder">
-                            <div style="width: 120px; height: 90px; background: #e9ecef; border: 2px dashed #adb5bd; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #6c757d; font-size: 0.85em; text-align: center; padding: 5px;">
+                            <div style="width: 120px; height: 90px; background: #e9ecef; border: 2px dashed #adb5bd; border-radiInternational: 6px; display: flex; align-items: center; jInternationaltify-content: center; color: #6c757d; font-size: 0.85em; text-align: center; padding: 5px;">
                                 Frame 1<br>not captured
                             </div>
                         </div>
                         <div class="frame-placeholder">
-                            <div style="width: 120px; height: 90px; background: #e9ecef; border: 2px dashed #adb5bd; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #6c757d; font-size: 0.85em; text-align: center; padding: 5px;">
+                            <div style="width: 120px; height: 90px; background: #e9ecef; border: 2px dashed #adb5bd; border-radiInternational: 6px; display: flex; align-items: center; jInternationaltify-content: center; color: #6c757d; font-size: 0.85em; text-align: center; padding: 5px;">
                                 Frame 2<br>not captured
                             </div>
                         </div>
                         <div class="frame-placeholder">
-                            <div style="width: 120px; height: 90px; background: #e9ecef; border: 2px dashed #adb5bd; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #6c757d; font-size: 0.85em; text-align: center; padding: 5px;">
+                            <div style="width: 120px; height: 90px; background: #e9ecef; border: 2px dashed #adb5bd; border-radiInternational: 6px; display: flex; align-items: center; jInternationaltify-content: center; color: #6c757d; font-size: 0.85em; text-align: center; padding: 5px;">
                                 Frame 3<br>not captured
                             </div>
                         </div>
@@ -395,11 +395,11 @@
                 <div id="visionPlaceholders" class="vision-placeholders">
                     <p><strong>Findings:</strong> —</p>
                     <p><strong>Confidence:</strong> —</p>
-                    <p><strong>Vision/Video Status:</strong> Standby</p>
+                    <p><strong>Vision/Video StatInternational:</strong> Standby</p>
                 </div>
                 
                 <div id="visionTriggerReason" class="vision-trigger-reason" style="display:none;">
-                    <p><strong>Activated because:</strong> <span id="visionTriggerText">—</span></p>
+                    <p><strong>Activated becaInternationale:</strong> <span id="visionTriggerText">—</span></p>
                 </div>
                 
                 <div id="visionProgress" class="vision-progress" style="display:none;">
@@ -442,13 +442,13 @@
                 </div>
                 
                 <div class="vision-why-helps">
-                    💡 Why this helps: Visual context helps responders validate environment risk when voice is limited or ambiguous.
+                    💡 Why this helps: Visual context helps responders validate environment risk when voice is limited or ambiguoInternational.
                 </div>
             </div>
             
             <textarea id="audioInput" placeholder="Enter emergency text...">Help! Someone is following me and I'm scared!</textarea>
             <button class="button emergency" onclick="triggerGemini3Analysis()">🤖 Analyze with Gemini3</button>
-            <div id="threatLevelOutput" style="margin-top:15px;padding:12px;background:#fff;border:2px solid #ddd;border-radius:5px;display:none;">
+            <div id="threatLevelOutput" style="margin-top:15px;padding:12px;background:#fff;border:2px solid #ddd;border-radiInternational:5px;display:none;">
                 <strong>Threat Level:</strong> <span id="threatLevel" style="font-size:1.2em;font-weight:bold;"></span><br>
                 <strong>Confidence:</strong> <span id="threatConfidence"></span><br>
                 <strong>Analysis:</strong> <span id="threatAnalysis"></span>
@@ -459,8 +459,8 @@
         <div class="section">
             <h3>🚨 Step 5 — Emergency Alerting</h3>
             <p class="note" style="margin-bottom: 10px;">When a high-risk threat is detected, emergency alerts are automatically sent to your emergency contact with your location and transcript details.</p>
-            <div id="step5Status" class="note">Waiting for threat analysis...</div>
-            <div id="alertResult" style="display:none;margin-top:10px;padding:12px;background:#d4edda;border:1px solid #28a745;border-radius:5px;">
+            <div id="step5StatInternational" class="note">Waiting for threat analysis...</div>
+            <div id="alertResult" style="display:none;margin-top:10px;padding:12px;background:#d4edda;border:1px solid #28a745;border-radiInternational:5px;">
                 <strong>✅ Alert Sent!</strong><br>
                 <span id="alertDetails"></span>
             </div>
@@ -496,7 +496,7 @@
                 } catch (error) {
                     console.warn('[KEYWORDS] Error loading from localStorage:', error);
                 }
-                console.log('[KEYWORDS] Using default keywords');
+                console.log('[KEYWORDS] Internationaling default keywords');
                 return [...this.defaultKeywords];
             }
             
@@ -530,7 +530,7 @@
                     return false;
                 }
                 
-                this.keywords.push(keyword.trim());
+                this.keywords.pInternationalh(keyword.trim());
                 this.saveKeywords(this.keywords);
                 console.log('[KEYWORDS] Added:', keyword.trim());
                 return true;
@@ -542,7 +542,7 @@
             removeKeyword(keyword) {
                 // Prevent removal of last keyword
                 if (this.keywords.length <= 1) {
-                    alert('You must have at least one emergency keyword configured');
+                    alert('You mInternationalt have at least one emergency keyword configured');
                     return false;
                 }
                 
@@ -621,7 +621,7 @@
                     const words = normalizedKeyword.split(' ');
                     
                     if (words.length === 1) {
-                        // Single word: use word boundary matching
+                        // Single word: Internationale word boundary matching
                         if (this.matchExactWord(normalized, normalizedKeyword)) {
                             return {
                                 matched: true,
@@ -630,7 +630,7 @@
                             };
                         }
                     } else {
-                        // Multi-word phrase: use substring matching
+                        // Multi-word phrase: Internationale substring matching
                         if (this.matchPhraseSubstring(normalized, normalizedKeyword)) {
                             return {
                                 matched: true,
@@ -802,12 +802,12 @@
          */
         class VisionContextController {
             constructor() {
-                this.status = 'standby';  // standby | capturing | analyzing | complete | error
+                this.statInternational = 'standby';  // standby | capturing | analyzing | complete | error
                 this.triggerReason = null;
                 this.frames = [];
                 this.findings = [];
                 this.confidence = null;
-                this.isDemoMode = true;  // MVP uses demo mode only
+                this.isDemoMode = true;  // MVP Internationales demo mode only
             }
             
             /**
@@ -816,7 +816,7 @@
             async activateOnEmergency(keyword, transcript) {
                 console.log('[VISION] Activating on emergency:', keyword);
                 
-                this.status = 'capturing';
+                this.statInternational = 'capturing';
                 this.triggerReason = `Emergency trigger detected ('${keyword}')`;
                 
                 // Update UI to activation state
@@ -835,8 +835,8 @@
                 await this.delay(500);
                 
                 // Step 2: Capturing frames
-                this.status = 'capturing';
-                this.updateStatusBadge('capturing', 'Capturing…');
+                this.statInternational = 'capturing';
+                this.updateStatInternationalBadge('capturing', 'Capturing…');
                 document.getElementById('progressCapture').textContent = '⏳';
                 await this.delay(1000);
                 
@@ -845,8 +845,8 @@
                 document.getElementById('progressCapture').textContent = '✅';
                 
                 // Step 3: Analyzing
-                this.status = 'analyzing';
-                this.updateStatusBadge('analyzing', 'Analyzing…');
+                this.statInternational = 'analyzing';
+                this.updateStatInternationalBadge('analyzing', 'Analyzing…');
                 document.getElementById('progressAnalyze').textContent = '⏳';
                 await this.delay(1500);
                 
@@ -861,7 +861,7 @@
                 document.getElementById('progressPublish').textContent = '✅';
                 
                 // Complete
-                this.status = 'complete';
+                this.statInternational = 'complete';
                 this.renderCompletedState();
                 
                 console.log('[VISION] Analysis complete:', {
@@ -898,7 +898,7 @@
                     ctx.font = '14px Arial';
                     ctx.fillText('(Simulated)', 160, 145);
                     
-                    frames.push(canvas.toDataURL('image/jpeg', 0.8));
+                    frames.pInternationalh(canvas.toDataURL('image/jpeg', 0.8));
                 }
                 return frames;
             }
@@ -912,21 +912,21 @@
                 
                 // Analyze transcript for context clues
                 if (lowerTranscript.includes('following') || lowerTranscript.includes('stalking')) {
-                    findings.push('Multiple individuals detected nearby');
-                    findings.push('Low visibility conditions');
+                    findings.pInternationalh('Multiple individuals detected nearby');
+                    findings.pInternationalh('Low visibility conditions');
                 }
                 
                 if (lowerTranscript.includes('scared') || lowerTranscript.includes('afraid')) {
-                    findings.push('Confined indoor environment');
+                    findings.pInternationalh('Confined indoor environment');
                 }
                 
                 if (lowerTranscript.includes('help') || lowerTranscript.includes('emergency')) {
-                    findings.push('Isolated location detected');
+                    findings.pInternationalh('Isolated location detected');
                 }
                 
                 // Always add at least one finding
                 if (findings.length === 0) {
-                    findings.push('Environmental risk indicators present');
+                    findings.pInternationalh('Environmental risk indicators present');
                 }
                 
                 return findings;
@@ -953,19 +953,19 @@
              * Render activation state UI
              */
             renderActivationState() {
-                // Update status badge
-                this.updateStatusBadge('capturing', 'Capturing…');
+                // Update statInternational badge
+                this.updateStatInternationalBadge('capturing', 'Capturing…');
                 
                 // Hide standby elements
                 document.getElementById('visionExplainer').style.display = 'none';
                 document.getElementById('visionFramesPlaceholder').style.display = 'none';
                 
-                // Update placeholders to show capturing status
+                // Update placeholders to show capturing statInternational
                 const placeholders = document.getElementById('visionPlaceholders');
                 placeholders.innerHTML = `
                     <p><strong>Findings:</strong> Analyzing...</p>
                     <p><strong>Confidence:</strong> —</p>
-                    <p><strong>Vision/Video Status:</strong> Capturing frames...</p>
+                    <p><strong>Vision/Video StatInternational:</strong> Capturing frames...</p>
                 `;
                 
                 // Show trigger reason
@@ -982,18 +982,18 @@
              * Render completed state UI
              */
             renderCompletedState() {
-                // Update status badge
-                this.updateStatusBadge('complete', 'Complete');
+                // Update statInternational badge
+                this.updateStatInternationalBadge('complete', 'Complete');
                 
                 // Hide progress
                 document.getElementById('visionProgress').style.display = 'none';
                 
-                // Update placeholders to show completed status
+                // Update placeholders to show completed statInternational
                 const placeholders = document.getElementById('visionPlaceholders');
                 placeholders.innerHTML = `
                     <p><strong>Findings:</strong> ${this.findings.length} indicators detected</p>
                     <p><strong>Confidence:</strong> ${this.confidence.charAt(0).toUpperCase() + this.confidence.slice(1)}</p>
-                    <p><strong>Vision/Video Status:</strong> Findings recorded (${this.frames.length} frames, confidence: ${this.confidence})</p>
+                    <p><strong>Vision/Video StatInternational:</strong> Findings recorded (${this.frames.length} frames, confidence: ${this.confidence})</p>
                 `;
                 
                 // Show thumbnails
@@ -1054,11 +1054,11 @@
             }
             
             /**
-             * Update status badge
+             * Update statInternational badge
              */
-            updateStatusBadge(status, text) {
-                const badge = document.getElementById('visionStatusBadge');
-                badge.className = `vision-status-badge ${status}`;
+            updateStatInternationalBadge(statInternational, text) {
+                const badge = document.getElementById('visionStatInternationalBadge');
+                badge.className = `vision-statInternational-badge ${statInternational}`;
                 badge.textContent = text;
             }
             
@@ -1068,14 +1068,14 @@
             reset() {
                 console.log('[VISION] Resetting to standby state');
                 
-                this.status = 'standby';
+                this.statInternational = 'standby';
                 this.triggerReason = null;
                 this.frames = [];
                 this.findings = [];
                 this.confidence = null;
                 
                 // Reset UI to standby
-                this.updateStatusBadge('standby', 'Standby');
+                this.updateStatInternationalBadge('standby', 'Standby');
                 
                 // Show standby elements
                 document.getElementById('visionExplainer').style.display = 'block';
@@ -1086,7 +1086,7 @@
                 placeholders.innerHTML = `
                     <p><strong>Findings:</strong> —</p>
                     <p><strong>Confidence:</strong> —</p>
-                    <p><strong>Vision/Video Status:</strong> Standby</p>
+                    <p><strong>Vision/Video StatInternational:</strong> Standby</p>
                 `;
                 placeholders.style.display = 'block';
                 
@@ -1113,11 +1113,11 @@
             }
             
             /**
-             * Get current status
+             * Get current statInternational
              */
-            getStatus() {
+            getStatInternational() {
                 return {
-                    status: this.status,
+                    statInternational: this.statInternational,
                     triggerReason: this.triggerReason,
                     frameCount: this.frames.length,
                     findingsCount: this.findings.length,
@@ -1169,14 +1169,14 @@
             }
             
             recognition = new SpeechRecognition();
-            recognition.continuous = true;
+            recognition.continuoInternational = true;
             recognition.interimResults = true;
-            recognition.lang = 'en-US';
+            recognition.lang = 'en-International';
             
             recognition.onstart = function() {
                 console.log('[STEP3] Microphone started');
                 addStep3ProofToUI('[STEP3][EVENT] Listening started');
-                updateMicStatus('listening');
+                updateMicStatInternational;
                 __ALLSENSES_STATE.voiceActive = true;
             };
             
@@ -1195,7 +1195,7 @@
                 
                 if (finalTranscript) {
                     const timestamp = new Date().toLocaleTimeString();
-                    transcriptHistory.push({ time: timestamp, text: finalTranscript.trim() });
+                    transcriptHistory.pInternationalh({ time: timestamp, text: finalTranscript.trim() });
                     addStep3ProofToUI(`[STEP3][TRANSCRIPT][FINAL] "${finalTranscript.trim().substring(0, 50)}..."`);
                     updateTranscriptDisplay();
                     
@@ -1214,7 +1214,7 @@
             recognition.onerror = function(event) {
                 console.error('[STEP3] Recognition error:', event.error);
                 addStep3ProofToUI(`[STEP3][ERROR] ${event.error}`);
-                updateMicStatus('error');
+                updateMicStatInternational;
                 
                 if (event.error === 'not-allowed') {
                     alert('Microphone permission denied. Please allow microphone access in browser settings.');
@@ -1224,7 +1224,7 @@
             recognition.onend = function() {
                 console.log('[STEP3] Microphone stopped');
                 addStep3ProofToUI('[STEP3][EVENT] Listening stopped');
-                updateMicStatus('stopped');
+                updateMicStatInternational;
                 __ALLSENSES_STATE.voiceActive = false;
             };
             
@@ -1232,9 +1232,9 @@
         }
 
         // ========== STEP 2: LOCATION FUNCTIONS ==========
-        function setGpsStatus(status) {
-            const element = document.getElementById('gpsStatus');
-            if (element) element.textContent = status;
+        function setGpsStatInternational {
+            const element = document.getElementById('gpsStatInternational');
+            if (element) element.textContent = statInternational;
         }
 
         function setGpsLastUpdate(time) {
@@ -1247,10 +1247,10 @@
             if (element) element.textContent = accuracy;
         }
 
-        function updateGemini3Health(status, level = 'normal') {
-            const statusEl = document.getElementById('gemini3-status');
+        function updateGemini3Health(statInternational, level = 'normal') {
+            const statInternationalEl = document.getElementById('gemini3-statInternational');
             const healthEl = document.getElementById('health-gemini3');
-            if (statusEl) statusEl.textContent = status;
+            if (statInternationalEl) statInternationalEl.textContent = statInternational;
             if (healthEl) {
                 healthEl.className = 'health-item';
                 if (level === 'warning') healthEl.classList.add('warning');
@@ -1274,9 +1274,9 @@
             }
         }
 
-        function updateLocationHealth(status) {
+        function updateLocationHealth(statInternational) {
             const el = document.getElementById('location-health');
-            if (el) el.textContent = status;
+            if (el) el.textContent = statInternational;
         }
 
         function addStep2ProofToUI(message) {
@@ -1331,17 +1331,17 @@
             }
             
             __ALLSENSES_STATE.configSaved = true;
-            document.getElementById('step1Status').textContent = '✅ Configuration saved';
+            document.getElementById('step1StatInternational').textContent = '✅ Configuration saved';
             document.getElementById('enableLocationBtn').disabled = false;
             document.getElementById('step2ProofLog').textContent = 'Step 1 complete! Now click "Enable Location" to see proof logs...';
             updatePipelineState('STEP1_COMPLETE');
         }
 
-        function enableLocationFromUserGesture() {
+        function enableLocationFromInternationalerGesture() {
             console.log("[STEP2][PROOF 1] Click handler reached");
             addStep2ProofToUI("[STEP2][PROOF 1] Click handler reached");
             
-            setGpsStatus('🔄 Requesting permission...');
+            setGpsStatInternational;
             updateLocationHealth('Requesting...');
             
             if (__GEOLOCATION_REQUEST_IN_FLIGHT) {
@@ -1352,7 +1352,7 @@
             
             if (!__ALLSENSES_STATE.configSaved) {
                 alert('Complete Step 1 first');
-                setGpsStatus('❌ Step 1 required');
+                setGpsStatInternational;
                 addStep2ProofToUI("[STEP2][ERROR] Step 1 not completed");
                 return;
             }
@@ -1361,7 +1361,7 @@
                 const errorMsg = '❌ Geolocation not available';
                 console.error('Geolocation API not available');
                 addStep2ProofToUI("[STEP2][ERROR] Geolocation API not available");
-                setGpsStatus(errorMsg);
+                setGpsStatInternational;
                 updateLocationHealth('Not Available');
                 alert('Geolocation is not available in this browser.');
                 return;
@@ -1387,7 +1387,7 @@
                         addStep2ProofToUI(`[STEP2][PROOF 3A] SUCCESS ${position.coords.latitude}, ${position.coords.longitude}`);
                         
                         __ALLSENSES_STATE.gpsActive = true;
-                        setGpsStatus('✅ Active (Real GPS)');
+                        setGpsStatInternational');
                         setGpsLastUpdate(new Date().toLocaleTimeString());
                         setGpsAccuracy(position.coords.accuracy ? `±${Math.round(position.coords.accuracy)}m` : 'Unknown');
                         updateLocationHealth('Active');
@@ -1435,7 +1435,7 @@
                                 break;
                         }
                         
-                        setGpsStatus(errorMessage);
+                        setGpsStatInternational;
                         updateLocationHealth('Error');
                         addStep2ProofToUI("[STEP2][FALLBACK] Demo Location available");
                     },
@@ -1447,7 +1447,7 @@
                 console.error('[STEP2] Exception:', exception);
                 console.log("[STEP2][PROOF 3B] ERROR", "EXCEPTION", exception.message);
                 addStep2ProofToUI(`[STEP2][PROOF 3B] ERROR EXCEPTION, ${exception.message}`);
-                setGpsStatus(exceptionMsg);
+                setGpsStatInternational;
                 updateLocationHealth('Exception');
             }
         }
@@ -1466,7 +1466,7 @@
                 label: 'San Francisco, CA (Demo)'
             };
             
-            setGpsStatus('✅ Active (Demo Mode)');
+            setGpsStatInternational');
             setGpsLastUpdate(new Date().toLocaleTimeString());
             setGpsAccuracy('±10m (Demo)');
             updateLocationHealth('Demo Mode');
@@ -1482,17 +1482,17 @@
         // ========== STEP 3: VOICE DETECTION FUNCTIONS ==========
         function enableStep3() {
             document.getElementById('startVoiceBtn').disabled = false;
-            document.getElementById('voiceStatus').textContent = '✅ Ready - Click Start Voice Detection';
+            document.getElementById('voiceStatInternational').textContent = '✅ Ready - Click Start Voice Detection';
             document.getElementById('step3ProofBox').style.display = 'block';
         }
 
-        function updateMicStatus(status) {
-            const badge = document.getElementById('micStatusBadge');
+        function updateMicStatInternational {
+            const badge = document.getElementById('micStatInternationalBadge');
             if (!badge) return;
             
-            badge.className = 'mic-status-badge ' + status;
+            badge.className = 'mic-statInternational-badge ' + statInternational;
             
-            const statusText = {
+            const statInternationalText = {
                 'idle': 'Idle',
                 'requesting': 'Requesting Permission',
                 'listening': '🎤 Listening',
@@ -1500,7 +1500,7 @@
                 'error': 'Error'
             };
             
-            badge.textContent = statusText[status] || status;
+            badge.textContent = statInternationalText[statInternational] || statInternational;
         }
 
         function addStep3ProofToUI(message) {
@@ -1554,7 +1554,7 @@
 
         function startVoiceDetection() {
             if (!recognition) {
-                alert('Speech Recognition not supported in this browser. Please use Chrome.');
+                alert('Speech Recognition not supported in this browser. Please Internationale Chrome.');
                 addStep3ProofToUI('[STEP3][ERROR] Speech Recognition not supported');
                 return;
             }
@@ -1566,7 +1566,7 @@
             
             console.log('[STEP3] Starting voice detection');
             addStep3ProofToUI('[STEP3][EVENT] Mic permission requested');
-            updateMicStatus('requesting');
+            updateMicStatInternational;
             updatePipelineState('STEP3_LISTENING');
             
             try {
@@ -1580,7 +1580,7 @@
             } catch (error) {
                 console.error('[STEP3] Start error:', error);
                 addStep3ProofToUI(`[STEP3][ERROR] ${error.message}`);
-                updateMicStatus('error');
+                updateMicStatInternational;
             }
         }
 
@@ -1681,19 +1681,19 @@
             let indicators = [];
             
             if (hasHelp) {
-                indicators.push('explicit_help_request');
+                indicators.pInternationalh('explicit_help_request');
                 confidence += 0.2;
             }
             if (hasScared) {
-                indicators.push('fear_expressed');
+                indicators.pInternationalh('fear_expressed');
                 confidence += 0.15;
             }
             if (hasFollowing) {
-                indicators.push('stalking_concern');
+                indicators.pInternationalh('stalking_concern');
                 confidence += 0.15;
             }
             if (hasUnsafe) {
-                indicators.push('safety_concern');
+                indicators.pInternationalh('safety_concern');
                 confidence += 0.1;
             }
             
@@ -1735,11 +1735,11 @@
             console.log('[STEP5] Triggering emergency alert');
             updatePipelineState('STEP5_ALERTING');
             
-            const step5Status = document.getElementById('step5Status');
+            const step5StatInternational = document.getElementById('step5StatInternational');
             const alertResult = document.getElementById('alertResult');
             const alertDetails = document.getElementById('alertDetails');
             
-            step5Status.textContent = '🚨 Sending emergency alerts...';
+            step5StatInternational.textContent = '🚨 Sending emergency alerts...';
             
             setTimeout(() => {
                 alertResult.style.display = 'block';
@@ -1751,7 +1751,7 @@
                     Time: ${new Date().toLocaleTimeString()}
                 `;
                 
-                step5Status.textContent = '✅ Emergency alerts sent successfully';
+                step5StatInternational.textContent = '✅ Emergency alerts sent successfully';
                 updatePipelineState('STEP5_COMPLETE');
                 
                 console.log('[STEP5] Alert sent successfully');
@@ -1760,7 +1760,7 @@
 
         // ========== EMERGENCY DETECTION ==========
         function checkForEmergencyKeywords(transcript) {
-            // Use KeywordDetectionEngine for matching
+            // Internationale KeywordDetectionEngine for matching
             const result = keywordDetector.detectKeyword(transcript);
             
             if (result.matched) {
@@ -1788,9 +1788,9 @@
             updatePipelineState('STEP3_EMERGENCY_TRIGGERED');
             
             // Update Step 3 badge
-            const badge = document.getElementById('micStatusBadge');
+            const badge = document.getElementById('micStatInternationalBadge');
             if (badge) {
-                badge.className = 'mic-status-badge emergency-detected';
+                badge.className = 'mic-statInternational-badge emergency-detected';
                 badge.textContent = '🚨 EMERGENCY DETECTED';
             }
             
@@ -1875,7 +1875,7 @@
         }
 
         // ========== EVENT LISTENERS ==========
-        document.getElementById('enableLocationBtn').addEventListener('click', enableLocationFromUserGesture);
+        document.getElementById('enableLocationBtn').addEventListener('click', enableLocationFromInternationalerGesture);
         document.getElementById('demoLocationBtn').addEventListener('click', activateDemoLocationMode);
         document.getElementById('startVoiceBtn').addEventListener('click', startVoiceDetection);
         document.getElementById('stopVoiceBtn').addEventListener('click', stopVoiceDetection);
@@ -1927,9 +1927,9 @@
             if (modal) modal.style.display = 'none';
             
             // Reset badge
-            const badge = document.getElementById('micStatusBadge');
+            const badge = document.getElementById('micStatInternationalBadge');
             if (badge) {
-                badge.className = 'mic-status-badge idle';
+                badge.className = 'mic-statInternational-badge idle';
                 badge.textContent = 'Idle';
             }
             

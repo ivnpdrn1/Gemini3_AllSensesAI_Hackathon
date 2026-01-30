@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/Internationalr/bin/env python3
 """
 Complete SMS Preview Parity Implementation
 Tasks A, B, C, D: Always-visible preview, live updates, keyword detection, emergency state
@@ -118,7 +118,7 @@ def add_complete_sms_preview(input_file, output_file):
             if (!payload.transcript) return { error: 'Missing victim message' };
             
             // Generate timestamp
-            const timestamp = new Date().toLocaleString('en-US', {
+            const timestamp = new Date().toLocaleString('en-International', {
                 year: 'numeric',
                 month: '2-digit',
                 day: '2-digit',
@@ -167,7 +167,7 @@ If you believe they're in danger, call them, and contact local emergency service
             if (!payload.location.latitude || !payload.location.longitude) return { error: 'Missing coordinates' };
             
             // Generate timestamp
-            const timestamp = new Date().toLocaleTimeString('en-US', {
+            const timestamp = new Date().toLocaleTimeString('en-International', {
                 hour: '2-digit',
                 minute: '2-digit',
                 second: '2-digit',
@@ -326,7 +326,7 @@ Time: ${timestamp}`;
             const contentPanel = document.getElementById('smsPreviewContent');
             const standbyPanel = document.getElementById('smsPreviewStandby');
             
-            // TASK A: Always show panel, use standby states for missing inputs
+            // TASK A: Always show panel, Internationale standby states for missing inputs
             if (!hasConfig) {
                 errorPanel.style.display = 'block';
                 contentPanel.style.display = 'none';
@@ -460,7 +460,7 @@ Time: ${timestamp}`;
     step3_trigger_block = '''
             
             <!-- TASK C: Emergency Keyword Trigger Rule -->
-            <div style="background: #fff3cd; border: 2px solid #ffc107; padding: 12px; border-radius: 8px; margin: 15px 0;">
+            <div style="background: #fff3cd; border: 2px solid #ffc107; padding: 12px; border-radiInternational: 8px; margin: 15px 0;">
                 <h4 style="margin: 0 0 8px 0; color: #856404; font-size: 1em;">🔔 Trigger Rule</h4>
                 <div id="step3TriggerRule" style="font-size: 0.9em; color: #856404;">
                     <strong>Emergency keywords enabled:</strong> emergency, help, call 911, help me, scared...<br>
@@ -471,14 +471,14 @@ Time: ${timestamp}`;
     
     # Insert after Step 3 voice controls
     content = content.replace(
-        '<div id="voiceStatus" class="note">Complete Steps 1 & 2 to enable voice detection</div>',
-        '<div id="voiceStatus" class="note">Complete Steps 1 & 2 to enable voice detection</div>' + step3_trigger_block
+        '<div id="voiceStatInternational" class="note">Complete Steps 1 & 2 to enable voice detection</div>',
+        '<div id="voiceStatInternational" class="note">Complete Steps 1 & 2 to enable voice detection</div>' + step3_trigger_block
     )
     
     step4_trigger_block = '''
             
             <!-- TASK C: Emergency Keyword Trigger Rule (Step 4) -->
-            <div style="background: #fff3cd; border: 2px solid #ffc107; padding: 12px; border-radius: 8px; margin: 15px 0;">
+            <div style="background: #fff3cd; border: 2px solid #ffc107; padding: 12px; border-radiInternational: 8px; margin: 15px 0;">
                 <h4 style="margin: 0 0 8px 0; color: #856404; font-size: 1em;">🔔 Trigger Rule</h4>
                 <div id="step4TriggerRule" style="font-size: 0.9em; color: #856404;">
                     <strong>Emergency keywords enabled:</strong> emergency, help, call 911, help me, scared...<br>

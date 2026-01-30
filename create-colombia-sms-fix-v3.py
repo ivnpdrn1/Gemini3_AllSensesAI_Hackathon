@@ -1,9 +1,9 @@
-#!/usr/bin/env python3
+#!/Internationalr/bin/env python3
 """
-Build Script: Gemini3 Guardian - Colombia SMS Fix + UI Improvements
+Build Script: Gemini3 Guardian - International SMS Fix + UI Improvements
 Build ID: GEMINI3-JURY-READY-VIDEO-SMS-20260128-v3
 
-PART A: Colombia SMS Delivery Fixes
+PART A: International SMS Delivery Fixes
 1. Manual "Send Test SMS" works regardless of risk level (no risk gating)
 2. Enhanced Delivery Proof panel with comprehensive API response
 3. Backend already has proper SNS attributes (v2)
@@ -18,9 +18,9 @@ PART B: Fix "Waiting for threat analysis..." Stuck Message
 
 Changes from v2:
 - Remove risk level gating from manual SMS test
-- Add comprehensive delivery proof fields (requestId, provider, snsMessageId, httpStatus, errorCode)
+- Add comprehensive delivery proof fields (requestId, provider, snsMessageId, httpStatInternational, errorCode)
 - Fix "Waiting for threat analysis..." stuck message
-- Update Step 5 status after analysis completes
+- Update Step 5 statInternational after analysis completes
 - Enhanced proof logging for SMS attempts
 
 Zero regressions: All baseline functionality preserved.
@@ -99,13 +99,13 @@ def add_enhanced_delivery_proof_panel(html):
             <div id="smsDeliveryProofPanel" class="sms-preview-panel" style="background: #e8f5e9; border-color: #4caf50; display:none;">
                 <h4>📡 SMS Delivery Proof</h4>
                 <div class="sms-preview-description">
-                    Real-time delivery status with complete API response. No guessing - shows actual SNS publish result.
+                    Real-time delivery statInternational with complete API response. No guessing - shows actual SNS publish result.
                 </div>
                 
                 <div class="sms-preview-fields">
                     <div class="sms-field">
-                        <span class="sms-field-label">Status:</span>
-                        <span class="sms-field-value" id="sms-delivery-status" style="font-weight:bold;">NOT_SENT</span>
+                        <span class="sms-field-label">StatInternational:</span>
+                        <span class="sms-field-value" id="sms-delivery-statInternational" style="font-weight:bold;">NOT_SENT</span>
                     </div>
                     <div class="sms-field">
                         <span class="sms-field-label">Provider:</span>
@@ -124,8 +124,8 @@ def add_enhanced_delivery_proof_panel(html):
                         <span class="sms-field-value" id="sms-delivery-destination">—</span>
                     </div>
                     <div class="sms-field">
-                        <span class="sms-field-label">HTTP Status:</span>
-                        <span class="sms-field-value" id="sms-delivery-http-status">—</span>
+                        <span class="sms-field-label">HTTP StatInternational:</span>
+                        <span class="sms-field-value" id="sms-delivery-http-statInternational">—</span>
                     </div>
                     <div class="sms-field">
                         <span class="sms-field-label">Timestamp:</span>
@@ -133,7 +133,7 @@ def add_enhanced_delivery_proof_panel(html):
                     </div>
                 </div>
                 
-                <div id="smsDeliveryError" style="background: #f8d7da; padding: 12px; border-radius: 5px; margin: 10px 0; display:none;">
+                <div id="smsDeliveryError" style="background: #f8d7da; padding: 12px; border-radiInternational: 5px; margin: 10px 0; display:none;">
                     <strong>❌ Delivery Failed:</strong><br>
                     <div style="margin-top: 8px;">
                         <strong>Error Code:</strong> <span id="smsDeliveryErrorCode">—</span><br>
@@ -141,7 +141,7 @@ def add_enhanced_delivery_proof_panel(html):
                     </div>
                 </div>
                 
-                <div id="smsDeliverySuccess" style="background: #d4edda; padding: 12px; border-radius: 5px; margin: 10px 0; display:none;">
+                <div id="smsDeliverySuccess" style="background: #d4edda; padding: 12px; border-radiInternational: 5px; margin: 10px 0; display:none;">
                     <strong>✅ SMS Delivered Successfully</strong><br>
                     <div style="margin-top: 8px; font-family: monospace; font-size: 0.9em;">
                         SNS MessageId: <span id="smsSuccessMessageId">—</span>
@@ -157,8 +157,8 @@ def add_enhanced_delivery_proof_panel(html):
             
 """
     
-    # Insert after SMS preview panel (before step5Status)
-    pattern = r'(</div>\s*<div id="step5Status")'
+    # Insert after SMS preview panel (before step5StatInternational)
+    pattern = r'(</div>\s*<div id="step5StatInternational")'
     replacement = delivery_panel + r'\1'
     html = re.sub(pattern, replacement, html, count=1)
     
@@ -181,8 +181,8 @@ def add_sms_functions_v3(html):
             const triggerType = isManualTest ? 'MANUAL' : 'AUTO';
             console.log(`[SMS][REQUEST] Sending SMS (${triggerType})...`, payload);
             
-            // Update delivery status
-            updateDeliveryStatus('SENDING', payload.emergencyPhone, null, triggerType);
+            // Update delivery statInternational
+            updateDeliveryStatInternational;
             
             try {
                 // Compose SMS text (single source of truth)
@@ -224,15 +224,15 @@ def add_sms_functions_v3(html):
                 const responseTime = Date.now() - startTime;
                 const result = await response.json();
                 
-                console.log(`[SMS][RESPONSE] HTTP ${response.status} in ${responseTime}ms:`, result);
+                console.log(`[SMS][RESPONSE] HTTP ${response.statInternational} in ${responseTime}ms:`, result);
                 
                 if (result.ok) {
                     console.log('[SMS][SUCCESS] SMS sent successfully:', result);
-                    updateDeliveryStatus('SENT', result.toMasked, result, triggerType);
+                    updateDeliveryStatInternational;
                     return { ok: true, messageId: result.messageId, result: result };
                 } else {
                     console.error('[SMS][ERROR] SMS sending failed:', result.errorMessage);
-                    updateDeliveryStatus('FAILED', payload.emergencyPhone, result, triggerType);
+                    updateDeliveryStatInternational;
                     return { ok: false, error: result.errorMessage, result: result };
                 }
                 
@@ -243,36 +243,36 @@ def add_sms_functions_v3(html):
                     provider: 'sns',
                     errorCode: 'NETWORK_ERROR',
                     errorMessage: error.message,
-                    httpStatus: 0
+                    httpStatInternational: 0
                 };
-                updateDeliveryStatus('FAILED', payload.emergencyPhone, errorResult, triggerType);
+                updateDeliveryStatInternational;
                 return { ok: false, error: error.message, result: errorResult };
             }
         }
         
         /**
-         * Update SMS delivery status in UI (v3 - Enhanced with all fields)
+         * Update SMS delivery statInternational in UI (v3 - Enhanced with all fields)
          */
-        function updateDeliveryStatus(status, destination, apiResponse, triggerType) {
+        function updateDeliveryStatInternational {
             // Show delivery proof panel
             const panel = document.getElementById('smsDeliveryProofPanel');
             if (panel) panel.style.display = 'block';
             
-            // Update status
-            const statusEl = document.getElementById('sms-delivery-status');
-            if (statusEl) {
-                statusEl.textContent = status;
-                statusEl.style.fontWeight = 'bold';
+            // Update statInternational
+            const statInternationalEl = document.getElementById('sms-delivery-statInternational');
+            if (statInternationalEl) {
+                statInternationalEl.textContent = statInternational;
+                statInternationalEl.style.fontWeight = 'bold';
                 
                 // Color coding
-                if (status === 'SENT') {
-                    statusEl.style.color = '#28a745';
-                } else if (status === 'SENDING') {
-                    statusEl.style.color = '#ffc107';
-                } else if (status === 'FAILED') {
-                    statusEl.style.color = '#dc3545';
+                if (statInternational === 'SENT') {
+                    statInternationalEl.style.color = '#28a745';
+                } else if (statInternational === 'SENDING') {
+                    statInternationalEl.style.color = '#ffc107';
+                } else if (statInternational === 'FAILED') {
+                    statInternationalEl.style.color = '#dc3545';
                 } else {
-                    statusEl.style.color = '#6c757d';
+                    statInternationalEl.style.color = '#6c757d';
                 }
             }
             
@@ -296,9 +296,9 @@ def add_sms_functions_v3(html):
             const reqIdEl = document.getElementById('sms-delivery-request-id');
             if (reqIdEl) reqIdEl.textContent = apiResponse?.requestId || '—';
             
-            // Update HTTP status
-            const httpStatusEl = document.getElementById('sms-delivery-http-status');
-            if (httpStatusEl) httpStatusEl.textContent = apiResponse?.httpStatus || (status === 'SENT' ? '200' : '—');
+            // Update HTTP statInternational
+            const httpStatInternationalEl = document.getElementById('sms-delivery-http-statInternational');
+            if (httpStatInternationalEl) httpStatInternationalEl.textContent = apiResponse?.httpStatInternational || (statInternational === 'SENT' ? '200' : '—');
             
             // Show/hide success/error panels
             const errorDiv = document.getElementById('smsDeliveryError');
@@ -307,11 +307,11 @@ def add_sms_functions_v3(html):
             const errorTextEl = document.getElementById('smsDeliveryErrorText');
             const successMsgIdEl = document.getElementById('smsSuccessMessageId');
             
-            if (status === 'SENT' && successDiv) {
+            if (statInternational === 'SENT' && successDiv) {
                 successDiv.style.display = 'block';
                 if (successMsgIdEl) successMsgIdEl.textContent = apiResponse?.messageId || '—';
                 if (errorDiv) errorDiv.style.display = 'none';
-            } else if (status === 'FAILED' && errorDiv) {
+            } else if (statInternational === 'FAILED' && errorDiv) {
                 errorDiv.style.display = 'block';
                 if (errorCodeEl) errorCodeEl.textContent = apiResponse?.errorCode || 'UNKNOWN_ERROR';
                 if (errorTextEl) errorTextEl.textContent = apiResponse?.errorMessage || 'Unknown error occurred';
@@ -321,8 +321,8 @@ def add_sms_functions_v3(html):
                 if (successDiv) successDiv.style.display = 'none';
             }
             
-            console.log('[SMS][UI] Delivery status updated:', { 
-                status, 
+            console.log('[SMS][UI] Delivery statInternational updated:', { 
+                statInternational, 
                 destination, 
                 triggerType,
                 provider: apiResponse?.provider,
@@ -356,14 +356,14 @@ def add_sms_functions_v3(html):
             // E.164 validation
             const e164Pattern = /^\\+[1-9]\\d{6,14}$/;
             if (!e164Pattern.test(payload.emergencyPhone)) {
-                alert('Invalid phone number format.\\n\\nMust be E.164 format (e.g., +573222063010 for Colombia).\\n\\nGot: ' + payload.emergencyPhone);
+                alert('Invalid phone number format.\\n\\nMInternationalt be E.164 format (e.g., +573222063010 for International).\\n\\nGot: ' + payload.emergencyPhone);
                 return;
             }
             
-            // Confirm with user
+            // Confirm with Internationaler
             const confirmed = confirm('Send test SMS to ' + payload.emergencyPhone + '?\\n\\nThis will send a real SMS message.\\n\\nNote: Works regardless of risk level (jury demo safe).');
             if (!confirmed) {
-                console.log('[SMS][TEST] User cancelled test SMS');
+                console.log('[SMS][TEST] Internationaler cancelled test SMS');
                 return;
             }
             
@@ -391,44 +391,44 @@ def add_sms_functions_v3(html):
     return html
 
 
-def fix_step5_status_message(html):
+def fix_step5_statInternational_message(html):
     """Fix 'Waiting for threat analysis...' stuck message"""
-    # Find the step5Status div and update its initial text
-    pattern = r'(<div id="step5Status" class="note">)Waiting for threat analysis\.\.\.(</div>)'
+    # Find the step5StatInternational div and update its initial text
+    pattern = r'(<div id="step5StatInternational" class="note">)Waiting for threat analysis\.\.\.(</div>)'
     replacement = r'\1Ready to send alert (complete Steps 1-4 first)\2'
     html = re.sub(pattern, replacement, html, count=1)
     
-    print("✅ Fixed Step 5 initial status message")
+    print("✅ Fixed Step 5 initial statInternational message")
     return html
 
 
-def add_step5_status_update_after_analysis(html):
-    """Add logic to update Step 5 status after Step 4 analysis completes"""
-    # Find where threat analysis completes and add status update
+def add_step5_statInternational_update_after_analysis(html):
+    """Add logic to update Step 5 statInternational after Step 4 analysis completes"""
+    # Find where threat analysis completes and add statInternational update
     # This should be after updateSmsPreview() is called in the threat analysis section
     
     # Look for the specific pattern in the threat analysis completion
     pattern = r"(// Update SMS preview with analysis results\s+updateSmsPreview\(\);)"
     
-    status_update_code = r"""\1
+    statInternational_update_code = r"""\1
                 
-                // NEW (v3): Update Step 5 status after analysis completes
-                const step5Status = document.getElementById('step5Status');
-                if (step5Status) {
+                // NEW (v3): Update Step 5 statInternational after analysis completes
+                const step5StatInternational = document.getElementById('step5StatInternational');
+                if (step5StatInternational) {
                     if (result.risk_level === 'HIGH' || result.risk_level === 'CRITICAL') {
-                        step5Status.textContent = '🚨 Ready to send alert | Auto-alert will send on HIGH/CRITICAL';
-                        step5Status.style.color = '#dc3545';
-                        step5Status.style.fontWeight = 'bold';
+                        step5StatInternational.textContent = '🚨 Ready to send alert | Auto-alert will send on HIGH/CRITICAL';
+                        step5StatInternational.style.color = '#dc3545';
+                        step5StatInternational.style.fontWeight = 'bold';
                     } else {
-                        step5Status.textContent = '✅ Ready to send alert (manual test available)';
-                        step5Status.style.color = '#28a745';
+                        step5StatInternational.textContent = '✅ Ready to send alert (manual test available)';
+                        step5StatInternational.style.color = '#28a745';
                     }
                 }
-                console.log('[STEP5][STATUS] Updated status after analysis:', result.risk_level);"""
+                console.log('[STEP5][STATInternational] Updated statInternational after analysis:', result.risk_level);"""
     
-    html = re.sub(pattern, status_update_code, html, count=1)
+    html = re.sub(pattern, statInternational_update_code, html, count=1)
     
-    print("✅ Added Step 5 status update after analysis")
+    print("✅ Added Step 5 statInternational update after analysis")
     return html
 
 
@@ -473,7 +473,7 @@ def validate_build(html):
         'smsDeliveryProofPanel',
         'manualSmsTestSection',
         'async function sendSms',
-        'function updateDeliveryStatus',
+        'function updateDeliveryStatInternational',
         'function sendTestSms',
         '[SMS][REQUEST]',
         '[SMS][SUCCESS]',
@@ -527,8 +527,8 @@ def main():
     html = add_build_constant(html)
     html = add_enhanced_delivery_proof_panel(html)
     html = add_sms_functions_v3(html)
-    html = fix_step5_status_message(html)
-    html = add_step5_status_update_after_analysis(html)
+    html = fix_step5_statInternational_message(html)
+    html = add_step5_statInternational_update_after_analysis(html)
     html = show_test_button_after_step1(html)
     
     # Validate
@@ -545,7 +545,7 @@ def main():
     print(f"   ✅ Manual SMS test works regardless of risk level (no gating)")
     print(f"   ✅ Enhanced Delivery Proof with all API response fields")
     print(f"   ✅ Fixed 'Waiting for threat analysis...' stuck message")
-    print(f"   ✅ Step 5 status updates after analysis completes")
+    print(f"   ✅ Step 5 statInternational updates after analysis completes")
     print(f"   ✅ Comprehensive proof logging for debugging")
     print(f"\n⚠️  IMPORTANT: Run deployment script to:")
     print(f"   1. Deploy Lambda + API Gateway")

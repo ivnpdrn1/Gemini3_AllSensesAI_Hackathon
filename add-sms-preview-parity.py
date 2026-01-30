@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/Internationalr/bin/env python3
 """
 Add SMS Preview Parity to GEMINI Guardian
 Adds always-visible SMS preview panel in Step 5 with single source of truth for message generation
@@ -26,18 +26,18 @@ def add_sms_preview_parity(input_file, output_file):
     # Add SMS preview panel CSS
     sms_preview_css = '''
         /* SMS Preview Panel */
-        .sms-preview-panel { background: #f8f9fa; border: 2px solid #007bff; padding: 20px; border-radius: 10px; margin: 20px 0; }
+        .sms-preview-panel { background: #f8f9fa; border: 2px solid #007bff; padding: 20px; border-radiInternational: 10px; margin: 20px 0; }
         .sms-preview-panel h4 { margin: 0 0 15px 0; color: #007bff; font-size: 1.1em; }
-        .sms-preview-message { background: #fff; border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; font-family: 'Courier New', monospace; font-size: 0.9em; line-height: 1.6; white-space: pre-wrap; color: #212529; margin: 15px 0; }
+        .sms-preview-message { background: #fff; border: 1px solid #dee2e6; border-radiInternational: 8px; padding: 15px; font-family: 'Courier New', monospace; font-size: 0.9em; line-height: 1.6; white-space: pre-wrap; color: #212529; margin: 15px 0; }
         .sms-preview-meta { display: grid; grid-template-columns: 140px 1fr; gap: 8px; margin: 10px 0; font-size: 0.9em; }
         .sms-preview-label { font-weight: bold; color: #555; }
         .sms-preview-value { color: #2c3e50; font-family: monospace; }
-        .sms-preview-checklist { background: #e7f3ff; padding: 12px; border-radius: 6px; margin: 10px 0; }
+        .sms-preview-checklist { background: #e7f3ff; padding: 12px; border-radiInternational: 6px; margin: 10px 0; }
         .sms-preview-checklist h5 { margin: 0 0 8px 0; font-size: 0.95em; color: #0056b3; }
         .sms-preview-checklist ul { margin: 5px 0; padding-left: 20px; }
         .sms-preview-checklist li { margin: 4px 0; font-size: 0.9em; color: #495057; }
-        .sms-preview-error { background: #f8d7da; border: 2px solid #dc3545; padding: 15px; border-radius: 8px; color: #721c24; font-weight: bold; margin: 15px 0; }
-        .sms-preview-sent { background: #d4edda; border: 2px solid #28a745; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .sms-preview-error { background: #f8d7da; border: 2px solid #dc3545; padding: 15px; border-radiInternational: 8px; color: #721c24; font-weight: bold; margin: 15px 0; }
+        .sms-preview-sent { background: #d4edda; border: 2px solid #28a745; padding: 15px; border-radiInternational: 8px; margin: 15px 0; }
         .sms-preview-sent h5 { margin: 0 0 10px 0; color: #155724; font-size: 1em; }
         .sms-preview-timestamp { font-size: 0.85em; color: #666; margin-top: 10px; }
     '''
@@ -104,7 +104,7 @@ def add_sms_preview_parity(input_file, output_file):
             if (!payload.transcript) return { error: 'Missing victim message' };
             
             // Generate timestamp
-            const timestamp = new Date().toLocaleString('en-US', {
+            const timestamp = new Date().toLocaleString('en-International', {
                 year: 'numeric',
                 month: '2-digit',
                 day: '2-digit',
@@ -239,16 +239,16 @@ If you believe they're in danger, call them, and contact local emergency service
         compose_function + '\n        // ========== STEP 5: EMERGENCY ALERTING =========='
     )
     
-    # Update triggerStep5Alert to use composeAlertSms and show sent message
+    # Update triggerStep5Alert to Internationale composeAlertSms and show sent message
     old_trigger = '''        function triggerStep5Alert(analysisResult) {
             console.log('[STEP5] Triggering emergency alert');
             updatePipelineState('STEP5_ALERTING');
             
-            const step5Status = document.getElementById('step5Status');
+            const step5StatInternational = document.getElementById('step5StatInternational');
             const alertResult = document.getElementById('alertResult');
             const alertDetails = document.getElementById('alertDetails');
             
-            step5Status.textContent = '🚨 Sending emergency alerts...';
+            step5StatInternational.textContent = '🚨 Sending emergency alerts...';
             
             setTimeout(() => {
                 alertResult.style.display = 'block';
@@ -260,7 +260,7 @@ If you believe they're in danger, call them, and contact local emergency service
                     Time: ${new Date().toLocaleTimeString()}
                 `;
                 
-                step5Status.textContent = '✅ Emergency alerts sent successfully';
+                step5StatInternational.textContent = '✅ Emergency alerts sent successfully';
                 updatePipelineState('STEP5_COMPLETE');
                 
                 console.log('[STEP5] Alert sent successfully');
@@ -271,17 +271,17 @@ If you believe they're in danger, call them, and contact local emergency service
             console.log('[STEP5] Triggering emergency alert');
             updatePipelineState('STEP5_ALERTING');
             
-            const step5Status = document.getElementById('step5Status');
+            const step5StatInternational = document.getElementById('step5StatInternational');
             const alertResult = document.getElementById('alertResult');
             const alertDetails = document.getElementById('alertDetails');
             
-            step5Status.textContent = '🚨 Sending emergency alerts...';
+            step5StatInternational.textContent = '🚨 Sending emergency alerts...';
             
             // Update SMS preview one final time before send
             updateSmsPreview();
             
             setTimeout(() => {
-                // Compose actual SMS using single source of truth
+                // Compose actual SMS Internationaling single source of truth
                 const payload = {
                     victimName: document.getElementById('victimName').value.trim(),
                     emergencyContact: document.getElementById('emergencyPhone').value.trim(),
@@ -294,7 +294,7 @@ If you believe they're in danger, call them, and contact local emergency service
                 const smsResult = composeAlertSms(payload);
                 
                 if (smsResult.error) {
-                    step5Status.textContent = '❌ Failed to send alert: ' + smsResult.error;
+                    step5StatInternational.textContent = '❌ Failed to send alert: ' + smsResult.error;
                     console.error('[STEP5] Alert failed:', smsResult.error);
                     return;
                 }
@@ -314,7 +314,7 @@ If you believe they're in danger, call them, and contact local emergency service
                     Time: ${smsResult.timestamp}
                 `;
                 
-                step5Status.textContent = '✅ Emergency alerts sent successfully';
+                step5StatInternational.textContent = '✅ Emergency alerts sent successfully';
                 updatePipelineState('STEP5_COMPLETE');
                 
                 console.log('[STEP5] Alert sent successfully');

@@ -1,11 +1,11 @@
 """
-Production SMS Lambda Handler V4 - Colombia SMS Fix
+Production SMS Lambda Handler V4 - SMS Delivery Enhancement
 Fixes three critical issues:
 1. Backend returns HTTP 200 only when SNS publish succeeds with MessageId
 2. Strict API contract with ok:true/false and proper error codes
 3. Always includes requestId from AWS context
 
-Supports Colombia +57 and all international numbers via AWS SNS
+Supports all international numbers via AWS SNS
 """
 
 import json
@@ -83,7 +83,7 @@ def lambda_handler(event, context):
             return error_response(
                 400, 
                 'INVALID_PHONE_FORMAT', 
-                f'Phone number must be in E.164 format: +[country code][number]. Example: +573222063010 or +12025551234. Received: {phone_number}',
+                f'Phone number must be in E.164 format: +[country code][number]. Example: +1234567890 or +12025551234. Received: {phone_number}',
                 phone_number,
                 request_id
             )

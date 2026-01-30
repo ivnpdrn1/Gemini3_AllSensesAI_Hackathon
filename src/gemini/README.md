@@ -71,7 +71,7 @@ print(f"Reasoning: {risk_assessment['reasoning']}")
 import vertexai
 from vertexai.generative_models import GenerativeModel
 
-vertexai.init(project="your-project-id", location="us-central1")
+vertexai.init(project="your-project-id", location="your-region")
 model = GenerativeModel("gemini-3-pro")
 ```
 

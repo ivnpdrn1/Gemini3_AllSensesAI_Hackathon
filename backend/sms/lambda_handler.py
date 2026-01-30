@@ -1,7 +1,7 @@
 """
 AllSensesAI Gemini3 Guardian - SMS Sending Lambda
 Sends real SMS alerts via AWS SNS with E.164 validation
-Supports international SMS (Colombia +57 and others)
+Supports international SMS (E.164 format)
 """
 
 import json
@@ -33,7 +33,7 @@ def handler(event, context):
     {
         "buildId": "GEMINI3-JURY-READY-VIDEO-SMS-20260128-v2",
         "victimName": "John Doe",
-        "to": "+573222063010",  # Colombia or any E.164
+        "to": "+1234567890",  # E.164 format
         "message": "🚨 EMERGENCY ALERT\n\nVictim: John Doe\n...",
         "meta": {
             "risk": "HIGH",
@@ -148,7 +148,7 @@ def validate_payload(body: Dict[str, Any]) -> str:
     # Validate E.164 format
     to_phone = body['to']
     if not E164_PATTERN.match(to_phone):
-        return f'Invalid phone number format. Must be E.164 format (e.g., +573222063010 for Colombia). Got: {to_phone}'
+        return f'Invalid phone number format. Must be E.164 format (e.g., +XXXXXXXXXXX international). Got: {to_phone}'
     
     # Validate SMS text length
     sms_text = body['message']

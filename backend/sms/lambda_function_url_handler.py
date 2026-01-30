@@ -1,7 +1,7 @@
 """
 Production SMS Lambda Handler - Function URL Pattern
 Matches working reference architecture for international SMS delivery
-Supports Colombia +57 and all international numbers via AWS SNS
+Supports all international numbers via AWS SNS
 """
 
 import json
@@ -48,7 +48,7 @@ def lambda_handler(event, context):
         
         # Validate E.164 format
         if not phone_number.startswith('+'):
-            return error_response(400, f'Invalid phone format: {phone_number}. Must use E.164 format (e.g., +1234567890 or +573222063010)')
+            return error_response(400, f'Invalid phone format: {phone_number}. Must use E.164 format (e.g., +1234567890 or +1234567890)')
         
         print(f'[SMS-LAMBDA] Sending SMS to {phone_number}')
         print(f'[SMS-LAMBDA] Victim: {victim_name}')
