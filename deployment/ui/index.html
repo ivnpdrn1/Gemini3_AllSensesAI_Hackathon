@@ -222,7 +222,7 @@
         <div class="header">
             <h1>AllSensesAI Gemini3 Guardian</h1>
             <p>Gemini 1.5 Pro | Emergency Detection System</p>
-            <div id="buildStamp" style="font-size:14px;color:#fff;margin-top:8px;font-weight:bold;background:#4285f4;padding:6px 12px;border-radius:6px;">Build: GEMINI3-GUARDIAN-PRODUCTION-SMS-20260129-v1</div>
+            <div id="buildStamp" style="font-size:14px;color:#fff;margin-top:8px;font-weight:bold;background:#4285f4;padding:6px 12px;border-radius:6px;">Build: GEMINI3-COLOMBIA-SMS-FIX-20260129-v3</div>
             
             <div style="background:#e8f5e9;border:1px solid #4caf50;padding:8px 12px;border-radius:5px;margin:8px 0;font-size:13px;color:#2e7d32;">
                 <strong>GEMINI3 POWERED:</strong> Using Google Gemini 1.5 Pro for threat analysis
@@ -250,7 +250,7 @@
                 </div>
                 <div class="health-item live" id="health-loaded-build">
                     <div class="health-label">Loaded Build ID</div>
-                    <div class="health-value" style="font-family: monospace; font-size: 12px;">GEMINI3-GUARDIAN-PRODUCTION-SMS-20260129-v1</div>
+                    <div class="health-value" style="font-family: monospace; font-size: 12px;">GEMINI3-COLOMBIA-SMS-FIX-20260129-v3</div>
                 </div>
             </div>
         </div>
@@ -907,7 +907,7 @@
         let transcriptHistory = [];
 
         // ========== GLOBAL CONFIGURATION ==========
-        const BUILD_ID = 'GEMINI3-GUARDIAN-PRODUCTION-SMS-20260129-v1';
+        const BUILD_ID = 'GEMINI3-COLOMBIA-SMS-FIX-20260129-v3';
         const SMS_API_URL = 'https://q4ouvfydgod6o734zbfipyi45q0lyuhx.lambda-url.us-east-1.on.aws/';
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -2354,35 +2354,41 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
                     return { ok: false, error: errorResult.errorMessage, result: errorResult };
                 }
                 
-                // Check if response is successful
-                if (response.ok && result.ok) {
+                // Check if response is successful (v4 API contract)
+                // SUCCESS: HTTP 200 AND result.ok === true AND result.messageId exists
+                if (result.ok === true && result.messageId) {
                     console.log('[SMS][SUCCESS] ✅ SMS sent successfully');
                     console.log('[SMS][SUCCESS] Message ID:', result.messageId);
                     console.log('[SMS][SUCCESS] Provider:', result.provider);
                     console.log('[SMS][SUCCESS] Destination (masked):', result.toMasked);
+                    console.log('[SMS][SUCCESS] HTTP status:', response.status);
                     console.log('[SMS][SUCCESS] Response time:', responseTime, 'ms');
                     
                     updateDeliveryStatus('SENT', result.toMasked, result, triggerType);
                     return { ok: true, messageId: result.messageId, result: result };
                     
                 } else {
-                    // HTTP error or API error
-                    const errorMessage = result.errorMessage || result.error || `HTTP ${response.status}: ${response.statusText}`;
+                    // FAILURE: Either non-200 HTTP status OR result.ok === false OR missing messageId
+                    const errorMessage = result.errorMessage || result.error || `Backend returned ok:false or missing messageId`;
                     console.error('[SMS][ERROR] ❌ SMS sending failed');
                     console.error('[SMS][ERROR] Error message:', errorMessage);
                     console.error('[SMS][ERROR] HTTP status:', response.status);
+                    console.error('[SMS][ERROR] result.ok:', result.ok);
+                    console.error('[SMS][ERROR] result.messageId:', result.messageId);
                     console.error('[SMS][ERROR] Full response:', result);
                     
                     const errorResult = {
                         ok: false,
                         provider: result.provider || 'sns',
-                        errorCode: result.errorCode || 'HTTP_ERROR',
+                        errorCode: result.errorCode || 'BACKEND_ERROR',
                         errorMessage: errorMessage,
                         httpStatus: response.status,
                         responseBody: result,
                         details: {
                             httpStatus: response.status,
                             httpStatusText: response.statusText,
+                            resultOk: result.ok,
+                            hasMessageId: !!result.messageId,
                             apiError: result.errorMessage || result.error,
                             apiErrorCode: result.errorCode
                         }

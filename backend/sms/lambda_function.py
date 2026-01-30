@@ -29,15 +29,22 @@ def lambda_handler(event, context):
     # Get AWS request ID for tracking
     request_id = context.aws_request_id if context else 'unknown'
     
+    # Log request details for CORS debugging
+    method = event.get('requestContext', {}).get('http', {}).get('method', 'UNKNOWN')
+    origin = event.get('headers', {}).get('origin', 'NO_ORIGIN')
+    print(f'[SMS-LAMBDA-V4] Method: {method}, Origin: {origin}, RequestId: {request_id}')
+    
     # Handle CORS preflight (OPTIONS request)
     if event.get('requestContext', {}).get('http', {}).get('method') == 'OPTIONS':
         print('[SMS-LAMBDA-V4] Handling OPTIONS preflight request')
+        origin = event.get('headers', {}).get('origin', 'https://dfc8ght8abwqc.cloudfront.net')
+        print(f'[SMS-LAMBDA-V4] Origin header: {origin}')
         return {
             'statusCode': 200,
             'headers': {
-                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Origin': 'https://dfc8ght8abwqc.cloudfront.net',
                 'Access-Control-Allow-Methods': 'POST, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Headers': 'content-type',
                 'Access-Control-Max-Age': '86400'
             },
             'body': ''
@@ -146,9 +153,9 @@ def lambda_handler(event, context):
             'statusCode': 200,
             'headers': {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Origin': 'https://dfc8ght8abwqc.cloudfront.net',
                 'Access-Control-Allow-Methods': 'POST, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type'
+                'Access-Control-Allow-Headers': 'content-type'
             },
             'body': json.dumps({
                 'ok': True,
@@ -180,9 +187,9 @@ def error_response(status_code, error_code, error_message, phone_number, request
         'statusCode': status_code,  # Must be non-200 for errors
         'headers': {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Origin': 'https://dfc8ght8abwqc.cloudfront.net',
             'Access-Control-Allow-Methods': 'POST, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type'
+            'Access-Control-Allow-Headers': 'content-type'
         },
         'body': json.dumps({
             'ok': False,  # Always false for errors

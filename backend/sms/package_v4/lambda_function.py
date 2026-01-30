@@ -27,21 +27,7 @@ def lambda_handler(event, context):
     print('[SMS-LAMBDA-V4] Event:', json.dumps(event))
     
     # Get AWS request ID for tracking
-    request_id = context.aws_request_id if context else 'unknown'
-    
-    # Handle CORS preflight (OPTIONS request)
-    if event.get('requestContext', {}).get('http', {}).get('method') == 'OPTIONS':
-        print('[SMS-LAMBDA-V4] Handling OPTIONS preflight request')
-        return {
-            'statusCode': 200,
-            'headers': {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'POST, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type',
-                'Access-Control-Max-Age': '86400'
-            },
-            'body': ''
-        }
+    request_id = context.request_id if context else 'unknown'
     
     try:
         # Parse request body
