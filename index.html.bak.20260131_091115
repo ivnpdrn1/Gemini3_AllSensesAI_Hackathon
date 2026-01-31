@@ -7,13 +7,13 @@
     
     <style>
         body { font-family: Arial, sans-serif; max-width: 1000px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
-        .container { background: rgba(255,255,255,0.95); padding: 30px; border-radiInternational: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .container { background: rgba(255,255,255,0.95); padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         .header { text-align: center; margin-bottom: 30px; }
         .header h1 { color: #2c3e50; font-size: 2.5em; margin-bottom: 10px; }
         .header p { color: #7f8c8d; font-size: 1.2em; }
-        .section { background: #f8f9fa; padding: 20px; border-radiInternational: 10px; margin-bottom: 20px; }
+        .section { background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
         .section h3 { color: #2c3e50; margin-bottom: 15px; }
-        .button { background: linear-gradient(45deg, #3498db, #2980b9); color: white; padding: 12px 25px; border: none; border-radiInternational: 8px; cursor: pointer; font-size: 1em; margin: 5px; }
+        .button { background: linear-gradient(45deg, #3498db, #2980b9); color: white; padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-size: 1em; margin: 5px; }
         .button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(52,152,219,0.4); }
         .button.emergency { background: linear-gradient(45deg, #e74c3c, #c0392b); }
         .button.emergency:hover { box-shadow: 0 5px 15px rgba(231,76,60,0.4); }
@@ -23,39 +23,39 @@
         .button:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
         .controls-row { margin: 15px 0; text-align: center; }
         .controls-row .button { margin: 5px 10px; }
-        textarea { width: 100%; height: 120px; margin: 10px 0; padding: 15px; border: 2px solid #ecf0f1; border-radiInternational: 8px; font-size: 1em; }
-        input[type="text"], input[type="tel"] { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #ecf0f1; border-radiInternational: 8px; font-size: 1em; }
-        .result { background: #e8f5e8; padding: 15px; border-radiInternational: 8px; margin-top: 15px; border-left: 4px solid #27ae60; }
-        .error { background: #f8d7da; padding: 15px; border-radiInternational: 8px; margin-top: 15px; border-left: 4px solid #dc3545; }
+        textarea { width: 100%; height: 120px; margin: 10px 0; padding: 15px; border: 2px solid #ecf0f1; border-radius: 8px; font-size: 1em; }
+        input[type="text"], input[type="tel"] { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #ecf0f1; border-radius: 8px; font-size: 1em; }
+        .result { background: #e8f5e8; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #27ae60; }
+        .error { background: #f8d7da; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #dc3545; }
         .warning { background: #fff3cd; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #f39c12; }
         .note { font-size: 0.9em; color: #666; margin-top: 8px; }
         .location-status { background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #28a745; }
         .location-status.denied { border-left-color: #dc3545; background: #f8d7da; }
         .location-status.unavailable { border-left-color: #ffc107; background: #fff3cd; }
         
-        .runtime-health { background: #fff; border: 2px solid #007bff; padding: 15px; border-radiInternational: 8px; margin-bottom: 20px; }
+        .runtime-health { background: #fff; border: 2px solid #007bff; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
         .runtime-health h3 { color: #007bff; margin-bottom: 10px; font-size: 1.2em; }
         .health-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
-        .health-item { background: #f8f9fa; padding: 10px; border-radiInternational: 5px; border-left: 3px solid #28a745; }
+        .health-item { background: #f8f9fa; padding: 10px; border-radius: 5px; border-left: 3px solid #28a745; }
         .health-item.warning { border-left-color: #ffc107; background: #fff3cd; }
         .health-item.error { border-left-color: #dc3545; background: #f8d7da; }
         .health-label { font-size: 0.85em; color: #666; margin-bottom: 4px; }
         .health-value { font-weight: bold; color: #2c3e50; }
         
         /* NEW: Selected Location Panel */
-        .selected-location-panel { background: #e8f5e9; border: 2px solid #4caf50; padding: 15px; border-radiInternational: 8px; margin: 15px 0; }
+        .selected-location-panel { background: #e8f5e9; border: 2px solid #4caf50; padding: 15px; border-radius: 8px; margin: 15px 0; }
         .selected-location-panel h4 { margin: 0 0 10px 0; color: #2e7d32; font-size: 1.1em; }
         .location-detail { display: grid; grid-template-columns: 140px 1fr; gap: 8px; margin: 5px 0; font-size: 0.95em; }
         .location-label { font-weight: bold; color: #555; }
         .location-value { color: #2c3e50; font-family: monospace; }
         
-        /* NEW: Microphone StatInternational Badge */
-        .mic-statInternational-badge { display: inline-block; padding: 6px 12px; border-radiInternational: 20px; font-size: 0.9em; font-weight: bold; margin-left: 10px; }
-        .mic-statInternational-badge.idle { background: #e9ecef; color: #6c757d; }
-        .mic-statInternational-badge.requesting { background: #fff3cd; color: #856404; }
-        .mic-statInternational-badge.listening { background: #d4edda; color: #155724; animation: pulse 1.5s infinite; }
-        .mic-statInternational-badge.stopped { background: #f8d7da; color: #721c24; }
-        .mic-statInternational-badge.error { background: #f8d7da; color: #721c24; }
+        /* NEW: Microphone Status Badge */
+        .mic-status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 0.9em; font-weight: bold; margin-left: 10px; }
+        .mic-status-badge.idle { background: #e9ecef; color: #6c757d; }
+        .mic-status-badge.requesting { background: #fff3cd; color: #856404; }
+        .mic-status-badge.listening { background: #d4edda; color: #155724; animation: pulse 1.5s infinite; }
+        .mic-status-badge.stopped { background: #f8d7da; color: #721c24; }
+        .mic-status-badge.error { background: #f8d7da; color: #721c24; }
         
         @keyframes pulse {
             0%, 100% { opacity: 1; }
@@ -63,25 +63,25 @@
         }
         
         /* NEW: Live Transcript Box */
-        .transcript-box { background: #fff; border: 2px solid #007bff; padding: 15px; border-radiInternational: 8px; margin: 15px 0; min-height: 120px; max-height: 300px; overflow-y: auto; }
+        .transcript-box { background: #fff; border: 2px solid #007bff; padding: 15px; border-radius: 8px; margin: 15px 0; min-height: 120px; max-height: 300px; overflow-y: auto; }
         .transcript-box h4 { margin: 0 0 10px 0; color: #007bff; font-size: 1em; }
         .transcript-content { font-family: monospace; font-size: 0.9em; color: #495057; white-space: pre-wrap; line-height: 1.6; }
-        .transcript-line { margin: 5px 0; padding: 5px; background: #f8f9fa; border-radiInternational: 4px; }
+        .transcript-line { margin: 5px 0; padding: 5px; background: #f8f9fa; border-radius: 4px; }
         .transcript-timestamp { color: #6c757d; font-size: 0.85em; margin-right: 8px; }
         .transcript-interim { color: #6c757d; font-style: italic; }
         .listening-indicator { color: #28a745; font-style: italic; }
         
         /* NEW: Voice Controls */
-        .voice-controls { display: flex; gap: 10px; jInternationaltify-content: center; flex-wrap: wrap; margin: 15px 0; }
+        .voice-controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 15px 0; }
         
         /* NEW: Emergency Banner */
-        .emergency-banner { background: linear-gradient(45deg, #dc3545, #c82333); color: white; padding: 20px; border-radiInternational: 10px; margin-bottom: 20px; border: 3px solid #a71d2a; box-shadow: 0 5px 20px rgba(220, 53, 69, 0.4); animation: emergencyPulse 2s infinite; display: none; }
+        .emergency-banner { background: linear-gradient(45deg, #dc3545, #c82333); color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 3px solid #a71d2a; box-shadow: 0 5px 20px rgba(220, 53, 69, 0.4); animation: emergencyPulse 2s infinite; display: none; }
         .emergency-banner h2 { margin: 0 0 10px 0; font-size: 1.8em; }
-        .emergency-banner .emergency-details { background: rgba(0,0,0,0.2); padding: 15px; border-radiInternational: 8px; margin-top: 10px; }
+        .emergency-banner .emergency-details { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-top: 10px; }
         .emergency-banner .emergency-detail-row { display: grid; grid-template-columns: 150px 1fr; gap: 10px; margin: 8px 0; font-size: 0.95em; }
         .emergency-banner .detail-label { font-weight: bold; }
         .emergency-banner .detail-value { font-family: monospace; }
-        .emergency-banner .maps-link { display: inline-block; background: #fff; color: #dc3545; padding: 10px 20px; border-radiInternational: 8px; text-decoration: none; font-weight: bold; margin-top: 10px; }
+        .emergency-banner .maps-link { display: inline-block; background: #fff; color: #dc3545; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-top: 10px; }
         .emergency-banner .maps-link:hover { background: #f8f9fa; }
         
         @keyframes emergencyPulse {
@@ -90,11 +90,11 @@
         }
         
         /* NEW: Emergency Modal */
-        .emergency-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; jInternationaltify-content: center; align-items: center; z-index: 9999; }
-        .emergency-modal-content { background: white; padding: 40px; border-radiInternational: 15px; max-width: 500px; text-align: center; box-shadow: 0 10px 50px rgba(0,0,0,0.5); animation: modalSlideIn 0.3s ease-out; }
+        .emergency-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 9999; }
+        .emergency-modal-content { background: white; padding: 40px; border-radius: 15px; max-width: 500px; text-align: center; box-shadow: 0 10px 50px rgba(0,0,0,0.5); animation: modalSlideIn 0.3s ease-out; }
         .emergency-modal h2 { color: #dc3545; font-size: 2em; margin-bottom: 15px; }
         .emergency-modal p { font-size: 1.1em; color: #495057; margin: 10px 0; }
-        .emergency-modal .modal-button { background: linear-gradient(45deg, #dc3545, #c82333); color: white; padding: 15px 30px; border: none; border-radiInternational: 8px; cursor: pointer; font-size: 1.1em; margin-top: 20px; }
+        .emergency-modal .modal-button { background: linear-gradient(45deg, #dc3545, #c82333); color: white; padding: 15px 30px; border: none; border-radius: 8px; cursor: pointer; font-size: 1.1em; margin-top: 20px; }
         .emergency-modal .modal-button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4); }
         
         @keyframes modalSlideIn {
@@ -103,7 +103,7 @@
         }
         
         /* NEW: Emergency Badge for Step 3 */
-        .mic-statInternational-badge.emergency-detected { background: #dc3545; color: white; animation: badgePulse 1s infinite; }
+        .mic-status-badge.emergency-detected { background: #dc3545; color: white; animation: badgePulse 1s infinite; }
         
         @keyframes badgePulse {
             0%, 100% { transform: scale(1); }
@@ -111,67 +111,67 @@
         }
     
         /* NEW: Emergency Keywords Configuration UI */
-        .keywords-config { background: #fff3cd; border: 2px solid #ffc107; padding: 15px; border-radiInternational: 8px; margin: 15px 0; }
+        .keywords-config { background: #fff3cd; border: 2px solid #ffc107; padding: 15px; border-radius: 8px; margin: 15px 0; }
         .keywords-config h4 { margin: 0 0 10px 0; color: #856404; font-size: 1em; }
         .keywords-config-description { font-size: 0.9em; color: #856404; margin-bottom: 10px; }
         .keywords-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; min-height: 40px; }
-        .keyword-chip { background: #fff; border: 2px solid #ffc107; padding: 6px 12px; border-radiInternational: 20px; display: inline-flex; align-items: center; gap: 8px; font-size: 0.9em; }
+        .keyword-chip { background: #fff; border: 2px solid #ffc107; padding: 6px 12px; border-radius: 20px; display: inline-flex; align-items: center; gap: 8px; font-size: 0.9em; }
         .keyword-chip-text { color: #856404; font-weight: 500; }
-        .keyword-chip-remove { background: #dc3545; color: white; border: none; border-radiInternational: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 0.8em; line-height: 1; padding: 0; }
+        .keyword-chip-remove { background: #dc3545; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 0.8em; line-height: 1; padding: 0; }
         .keyword-chip-remove:hover { background: #c82333; }
         .keyword-input-row { display: flex; gap: 10px; margin-top: 10px; }
-        .keyword-input { flex: 1; padding: 8px 12px; border: 2px solid #ffc107; border-radiInternational: 8px; font-size: 0.9em; }
-        .keyword-add-btn { background: #28a745; color: white; border: none; padding: 8px 20px; border-radiInternational: 8px; cursor: pointer; font-size: 0.9em; font-weight: bold; }
+        .keyword-input { flex: 1; padding: 8px 12px; border: 2px solid #ffc107; border-radius: 8px; font-size: 0.9em; }
+        .keyword-add-btn { background: #28a745; color: white; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 0.9em; font-weight: bold; }
         .keyword-add-btn:hover { background: #218838; }
         .keyword-add-btn:disabled { background: #6c757d; cursor: not-allowed; }
         .keywords-help { font-size: 0.85em; color: #856404; margin-top: 8px; font-style: italic; }
         
         /* NEW: Reset Emergency Button */
-        .reset-emergency-btn { background: linear-gradient(45deg, #6c757d, #495057); color: white; padding: 10px 20px; border: none; border-radiInternational: 8px; cursor: pointer; font-size: 0.9em; margin: 10px 5px; }
+        .reset-emergency-btn { background: linear-gradient(45deg, #6c757d, #495057); color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9em; margin: 10px 5px; }
         .reset-emergency-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4); }
         .reset-emergency-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
     
         /* SMS Preview Panel */
-        .sms-preview-panel { background: #fff3cd; border: 2px solid #ffc107; padding: 20px; border-radiInternational: 10px; margin: 15px 0; }
+        .sms-preview-panel { background: #fff3cd; border: 2px solid #ffc107; padding: 20px; border-radius: 10px; margin: 15px 0; }
         .sms-preview-panel h4 { margin: 0 0 10px 0; color: #856404; font-size: 1.1em; }
         .sms-preview-description { font-size: 0.9em; color: #856404; margin-bottom: 15px; }
-        .sms-preview-fields { background: #fff; padding: 15px; border-radiInternational: 8px; margin: 10px 0; }
-        .sms-field { display: grid; grid-template-columns: 150px 1fr; gap: 10px; margin: 8px 0; padding: 8px; background: #f8f9fa; border-radiInternational: 5px; font-size: 0.95em; }
+        .sms-preview-fields { background: #fff; padding: 15px; border-radius: 8px; margin: 10px 0; }
+        .sms-field { display: grid; grid-template-columns: 150px 1fr; gap: 10px; margin: 8px 0; padding: 8px; background: #f8f9fa; border-radius: 5px; font-size: 0.95em; }
         .sms-field-label { font-weight: bold; color: #495057; }
         .sms-field-value { color: #212529; font-family: monospace; }
-        .sms-text-preview { background: #fff; padding: 15px; border-radiInternational: 8px; margin: 10px 0; }
+        .sms-text-preview { background: #fff; padding: 15px; border-radius: 8px; margin: 10px 0; }
         .sms-text-preview h5 { margin: 0 0 10px 0; color: #495057; font-size: 1em; }
-        .sms-text-content { background: #f8f9fa; padding: 12px; border-radiInternational: 5px; font-family: monospace; font-size: 0.9em; color: #212529; white-space: pre-wrap; min-height: 80px; border: 1px solid #dee2e6; }
+        .sms-text-content { background: #f8f9fa; padding: 12px; border-radius: 5px; font-family: monospace; font-size: 0.9em; color: #212529; white-space: pre-wrap; min-height: 80px; border: 1px solid #dee2e6; }
 
     
         /* Vision Context Analysis Panel */
-        .vision-context-panel { background: #f0f8ff; border: 2px solid #4a90e2; padding: 20px; border-radiInternational: 10px; margin: 20px 0; }
+        .vision-context-panel { background: #f0f8ff; border: 2px solid #4a90e2; padding: 20px; border-radius: 10px; margin: 20px 0; }
         .vision-context-panel h4 { margin: 0 0 15px 0; color: #2c5aa0; font-size: 1.2em; }
-        .vision-statInternational-badge { display: inline-block; padding: 6px 14px; border-radiInternational: 20px; font-size: 0.9em; font-weight: bold; margin-bottom: 15px; }
-        .vision-statInternational-badge.standby { background: #e9ecef; color: #6c757d; }
-        .vision-statInternational-badge.capturing { background: #fff3cd; color: #856404; animation: visionPulse 1.5s infinite; }
-        .vision-statInternational-badge.analyzing { background: #cfe2ff; color: #084298; animation: visionPulse 1.5s infinite; }
-        .vision-statInternational-badge.complete { background: #d1e7dd; color: #0f5132; }
-        .vision-statInternational-badge.error { background: #f8d7da; color: #842029; }
-        .vision-explainer { background: #fff; padding: 12px; border-radiInternational: 6px; margin: 10px 0; font-size: 0.95em; color: #495057; border-left: 4px solid #4a90e2; }
-        .vision-placeholders { background: #f8f9fa; padding: 15px; border-radiInternational: 6px; margin: 10px 0; color: #adb5bd; font-style: italic; }
+        .vision-status-badge { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 0.9em; font-weight: bold; margin-bottom: 15px; }
+        .vision-status-badge.standby { background: #e9ecef; color: #6c757d; }
+        .vision-status-badge.capturing { background: #fff3cd; color: #856404; animation: visionPulse 1.5s infinite; }
+        .vision-status-badge.analyzing { background: #cfe2ff; color: #084298; animation: visionPulse 1.5s infinite; }
+        .vision-status-badge.complete { background: #d1e7dd; color: #0f5132; }
+        .vision-status-badge.error { background: #f8d7da; color: #842029; }
+        .vision-explainer { background: #fff; padding: 12px; border-radius: 6px; margin: 10px 0; font-size: 0.95em; color: #495057; border-left: 4px solid #4a90e2; }
+        .vision-placeholders { background: #f8f9fa; padding: 15px; border-radius: 6px; margin: 10px 0; color: #adb5bd; font-style: italic; }
         .vision-placeholders p { margin: 5px 0; }
         .vision-frames-placeholder { margin: 15px 0; }
         .frame-placeholder { display: inline-block; margin: 5px; }
         .vision-thumbnails { display: flex; gap: 10px; margin: 15px 0; flex-wrap: wrap; }
-        .vision-thumbnail { width: 120px; height: 90px; border-radiInternational: 6px; object-fit: cover; border: 2px solid #dee2e6; }
+        .vision-thumbnail { width: 120px; height: 90px; border-radius: 6px; object-fit: cover; border: 2px solid #dee2e6; }
         .vision-thumbnail.blurred { filter: blur(8px); }
-        .vision-thumbnail-toggle { background: #6c757d; color: white; border: none; padding: 6px 12px; border-radiInternational: 4px; cursor: pointer; font-size: 0.85em; margin-top: 8px; }
+        .vision-thumbnail-toggle { background: #6c757d; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; margin-top: 8px; }
         .vision-thumbnail-toggle:hover { background: #5a6268; }
-        .vision-findings { background: #fff; padding: 15px; border-radiInternational: 6px; margin: 10px 0; }
+        .vision-findings { background: #fff; padding: 15px; border-radius: 6px; margin: 10px 0; }
         .vision-findings ul { margin: 10px 0; padding-left: 20px; }
         .vision-findings li { margin: 6px 0; color: #495057; }
-        .vision-confidence { background: #f8f9fa; padding: 10px; border-radiInternational: 6px; margin: 10px 0; display: inline-block; }
-        .vision-confidence .badge { padding: 4px 10px; border-radiInternational: 12px; font-size: 0.85em; font-weight: bold; margin-left: 8px; }
+        .vision-confidence { background: #f8f9fa; padding: 10px; border-radius: 6px; margin: 10px 0; display: inline-block; }
+        .vision-confidence .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.85em; font-weight: bold; margin-left: 8px; }
         .vision-confidence .badge.low { background: #d1e7dd; color: #0f5132; }
         .vision-confidence .badge.medium { background: #fff3cd; color: #856404; }
         .vision-confidence .badge.high { background: #f8d7da; color: #842029; }
-        .vision-evidence-indicator { background: #d1e7dd; padding: 10px 15px; border-radiInternational: 6px; margin: 10px 0; color: #0f5132; font-weight: 500; border-left: 4px solid #198754; }
+        .vision-evidence-indicator { background: #d1e7dd; padding: 10px 15px; border-radius: 6px; margin: 10px 0; color: #0f5132; font-weight: 500; border-left: 4px solid #198754; }
         .vision-why-helps { font-size: 0.85em; color: #6c757d; margin-top: 10px; font-style: italic; }
         
         @keyframes visionPulse {
@@ -222,10 +222,10 @@
         <div class="header">
             <h1>AllSensesAI Gemini3 Guardian</h1>
             <p>Gemini 1.5 Pro | Emergency Detection System</p>
-            <div id="buildStamp" style="font-size:14px;color:#fff;margin-top:8px;font-weight:bold;background:#4285f4;padding:6px 12px;border-radius:6px;">Build: GEMINI3-GUARDIAN-SMS-VIDEO-20260130-v1</div>
+            <div id="buildStamp" style="font-size:14px;color:#fff;margin-top:8px;font-weight:bold;background:#4285f4;padding:6px 12px;border-radius:6px;">Build: GEMINI3-GUARDIAN-SMS-VIDEO-20260131-v4-HOTFIX</div>
             
-            <div style="background:#e8f5e9;border:1px solid #4caf50;padding:8px 12px;border-radiInternational:5px;margin:8px 0;font-size:13px;color:#2e7d32;">
-                <strong>GEMINI3 POWERED:</strong> Internationaling Google Gemini 1.5 Pro for threat analysis
+            <div style="background:#e8f5e9;border:1px solid #4caf50;padding:8px 12px;border-radius:5px;margin:8px 0;font-size:13px;color:#2e7d32;">
+                <strong>GEMINI3 POWERED:</strong> Using Google Gemini 1.5 Pro for threat analysis
             </div>
         </div>
         
@@ -234,7 +234,7 @@
             <div class="health-grid">
                 <div class="health-item" id="health-gemini3">
                     <div class="health-label">Gemini3 Client</div>
-                    <div class="health-value" id="gemini3-statInternational">Initializing...</div>
+                    <div class="health-value" id="gemini3-status">Initializing...</div>
                 </div>
                 <div class="health-item" id="health-model">
                     <div class="health-label">Model</div>
@@ -250,18 +250,18 @@
                 </div>
                 <div class="health-item live" id="health-loaded-build">
                     <div class="health-label">Loaded Build ID</div>
-                    <div class="health-value" style="font-family: monospace; font-size: 12px;">GEMINI3-GUARDIAN-SMS-VIDEO-VIDEO-20260129-v3</div>
+                    <div class="health-value" style="font-family: monospace; font-size: 12px;">GEMINI3-GUARDIAN-SMS-VIDEO-20260131-v4-HOTFIX</div>
                 </div>
             </div>
         </div>
         
         <div class="section">
             <h3>👤 Step 1 — Configuration</h3>
-            <p class="note" style="margin-bottom: 10px;">Enter your name and emergency contact phone number. This information will be Internationaled if an emergency is detected.</p>
-            <input type="text" id="victimName" placeholder="Your Name" value="Demo Internationaler">
+            <p class="note" style="margin-bottom: 10px;">Enter your name and emergency contact phone number. This information will be used if an emergency is detected.</p>
+            <input type="text" id="victimName" placeholder="Your Name" value="Demo User">
             <input type="tel" id="emergencyPhone" placeholder="+1234567890" value="+1234567890">
             <button type="button" class="button primary-btn" onclick="completeStep1()">✅ Complete Step 1</button>
-            <div id="step1StatInternational" class="note">Enter your details and click Complete Step 1</div>
+            <div id="step1Status" class="note">Enter your details and click Complete Step 1</div>
         </div>
         
         <div class="section">
@@ -300,7 +300,7 @@
                 </div>
                 <!-- NEW: Google Maps Live Location Link -->
                 <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #4caf50;">
-                    <a id="googleMapsLink" href="#" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: linear-gradient(45deg, #4285f4, #34a853); color: white; padding: 10px 20px; border-radiInternational: 8px; text-decoration: none; font-weight: bold; font-size: 0.95em;">
+                    <a id="googleMapsLink" href="#" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: linear-gradient(45deg, #4285f4, #34a853); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 0.95em;">
                         🗺️ View Live Location on Google Maps
                     </a>
                     <div style="font-size: 0.85em; color: #666; margin-top: 8px;">
@@ -311,10 +311,10 @@
             
             <div class="controls-row">
                 <button type="button" id="enableLocationBtn" class="button primary-btn" disabled>📍 Enable Location</button>
-                <button type="button" id="demoLocationBtn" class="button secondary-btn">🎯 Internationale Demo Location</button>
+                <button type="button" id="demoLocationBtn" class="button secondary-btn">🎯 Use Demo Location</button>
             </div>
             
-            <div id="step2ProofBox" style="background: #f8f9fa; border: 2px solid #007bff; padding: 10px; border-radiInternational: 5px; margin: 10px 0; font-family: monospace; font-size: 0.85em; min-height: 60px;">
+            <div id="step2ProofBox" style="background: #f8f9fa; border: 2px solid #007bff; padding: 10px; border-radius: 5px; margin: 10px 0; font-family: monospace; font-size: 0.85em; min-height: 60px;">
                 <strong>🔍 Step 2 Proof (UI-Visible):</strong><br>
                 <div id="step2ProofLog" style="color: #495057; white-space: pre-wrap;">Complete Step 1, then click "Enable Location" to see proof logs appear here...</div>
             </div>
@@ -325,14 +325,14 @@
         <div class="section">
             <h3>
                 🎤 Step 3 — Voice Emergency Detection
-                <span id="micStatInternationalBadge" class="mic-statInternational-badge idle">Idle</span>
+                <span id="micStatusBadge" class="mic-status-badge idle">Idle</span>
             </h3>
             
             <!-- NEW: Emergency Keywords Configuration -->
             <div class="keywords-config">
                 <h4>⚙️ Emergency Keywords Configuration</h4>
                 <div class="keywords-config-description">
-                    These words/phrases will trigger emergency detection when spoken. CInternationaltomize them for your needs.
+                    These words/phrases will trigger emergency detection when spoken. Customize them for your needs.
                 </div>
                 <div class="keywords-list" id="keywordsList">
                     <!-- Keywords will be rendered here -->
@@ -356,7 +356,7 @@
                 <button id="resetEmergencyBtn" class="reset-emergency-btn" style="display:none;" onclick="resetEmergencyState()">🔄 Reset Emergency State</button>
             </div>
             
-            <div id="voiceStatInternational" class="note">Complete Steps 1 & 2 to enable voice detection</div>
+            <div id="voiceStatus" class="note">Complete Steps 1 & 2 to enable voice detection</div>
             
             <!-- NEW: Live Transcript Box -->
             <div id="transcriptBox" class="transcript-box" style="display:none;">
@@ -366,7 +366,7 @@
                 </div>
             </div>
             
-            <div id="step3ProofBox" style="background: #f8f9fa; border: 2px solid #007bff; padding: 10px; border-radiInternational: 5px; margin: 10px 0; font-family: monospace; font-size: 0.85em; min-height: 40px; display:none;">
+            <div id="step3ProofBox" style="background: #f8f9fa; border: 2px solid #007bff; padding: 10px; border-radius: 5px; margin: 10px 0; font-family: monospace; font-size: 0.85em; min-height: 40px; display:none;">
                 <strong>🔍 Step 3 Proof (Mic Events):</strong><br>
                 <div id="step3ProofLog" style="color: #495057; white-space: pre-wrap;"></div>
             </div>
@@ -378,13 +378,13 @@
             <div id="visionContextPanel" class="vision-context-panel">
                 <h4>🎥 Visual Context (Gemini Vision) — Video Frames</h4>
                 
-                <div id="visionStatInternationalBadge" class="vision-statInternational-badge standby">
+                <div id="visionStatusBadge" class="vision-status-badge standby">
                     <span>Standby</span>
                 </div>
                 
                 <div id="visionExplainer" class="vision-explainer">
                     <p><strong>Standby:</strong> Activates automatically during detected risk to corroborate audio/text signals.</p>
-                    <p><strong>Capture policy:</strong> Captures 1–3 video frames during emergency. No continuoInternational recording.</p>
+                    <p><strong>Capture policy:</strong> Captures 1–3 video frames during emergency. No continuous recording.</p>
                 </div>
                 
                 <!-- Video Frames Placeholders (Always Visible Before Trigger) -->
@@ -392,17 +392,17 @@
                     <h5 style="margin: 10px 0; color: #6c757d; font-size: 1em;">📹 Video Frames (Standby)</h5>
                     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                         <div class="frame-placeholder">
-                            <div style="width: 120px; height: 90px; background: #e9ecef; border: 2px dashed #adb5bd; border-radiInternational: 6px; display: flex; align-items: center; jInternationaltify-content: center; color: #6c757d; font-size: 0.85em; text-align: center; padding: 5px;">
+                            <div style="width: 120px; height: 90px; background: #e9ecef; border: 2px dashed #adb5bd; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #6c757d; font-size: 0.85em; text-align: center; padding: 5px;">
                                 Frame 1<br>not captured
                             </div>
                         </div>
                         <div class="frame-placeholder">
-                            <div style="width: 120px; height: 90px; background: #e9ecef; border: 2px dashed #adb5bd; border-radiInternational: 6px; display: flex; align-items: center; jInternationaltify-content: center; color: #6c757d; font-size: 0.85em; text-align: center; padding: 5px;">
+                            <div style="width: 120px; height: 90px; background: #e9ecef; border: 2px dashed #adb5bd; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #6c757d; font-size: 0.85em; text-align: center; padding: 5px;">
                                 Frame 2<br>not captured
                             </div>
                         </div>
                         <div class="frame-placeholder">
-                            <div style="width: 120px; height: 90px; background: #e9ecef; border: 2px dashed #adb5bd; border-radiInternational: 6px; display: flex; align-items: center; jInternationaltify-content: center; color: #6c757d; font-size: 0.85em; text-align: center; padding: 5px;">
+                            <div style="width: 120px; height: 90px; background: #e9ecef; border: 2px dashed #adb5bd; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #6c757d; font-size: 0.85em; text-align: center; padding: 5px;">
                                 Frame 3<br>not captured
                             </div>
                         </div>
@@ -412,11 +412,11 @@
                 <div id="visionPlaceholders" class="vision-placeholders">
                     <p><strong>Findings:</strong> —</p>
                     <p><strong>Confidence:</strong> —</p>
-                    <p><strong>Vision/Video StatInternational:</strong> Standby</p>
+                    <p><strong>Vision/Video Status:</strong> Standby</p>
                 </div>
                 
-                <div id="visionTriggerReason" style="background: #fff3cd; padding: 12px; border-radiInternational: 6px; margin: 10px 0; font-size: 0.95em; color: #856404; border-left: 4px solid #ffc107; display:none;">
-                    <p><strong>Activated becaInternationale:</strong> <span id="visionTriggerText">—</span></p>
+                <div id="visionTriggerReason" style="background: #fff3cd; padding: 12px; border-radius: 6px; margin: 10px 0; font-size: 0.95em; color: #856404; border-left: 4px solid #ffc107; display:none;">
+                    <p><strong>Activated becaUse:</strong> <span id="visionTriggerText">—</span></p>
                 </div>
                 
                 <div id="visionThumbnails" class="vision-thumbnails" style="display:none;">
@@ -440,7 +440,7 @@
                 </div>
                 
                 <div class="vision-why-helps">
-                    💡 Why this helps: Visual context helps responders validate environment risk when voice is limited or ambiguoInternational.
+                    💡 Why this helps: Visual context helps responders validate environment risk when voice is limited or ambiguous.
                 </div>
             </div>
             
@@ -448,7 +448,7 @@
             <p class="note" style="margin-bottom: 10px;">Gemini 1.5 Pro analyzes the emergency transcript to assess threat level and recommend appropriate response actions.</p>
             <textarea id="audioInput" placeholder="Enter emergency text...">Help! Someone is following me and I'm scared!</textarea>
             <button class="button emergency" onclick="triggerGemini3Analysis()">🤖 Analyze with Gemini3</button>
-            <div id="threatLevelOutput" style="margin-top:15px;padding:12px;background:#fff;border:2px solid #ddd;border-radiInternational:5px;display:none;">
+            <div id="threatLevelOutput" style="margin-top:15px;padding:12px;background:#fff;border:2px solid #ddd;border-radius:5px;display:none;">
                 <strong>Threat Level:</strong> <span id="threatLevel" style="font-size:1.2em;font-weight:bold;"></span><br>
                 <strong>Confidence:</strong> <span id="threatConfidence"></span><br>
                 <strong>Analysis:</strong> <span id="threatAnalysis"></span>
@@ -513,13 +513,13 @@
             <div id="smsDeliveryProofPanel" class="sms-preview-panel" style="background: #e8f5e9; border-color: #4caf50; display:none;">
                 <h4>📡 SMS Delivery Proof</h4>
                 <div class="sms-preview-description">
-                    Real-time delivery statInternational with complete API response. No guessing - shows actual SNS publish result.
+                    Real-time delivery status with complete API response. No guessing - shows actual SNS publish result.
                 </div>
                 
                 <div class="sms-preview-fields">
                     <div class="sms-field">
-                        <span class="sms-field-label">StatInternational:</span>
-                        <span class="sms-field-value" id="sms-delivery-statInternational" style="font-weight:bold;">NOT_SENT</span>
+                        <span class="sms-field-label">Status:</span>
+                        <span class="sms-field-value" id="sms-delivery-status" style="font-weight:bold;">NOT_SENT</span>
                     </div>
                     <div class="sms-field">
                         <span class="sms-field-label">Provider:</span>
@@ -538,8 +538,8 @@
                         <span class="sms-field-value" id="sms-delivery-destination">—</span>
                     </div>
                     <div class="sms-field">
-                        <span class="sms-field-label">HTTP StatInternational:</span>
-                        <span class="sms-field-value" id="sms-delivery-http-statInternational">—</span>
+                        <span class="sms-field-label">HTTP Status:</span>
+                        <span class="sms-field-value" id="sms-delivery-http-status">—</span>
                     </div>
                     <div class="sms-field">
                         <span class="sms-field-label">Timestamp:</span>
@@ -547,7 +547,7 @@
                     </div>
                 </div>
                 
-                <div id="smsDeliveryError" style="background: #f8d7da; padding: 12px; border-radiInternational: 5px; margin: 10px 0; display:none;">
+                <div id="smsDeliveryError" style="background: #f8d7da; padding: 12px; border-radius: 5px; margin: 10px 0; display:none;">
                     <strong>❌ Delivery Failed:</strong><br>
                     <div style="margin-top: 8px;">
                         <strong>Error Code:</strong> <span id="smsDeliveryErrorCode">—</span><br>
@@ -555,7 +555,7 @@
                     </div>
                 </div>
                 
-                <div id="smsDeliverySuccess" style="background: #d4edda; padding: 12px; border-radiInternational: 5px; margin: 10px 0; display:none;">
+                <div id="smsDeliverySuccess" style="background: #d4edda; padding: 12px; border-radius: 5px; margin: 10px 0; display:none;">
                     <strong>✅ SMS Delivered Successfully</strong><br>
                     <div style="margin-top: 8px; font-family: monospace; font-size: 0.9em;">
                         SNS MessageId: <span id="smsSuccessMessageId">—</span>
@@ -571,8 +571,8 @@
             
 </div>
             
-            <div id="step5StatInternational" class="note">Ready to send alert (complete Steps 1-4 first)</div>
-            <div id="alertResult" style="display:none;margin-top:10px;padding:12px;background:#d4edda;border:1px solid #28a745;border-radiInternational:5px;">
+            <div id="step5Status" class="note">Ready to send alert (complete Steps 1-4 first)</div>
+            <div id="alertResult" style="display:none;margin-top:10px;padding:12px;background:#d4edda;border:1px solid #28a745;border-radius:5px;">
                 <strong>✅ Alert Sent!</strong><br>
                 <span id="alertDetails"></span>
             </div>
@@ -608,7 +608,7 @@
                 } catch (error) {
                     console.warn('[KEYWORDS] Error loading from localStorage:', error);
                 }
-                console.log('[KEYWORDS] Internationaling default keywords');
+                console.log('[KEYWORDS] Using default keywords');
                 return [...this.defaultKeywords];
             }
             
@@ -642,7 +642,7 @@
                     return false;
                 }
                 
-                this.keywords.pInternationalh(keyword.trim());
+                this.keywords.push(keyword.trim());
                 this.saveKeywords(this.keywords);
                 console.log('[KEYWORDS] Added:', keyword.trim());
                 return true;
@@ -654,7 +654,7 @@
             removeKeyword(keyword) {
                 // Prevent removal of last keyword
                 if (this.keywords.length <= 1) {
-                    alert('You mInternationalt have at least one emergency keyword configured');
+                    alert('You must have at least one emergency keyword configured');
                     return false;
                 }
                 
@@ -733,7 +733,7 @@
                     const words = normalizedKeyword.split(' ');
                     
                     if (words.length === 1) {
-                        // Single word: Internationale word boundary matching
+                        // Single word: Use word boundary matching
                         if (this.matchExactWord(normalized, normalizedKeyword)) {
                             return {
                                 matched: true,
@@ -742,7 +742,7 @@
                             };
                         }
                     } else {
-                        // Multi-word phrase: Internationale substring matching
+                        // Multi-word phrase: Use substring matching
                         if (this.matchPhraseSubstring(normalized, normalizedKeyword)) {
                             return {
                                 matched: true,
@@ -907,12 +907,12 @@
         let transcriptHistory = [];
 
         // ========== GLOBAL CONFIGURATION ==========
-        const BUILD_ID = 'GEMINI3-GUARDIAN-SMS-VIDEO-VIDEO-20260129-v3';
-        const SMS_API_URL = 'https://q4ouvfydgod6o734zbfipyi45q0lyuhx.lambda-url.International-east-1.on.aws/';
+        const BUILD_ID = 'GEMINI3-GUARDIAN-SMS-VIDEO-20260131-v4-HOTFIX';
+        const SMS_API_URL = 'https://q4ouvfydgod6o734zbfipyi45q0lyuhx.lambda-url.us-east-1.on.aws/';
 
         window.addEventListener('DOMContentLoaded', () => {
         console.log('[SMS-CONFIG] Build ID:', BUILD_ID);
-        console.log('[SMS-CONFIG] API URL:', SMS_API_URL);
+        console.log('[SMS-CONFIG] SMS API configured (URL available for user-triggered actions)');
         
 
             updateGemini3Health('DEMO', 'warning');
@@ -956,14 +956,14 @@
             }
             
             recognition = new SpeechRecognition();
-            recognition.continuoInternational = true;
+            recognition.continuous = true;
             recognition.interimResults = true;
-            recognition.lang = 'en-International';
+            recognition.lang = 'en-US';
             
             recognition.onstart = function() {
                 console.log('[STEP3] Microphone started');
                 addStep3ProofToUI('[STEP3][EVENT] Listening started');
-                updateMicStatInternational;
+                updateMicStatus('listening');
                 __ALLSENSES_STATE.voiceActive = true;
             };
             
@@ -982,7 +982,7 @@
                 
                 if (finalTranscript) {
                     const timestamp = new Date().toLocaleTimeString();
-                    transcriptHistory.pInternationalh({ time: timestamp, text: finalTranscript.trim() });
+                    transcriptHistory.push({ time: timestamp, text: finalTranscript.trim() });
                     addStep3ProofToUI(`[STEP3][TRANSCRIPT][FINAL] "${finalTranscript.trim().substring(0, 50)}..."`);
                     updateTranscriptDisplay();
                     
@@ -1001,7 +1001,7 @@
             recognition.onerror = function(event) {
                 console.error('[STEP3] Recognition error:', event.error);
                 addStep3ProofToUI(`[STEP3][ERROR] ${event.error}`);
-                updateMicStatInternational;
+                updateMicStatus('error');
                 
                 if (event.error === 'not-allowed') {
                     alert('Microphone permission denied. Please allow microphone access in browser settings.');
@@ -1011,12 +1011,15 @@
             recognition.onend = function() {
                 console.log('[STEP3] Microphone stopped');
                 addStep3ProofToUI('[STEP3][EVENT] Listening stopped');
-                updateMicStatInternational;
+                updateMicStatus('stopped');
                 __ALLSENSES_STATE.voiceActive = false;
             };
             
             console.log('[STEP3] Speech Recognition initialized');
         }
+
+        // Runtime proof: Verify completeStep1 is loaded
+        console.log("[BOOT] JS loaded; completeStep1 type =", typeof window.completeStep1);
 
         // ========== STEP 2: LOCATION FUNCTIONS ==========
         function setGpsStatus(status) {
@@ -1034,10 +1037,10 @@
             if (element) element.textContent = accuracy;
         }
 
-        function updateGemini3Health(statInternational, level = 'normal') {
-            const statInternationalEl = document.getElementById('gemini3-statInternational');
+        function updateGemini3Health(status, level = 'normal') {
+            const statusEl = document.getElementById('gemini3-status');
             const healthEl = document.getElementById('health-gemini3');
-            if (statInternationalEl) statInternationalEl.textContent = statInternational;
+            if (statusEl) statusEl.textContent = status;
             if (healthEl) {
                 healthEl.className = 'health-item';
                 if (level === 'warning') healthEl.classList.add('warning');
@@ -1061,9 +1064,9 @@
             }
         }
 
-        function updateLocationHealth(statInternational) {
+        function updateLocationHealth(status) {
             const el = document.getElementById('location-health');
-            if (el) el.textContent = statInternational;
+            if (el) el.textContent = status;
         }
 
         function addStep2ProofToUI(message) {
@@ -1127,7 +1130,7 @@
                 }
                 
                 if (!e164Regex.test(phone)) {
-                    alert('Phone number mInternationalt be in E.164 format (e.g., +1234567890)\n\nFormat: +[country code][number]\nExample: +12025551234');
+                    alert('Phone number must be in E.164 format (e.g., +1234567890)\n\nFormat: +[country code][number]\nExample: +12025551234');
                     return;
                 }
                 
@@ -1139,25 +1142,41 @@
                 manualSmsSection.style.display = 'block';
                 console.log('[STEP1] Manual SMS test button now visible');
             }
-                document.getElementById('step1StatInternational').textContent = '✅ Configuration saved';
-                document.getElementById('step1StatInternational').style.color = '#28a745';
+                document.getElementById('step1Status').textContent = '✅ Configuration saved';
+                document.getElementById('step1Status').style.color = '#28a745';
                 document.getElementById('enableLocationBtn').disabled = false;
                 document.getElementById('step2ProofLog').textContent = 'Step 1 complete! Now click "Enable Location" to see proof logs...';
                 updatePipelineState('STEP1_COMPLETE');
                 updateSmsPreview();
                 
+                
+                // FORCE Step 2 enable (failsafe)
+                const step2Btn = document.querySelector("#enableLocationBtn") || [...document.querySelectorAll("button")].find(x => x.innerText.includes("Enable Location"));
+                if (step2Btn) {
+                    step2Btn.disabled = false;
+                    step2Btn.classList.remove("disabled");
+                    console.log("[STEP1] Step 2 button force-enabled");
+                }
+                
+                // Visible success proof log
+                console.log("[STEP1] ✅ Configuration complete - Step 2 unlocked");
+                addStep2ProofToUI("[STEP1] ✅ Configuration complete - Step 2 now enabled");
+
                 console.log('[STEP1] Configuration saved:', { name, phone });
                 
             } catch (error) {
                 console.error('[STEP1] ERROR:', error);
                 alert('Step 1 error: ' + error.message);
-                document.getElementById('step1StatInternational').textContent = '❌ Error: ' + error.message;
-                document.getElementById('step1StatInternational').style.color = '#dc3545';
+                document.getElementById('step1Status').textContent = '❌ Error: ' + error.message;
+                document.getElementById('step1Status').style.color = '#dc3545';
             }
         }
         
         // Export to global scope for onclick handler
         window.completeStep1 = completeStep1;
+        
+        // Runtime proof: Verify completeStep1 is loaded
+        console.log("[BOOT] JS loaded; completeStep1 type =", typeof window.completeStep1);
 
         function enableLocationFromUserGesture() {
             console.log("[STEP2][PROOF 1] Click handler reached");
@@ -1306,17 +1325,17 @@
         // ========== STEP 3: VOICE DETECTION FUNCTIONS ==========
         function enableStep3() {
             document.getElementById('startVoiceBtn').disabled = false;
-            document.getElementById('voiceStatInternational').textContent = '✅ Ready - Click Start Voice Detection';
+            document.getElementById('voiceStatus').textContent = '✅ Ready - Click Start Voice Detection';
             document.getElementById('step3ProofBox').style.display = 'block';
         }
 
-        function updateMicStatInternational {
-            const badge = document.getElementById('micStatInternationalBadge');
+        function updateMicStatus(status) {
+            const badge = document.getElementById('micStatusBadge');
             if (!badge) return;
             
-            badge.className = 'mic-statInternational-badge ' + statInternational;
+            badge.className = 'mic-status-badge ' + status;
             
-            const statInternationalText = {
+            const statusText = {
                 'idle': 'Idle',
                 'requesting': 'Requesting Permission',
                 'listening': '🎤 Listening',
@@ -1324,7 +1343,7 @@
                 'error': 'Error'
             };
             
-            badge.textContent = statInternationalText[statInternational] || statInternational;
+            badge.textContent = statusText[status] || status;
         }
 
         function addStep3ProofToUI(message) {
@@ -1378,7 +1397,7 @@
 
         function startVoiceDetection() {
             if (!recognition) {
-                alert('Speech Recognition not supported in this browser. Please Internationale Chrome.');
+                alert('Speech Recognition not supported in this browser. Please Use Chrome.');
                 addStep3ProofToUI('[STEP3][ERROR] Speech Recognition not supported');
                 return;
             }
@@ -1390,7 +1409,7 @@
             
             console.log('[STEP3] Starting voice detection');
             addStep3ProofToUI('[STEP3][EVENT] Mic permission requested');
-            updateMicStatInternational;
+            updateMicStatus('requesting');
             updatePipelineState('STEP3_LISTENING');
             
             try {
@@ -1404,7 +1423,7 @@
             } catch (error) {
                 console.error('[STEP3] Start error:', error);
                 addStep3ProofToUI(`[STEP3][ERROR] ${error.message}`);
-                updateMicStatInternational;
+                updateMicStatus('error');
             }
         }
 
@@ -1465,19 +1484,19 @@
                 // Update SMS preview with analysis results
                 updateSmsPreview();
                 
-                // NEW (v3): Update Step 5 statInternational after analysis completes
-                const step5StatInternational = document.getElementById('step5StatInternational');
-                if (step5StatInternational) {
+                // NEW (v3): Update Step 5 status after analysis completes
+                const step5Status = document.getElementById('step5Status');
+                if (step5Status) {
                     if (result.risk_level === 'HIGH' || result.risk_level === 'CRITICAL') {
-                        step5StatInternational.textContent = '🚨 Ready to send alert | Auto-alert will send on HIGH/CRITICAL';
-                        step5StatInternational.style.color = '#dc3545';
-                        step5StatInternational.style.fontWeight = 'bold';
+                        step5Status.textContent = '🚨 Ready to send alert | Auto-alert will send on HIGH/CRITICAL';
+                        step5Status.style.color = '#dc3545';
+                        step5Status.style.fontWeight = 'bold';
                     } else {
-                        step5StatInternational.textContent = '✅ Ready to send alert (manual test available)';
-                        step5StatInternational.style.color = '#28a745';
+                        step5Status.textContent = '✅ Ready to send alert (manual test available)';
+                        step5Status.style.color = '#28a745';
                     }
                 }
-                console.log('[STEP5][STATInternational] Updated statInternational after analysis:', result.risk_level);
+                console.log('[STEP5][STATUS] Updated status after analysis:', result.risk_level);
                 
                 threatOutput.setAttribute('data-threat', result.risk_level);
                 
@@ -1522,19 +1541,19 @@
             let indicators = [];
             
             if (hasHelp) {
-                indicators.pInternationalh('explicit_help_request');
+                indicators.push('explicit_help_request');
                 confidence += 0.2;
             }
             if (hasScared) {
-                indicators.pInternationalh('fear_expressed');
+                indicators.push('fear_expressed');
                 confidence += 0.15;
             }
             if (hasFollowing) {
-                indicators.pInternationalh('stalking_concern');
+                indicators.push('stalking_concern');
                 confidence += 0.15;
             }
             if (hasUnsafe) {
-                indicators.pInternationalh('safety_concern');
+                indicators.push('safety_concern');
                 confidence += 0.1;
             }
             
@@ -1577,11 +1596,11 @@
             console.log('[STEP5][AUTO] Emergency-cycle SMS sending started');
             updatePipelineState('STEP5_ALERTING');
             
-            const step5StatInternational = document.getElementById('step5StatInternational');
+            const step5Status = document.getElementById('step5Status');
             const alertResult = document.getElementById('alertResult');
             const alertDetails = document.getElementById('alertDetails');
             
-            step5StatInternational.textContent = '🚨 Sending emergency alerts...';
+            step5Status.textContent = '🚨 Sending emergency alerts...';
             
             // Final SMS preview update before sending
             updateSmsPreview();
@@ -1620,8 +1639,8 @@
                     Time: ${new Date().toLocaleTimeString()}
                 `;
                 
-                step5StatInternational.textContent = '✅ Emergency alerts sent successfully';
-                step5StatInternational.style.color = '#28a745';
+                step5Status.textContent = '✅ Emergency alerts sent successfully';
+                step5Status.style.color = '#28a745';
                 updatePipelineState('STEP5_COMPLETE');
                 
                 console.log('[STEP5][AUTO] Emergency SMS sent successfully, MessageId:', result.messageId);
@@ -1636,8 +1655,8 @@
                     <em>Check SMS Delivery Proof panel below for details</em>
                 `;
                 
-                step5StatInternational.textContent = '❌ SMS sending failed: ' + result.error;
-                step5StatInternational.style.color = '#dc3545';
+                step5Status.textContent = '❌ SMS sending failed: ' + result.error;
+                step5Status.style.color = '#dc3545';
                 updatePipelineState('STEP5_FAILED');
                 
                 console.error('[STEP5][AUTO] Emergency SMS failed:', result.error);
@@ -1646,7 +1665,7 @@
 
         // ========== EMERGENCY DETECTION ==========
         function checkForEmergencyKeywords(transcript) {
-            // Internationale KeywordDetectionEngine for matching
+            // Use KeywordDetectionEngine for matching
             const result = keywordDetector.detectKeyword(transcript);
             
             if (result.matched) {
@@ -1674,9 +1693,9 @@
             updatePipelineState('STEP3_EMERGENCY_TRIGGERED');
             
             // Update Step 3 badge
-            const badge = document.getElementById('micStatInternationalBadge');
+            const badge = document.getElementById('micStatusBadge');
             if (badge) {
-                badge.className = 'mic-statInternational-badge emergency-detected';
+                badge.className = 'mic-status-badge emergency-detected';
                 badge.textContent = '🚨 EMERGENCY DETECTED';
             }
             
@@ -1755,7 +1774,7 @@
         }
 
         // ========== EVENT LISTENERS ==========
-        document.getElementById('enableLocationBtn').addEventListener('click', enableLocationFromInternationalerGesture);
+        document.getElementById('enableLocationBtn').addEventListener('click', enableLocationFromUserGesture);
         document.getElementById('demoLocationBtn').addEventListener('click', activateDemoLocationMode);
         document.getElementById('startVoiceBtn').addEventListener('click', startVoiceDetection);
         document.getElementById('stopVoiceBtn').addEventListener('click', stopVoiceDetection);
@@ -1802,9 +1821,9 @@
             if (modal) modal.style.display = 'none';
             
             // Reset badge
-            const badge = document.getElementById('micStatInternationalBadge');
+            const badge = document.getElementById('micStatusBadge');
             if (badge) {
-                badge.className = 'mic-statInternational-badge idle';
+                badge.className = 'mic-status-badge idle';
                 badge.textContent = 'Idle';
             }
             
@@ -1828,7 +1847,7 @@
          * Compose alert payload with all required fields
          */
         function composeAlertPayload() {
-            const victimName = document.getElementById('victimName')?.value.trim() || 'Unknown Internationaler';
+            const victimName = document.getElementById('victimName')?.value.trim() || 'Unknown User';
             const emergencyPhone = document.getElementById('emergencyPhone')?.value.trim() || 'Not provided';
             
             // Get threat analysis data
@@ -1950,7 +1969,7 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
             const missingFunctions = [];
             requiredFunctions.forEach(funcName => {
                 if (typeof window[funcName] !== 'function') {
-                    missingFunctions.pInternationalh(funcName);
+                    missingFunctions.push(funcName);
                 }
             });
             
@@ -1977,7 +1996,7 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
             const missingElements = [];
             requiredElements.forEach(elemId => {
                 if (!document.getElementById(elemId)) {
-                    missingElements.pInternationalh(elemId);
+                    missingElements.push(elemId);
                 }
             });
             
@@ -1987,7 +2006,7 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
                 console.log('[BUILD-VALIDATION] PASSED - All required DOM elements present');
             }
             
-            console.log('[BUILD-VALIDATION] Build: GEMINI3-GUARDIAN-SMS-VIDEO-20260130-v1');
+            console.log('[BUILD-VALIDATION] Build: GEMINI3-GUARDIAN-SMS-VIDEO-20260131-v4-HOTFIX');
         });
 
     
@@ -2007,33 +2026,33 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
             
             // Add vision lifecycle proof logs
             addVisionProofLog('[STANDBY → TRIGGERED] Emergency detected, activating vision capture');
-            updateVisionStatInternational;
+            updateVisionStatus('capturing');
             
             setTimeout(() => {
                 addVisionProofLog('[CAPTURING] Capturing video frames...');
                 setTimeout(() => {
                     addVisionProofLog('[CAPTURED] 3 frames captured successfully');
                     addVisionProofLog('[ANALYZING] Sending frames to Gemini Vision API...');
-                    updateVisionStatInternational;
+                    updateVisionStatus('analyzing');
                     
                     setTimeout(() => {
                         addVisionProofLog('[ANALYSIS COMPLETE] Vision analysis complete');
-                        updateVisionStatInternational;
+                        updateVisionStatus('complete');
                         showVisionFindings();
                     }, 1500);
                 }, 1000);
             }, 500);
         };
         
-        function updateVisionStatInternational {
-            const badge = document.getElementById('visionStatInternationalBadge');
+        function updateVisionStatus(status) {
+            const badge = document.getElementById('visionStatusBadge');
             const placeholders = document.getElementById('visionPlaceholders');
             
             if (!badge) return;
             
-            badge.className = 'vision-statInternational-badge ' + statInternational;
+            badge.className = 'vision-status-badge ' + status;
             
-            const statInternationalText = {
+            const statusText = {
                 'standby': 'Standby',
                 'capturing': '📹 Capturing Frames',
                 'analyzing': '🤖 Analyzing',
@@ -2041,12 +2060,12 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
                 'error': '❌ Error'
             };
             
-            badge.textContent = statInternationalText[statInternational] || statInternational;
+            badge.textContent = statusText[status] || status;
             
             if (placeholders) {
-                const statInternationalLine = placeholders.querySelector('p:last-child');
-                if (statInternationalLine) {
-                    statInternationalLine.innerHTML = `<strong>Vision/Video StatInternational:</strong> ${statInternationalText[statInternational] || statInternational}`;
+                const statusLine = placeholders.querySelector('p:last-child');
+                if (statusLine) {
+                    statusLine.innerHTML = `<strong>Vision/Video Status:</strong> ${statusText[status] || status}`;
                 }
             }
         }
@@ -2079,7 +2098,7 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
                 placeholders.innerHTML = `
                     <p><strong>Findings:</strong> 4 environmental indicators detected</p>
                     <p><strong>Confidence:</strong> Medium (demo mode)</p>
-                    <p><strong>Vision/Video StatInternational:</strong> Analysis Complete</p>
+                    <p><strong>Vision/Video Status:</strong> Analysis Complete</p>
                 `;
             }
             
@@ -2105,17 +2124,17 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
                     <h5 style="margin: 10px 0; color: #2c5aa0; font-size: 1em;">📹 Video Frames (Captured)</h5>
                     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                         <div class="frame-placeholder">
-                            <div style="width: 120px; height: 90px; background: #d1e7dd; border: 2px solid #198754; border-radiInternational: 6px; display: flex; align-items: center; jInternationaltify-content: center; color: #0f5132; font-size: 0.85em; text-align: center; padding: 5px;">
+                            <div style="width: 120px; height: 90px; background: #d1e7dd; border: 2px solid #198754; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #0f5132; font-size: 0.85em; text-align: center; padding: 5px;">
                                 Frame 1<br>✓ captured
                             </div>
                         </div>
                         <div class="frame-placeholder">
-                            <div style="width: 120px; height: 90px; background: #d1e7dd; border: 2px solid #198754; border-radiInternational: 6px; display: flex; align-items: center; jInternationaltify-content: center; color: #0f5132; font-size: 0.85em; text-align: center; padding: 5px;">
+                            <div style="width: 120px; height: 90px; background: #d1e7dd; border: 2px solid #198754; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #0f5132; font-size: 0.85em; text-align: center; padding: 5px;">
                                 Frame 2<br>✓ captured
                             </div>
                         </div>
                         <div class="frame-placeholder">
-                            <div style="width: 120px; height: 90px; background: #d1e7dd; border: 2px solid #198754; border-radiInternational: 6px; display: flex; align-items: center; jInternationaltify-content: center; color: #0f5132; font-size: 0.85em; text-align: center; padding: 5px;">
+                            <div style="width: 120px; height: 90px; background: #d1e7dd; border: 2px solid #198754; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #0f5132; font-size: 0.85em; text-align: center; padding: 5px;">
                                 Frame 3<br>✓ captured
                             </div>
                         </div>
@@ -2126,7 +2145,7 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
                 `;
             }
             
-            addVisionProofLog('[UI] Vision findings displayed to Internationaler');
+            addVisionProofLog('[UI] Vision findings displayed to User');
         }
     
         // ========== SMS SENDING FUNCTIONS (v4 - Production Hardened) ==========
@@ -2140,8 +2159,8 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
         async function sendSms(payload, isManualTest = false) {
             const triggerType = isManualTest ? 'MANUAL' : 'AUTO';
             console.log(`[SMS][REQUEST] Sending SMS (${triggerType})...`);
-            console.log(`[SMS][CONFIG] Internationaling SMS_API_URL: ${SMS_API_URL}`);
-            console.log(`[SMS][CONFIG] Internationaling BUILD_ID: ${BUILD_ID}`);
+            console.log(`[SMS][CONFIG] Using SMS_API_URL: ${SMS_API_URL}`);
+            console.log(`[SMS][CONFIG] Using BUILD_ID: ${BUILD_ID}`);
             console.log(`[SMS][PAYLOAD]`, payload);
             
             // Validate global config is accessible
@@ -2154,14 +2173,14 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
                     provider: 'sns',
                     errorCode: 'CONFIG_ERROR',
                     errorMessage: 'Global configuration not accessible (SMS_API_URL or BUILD_ID undefined)',
-                    httpStatInternational: 0
+                    httpStatus: 0
                 };
-                updateDeliveryStatInternational;
+                updateDeliveryStatus;
                 return { ok: false, error: errorResult.errorMessage, result: errorResult };
             }
             
-            // Update delivery statInternational
-            updateDeliveryStatInternational;
+            // Update delivery status
+            updateDeliveryStatus;
             
             try {
                 // Compose SMS text (single source of truth)
@@ -2233,28 +2252,28 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
                             provider: 'sns',
                             errorCode: 'TIMEOUT',
                             errorMessage: 'Request timed out after 30 seconds',
-                            httpStatInternational: 0,
+                            httpStatus: 0,
                             diagnostics: {
                                 url: SMS_API_URL,
                                 triggerType: triggerType,
                                 timestamp: new Date().toISOString()
                             }
                         };
-                        updateDeliveryStatInternational;
+                        updateDeliveryStatus;
                         return { ok: false, error: 'Request timed out after 30 seconds', result: errorResult };
                         
                     } else if (fetchError.message.includes('Failed to fetch')) {
                         console.error('[SMS][ERROR] ❌ CORS or network error - Failed to fetch');
-                        console.error('[SMS][DIAGNOSTIC] This Internationalually means:');
+                        console.error('[SMS][DIAGNOSTIC] This usually means:');
                         console.error('[SMS][DIAGNOSTIC] 1. CORS headers missing from Lambda response');
-                        console.error('[SMS][DIAGNOSTIC]    → Lambda mInternationalt return Access-Control-Allow-Origin: *');
-                        console.error('[SMS][DIAGNOSTIC]    → Lambda mInternationalt return Access-Control-Allow-Methods: POST,OPTIONS');
-                        console.error('[SMS][DIAGNOSTIC]    → Lambda mInternationalt return Access-Control-Allow-Headers: content-type');
+                        console.error('[SMS][DIAGNOSTIC]    → Lambda must return Access-Control-Allow-Origin: *');
+                        console.error('[SMS][DIAGNOSTIC]    → Lambda must return Access-Control-Allow-Methods: POST,OPTIONS');
+                        console.error('[SMS][DIAGNOSTIC]    → Lambda must return Access-Control-Allow-Headers: content-type');
                         console.error('[SMS][DIAGNOSTIC] 2. Lambda URL is incorrect or unreachable');
                         console.error('[SMS][DIAGNOSTIC]    → Current URL:', SMS_API_URL);
                         console.error('[SMS][DIAGNOSTIC]    → Verify Lambda Function URL is correct');
                         console.error('[SMS][DIAGNOSTIC] 3. OPTIONS preflight request failing');
-                        console.error('[SMS][DIAGNOSTIC]    → Check Network tab for OPTIONS request statInternational');
+                        console.error('[SMS][DIAGNOSTIC]    → Check Network tab for OPTIONS request status');
                         console.error('[SMS][DIAGNOSTIC] 4. Network connectivity issue');
                         console.error('[SMS][DIAGNOSTIC]    → Test Lambda URL in separate tab');
                         console.error('[SMS][ERROR] Full error:', fetchError);
@@ -2266,7 +2285,7 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
                             provider: 'sns',
                             errorCode: 'FETCH_EXCEPTION',
                             errorMessage: `Failed to fetch (likely CORS or network). Check console for diagnostics.`,
-                            httpStatInternational: 0,
+                            httpStatus: 0,
                             details: {
                                 errorName: fetchError.name,
                                 errorMessage: fetchError.message,
@@ -2276,12 +2295,12 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
                                 diagnostics: [
                                     'Check Lambda CORS headers (Access-Control-Allow-Origin)',
                                     'Verify Lambda URL is correct and reachable',
-                                    'Check Network tab for OPTIONS preflight statInternational',
+                                    'Check Network tab for OPTIONS preflight status',
                                     'Test Lambda URL directly in browser'
                                 ]
                             }
                         };
-                        updateDeliveryStatInternational;
+                        updateDeliveryStatus;
                         return { ok: false, error: errorResult.errorMessage, result: errorResult };
                         
                     } else {
@@ -2295,7 +2314,7 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
                             provider: 'sns',
                             errorCode: 'FETCH_EXCEPTION',
                             errorMessage: `Fetch error: ${fetchError.message}`,
-                            httpStatInternational: 0,
+                            httpStatus: 0,
                             details: {
                                 errorName: fetchError.name,
                                 errorMessage: fetchError.message,
@@ -2303,14 +2322,14 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
                                 triggerType: triggerType
                             }
                         };
-                        updateDeliveryStatInternational;
+                        updateDeliveryStatus;
                         return { ok: false, error: fetchError.message, result: errorResult };
                     }
                 }
                 
                 const responseTime = Date.now() - startTime;
-                console.log(`[SMS][RESPONSE] ✅ HTTP ${response.statInternational} in ${responseTime}ms`);
-                console.log(`[SMS][RESPONSE] StatInternational text: ${response.statInternationalText}`);
+                console.log(`[SMS][RESPONSE] ✅ HTTP ${response.status} in ${responseTime}ms`);
+                console.log(`[SMS][RESPONSE] Status text: ${response.statusText}`);
                 console.log(`[SMS][RESPONSE] Response URL: ${response.url}`);
                 console.log(`[SMS][RESPONSE] Response type: ${response.type}`);
                 
@@ -2326,7 +2345,7 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
                 // Validate CORS headers
                 if (!corsHeaders['access-control-allow-origin']) {
                     console.warn('[SMS][WARNING] Missing Access-Control-Allow-Origin header!');
-                    console.warn('[SMS][WARNING] This may caInternationale issues in some browsers');
+                    console.warn('[SMS][WARNING] This may caUse issues in some browsers');
                 }
                 
                 // Parse response
@@ -2346,14 +2365,14 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
                         provider: 'sns',
                         errorCode: 'PARSE_ERROR',
                         errorMessage: `Failed to parse response: ${parseError.message}`,
-                        httpStatInternational: response.statInternational,
+                        httpStatus: response.status,
                         details: {
                             parseError: parseError.message,
-                            responseStatInternational: response.statInternational,
-                            responseStatInternationalText: response.statInternationalText
+                            responseStatus: response.status,
+                            responseStatusText: response.statusText
                         }
                     };
-                    updateDeliveryStatInternational;
+                    updateDeliveryStatus;
                     return { ok: false, error: errorResult.errorMessage, result: errorResult };
                 }
                 
@@ -2364,18 +2383,18 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
                     console.log('[SMS][SUCCESS] Message ID:', result.messageId);
                     console.log('[SMS][SUCCESS] Provider:', result.provider);
                     console.log('[SMS][SUCCESS] Destination (masked):', result.toMasked);
-                    console.log('[SMS][SUCCESS] HTTP statInternational:', response.statInternational);
+                    console.log('[SMS][SUCCESS] HTTP status:', response.status);
                     console.log('[SMS][SUCCESS] Response time:', responseTime, 'ms');
                     
-                    updateDeliveryStatInternational;
+                    updateDeliveryStatus;
                     return { ok: true, messageId: result.messageId, result: result };
                     
                 } else {
-                    // FAILURE: Either non-200 HTTP statInternational OR result.ok === false OR missing messageId
+                    // FAILURE: Either non-200 HTTP status OR result.ok === false OR missing messageId
                     const errorMessage = result.errorMessage || result.error || `Backend returned ok:false or missing messageId`;
                     console.error('[SMS][ERROR] ❌ SMS sending failed');
                     console.error('[SMS][ERROR] Error message:', errorMessage);
-                    console.error('[SMS][ERROR] HTTP statInternational:', response.statInternational);
+                    console.error('[SMS][ERROR] HTTP status:', response.status);
                     console.error('[SMS][ERROR] result.ok:', result.ok);
                     console.error('[SMS][ERROR] result.messageId:', result.messageId);
                     console.error('[SMS][ERROR] Full response:', result);
@@ -2385,18 +2404,18 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
                         provider: result.provider || 'sns',
                         errorCode: result.errorCode || 'BACKEND_ERROR',
                         errorMessage: errorMessage,
-                        httpStatInternational: response.statInternational,
+                        httpStatus: response.status,
                         responseBody: result,
                         details: {
-                            httpStatInternational: response.statInternational,
-                            httpStatInternationalText: response.statInternationalText,
+                            httpStatus: response.status,
+                            httpStatusText: response.statusText,
                             resultOk: result.ok,
                             hasMessageId: !!result.messageId,
                             apiError: result.errorMessage || result.error,
                             apiErrorCode: result.errorCode
                         }
                     };
-                    updateDeliveryStatInternational;
+                    updateDeliveryStatus;
                     return { ok: false, error: errorMessage, result: errorResult };
                 }
                 
@@ -2411,41 +2430,41 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
                     provider: 'sns',
                     errorCode: 'UNEXPECTED_ERROR',
                     errorMessage: `Unexpected error: ${error.message}`,
-                    httpStatInternational: 0,
+                    httpStatus: 0,
                     details: {
                         errorName: error.name,
                         errorMessage: error.message,
                         errorStack: error.stack
                     }
                 };
-                updateDeliveryStatInternational;
+                updateDeliveryStatus;
                 return { ok: false, error: error.message, result: errorResult };
             }
         }
         
         /**
-         * Update SMS delivery statInternational in UI (v3 - Enhanced with all fields)
+         * Update SMS delivery status in UI (v3 - Enhanced with all fields)
          */
-        function updateDeliveryStatInternational {
+        function updateDeliveryStatus {
             // Show delivery proof panel
             const panel = document.getElementById('smsDeliveryProofPanel');
             if (panel) panel.style.display = 'block';
             
-            // Update statInternational
-            const statInternationalEl = document.getElementById('sms-delivery-statInternational');
-            if (statInternationalEl) {
-                statInternationalEl.textContent = statInternational;
-                statInternationalEl.style.fontWeight = 'bold';
+            // Update status
+            const statusEl = document.getElementById('sms-delivery-status');
+            if (statusEl) {
+                statusEl.textContent = status;
+                statusEl.style.fontWeight = 'bold';
                 
                 // Color coding
-                if (statInternational === 'SENT') {
-                    statInternationalEl.style.color = '#28a745';
-                } else if (statInternational === 'SENDING') {
-                    statInternationalEl.style.color = '#ffc107';
-                } else if (statInternational === 'FAILED') {
-                    statInternationalEl.style.color = '#dc3545';
+                if (status === 'SENT') {
+                    statusEl.style.color = '#28a745';
+                } else if (status === 'SENDING') {
+                    statusEl.style.color = '#ffc107';
+                } else if (status === 'FAILED') {
+                    statusEl.style.color = '#dc3545';
                 } else {
-                    statInternationalEl.style.color = '#6c757d';
+                    statusEl.style.color = '#6c757d';
                 }
             }
             
@@ -2469,9 +2488,9 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
             const reqIdEl = document.getElementById('sms-delivery-request-id');
             if (reqIdEl) reqIdEl.textContent = apiResponse?.requestId || '—';
             
-            // Update HTTP statInternational
-            const httpStatInternationalEl = document.getElementById('sms-delivery-http-statInternational');
-            if (httpStatInternationalEl) httpStatInternationalEl.textContent = apiResponse?.httpStatInternational || (statInternational === 'SENT' ? '200' : '—');
+            // Update HTTP status
+            const httpStatusEl = document.getElementById('sms-delivery-http-status');
+            if (httpStatusEl) httpStatusEl.textContent = apiResponse?.httpStatus || (status === 'SENT' ? '200' : '—');
             
             // Show/hide success/error panels
             const errorDiv = document.getElementById('smsDeliveryError');
@@ -2480,11 +2499,11 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
             const errorTextEl = document.getElementById('smsDeliveryErrorText');
             const successMsgIdEl = document.getElementById('smsSuccessMessageId');
             
-            if (statInternational === 'SENT' && successDiv) {
+            if (status === 'SENT' && successDiv) {
                 successDiv.style.display = 'block';
                 if (successMsgIdEl) successMsgIdEl.textContent = apiResponse?.messageId || '—';
                 if (errorDiv) errorDiv.style.display = 'none';
-            } else if (statInternational === 'FAILED' && errorDiv) {
+            } else if (status === 'FAILED' && errorDiv) {
                 errorDiv.style.display = 'block';
                 if (errorCodeEl) errorCodeEl.textContent = apiResponse?.errorCode || 'UNKNOWN_ERROR';
                 if (errorTextEl) errorTextEl.textContent = apiResponse?.errorMessage || 'Unknown error occurred';
@@ -2494,8 +2513,8 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
                 if (successDiv) successDiv.style.display = 'none';
             }
             
-            console.log('[SMS][UI] Delivery statInternational updated:', { 
-                statInternational, 
+            console.log('[SMS][UI] Delivery status updated:', { 
+                status, 
                 destination, 
                 triggerType,
                 provider: apiResponse?.provider,
@@ -2529,14 +2548,14 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
             // E.164 validation
             const e164Pattern = /^\+[1-9]\d{6,14}$/;
             if (!e164Pattern.test(payload.emergencyPhone)) {
-                alert('Invalid phone number format.\n\nMInternationalt be E.164 format (e.g., +573222063010 for International).\n\nGot: ' + payload.emergencyPhone);
+                alert('Invalid phone number format.\n\nMust be E.164 format (e.g., +573222063010 for Colombia).\n\nGot: ' + payload.emergencyPhone);
                 return;
             }
             
-            // Confirm with Internationaler
+            // Confirm with User
             const confirmed = confirm('Send test SMS to ' + payload.emergencyPhone + '?\n\nThis will send a real SMS message.\n\nNote: Works regardless of risk level (production safe).');
             if (!confirmed) {
-                console.log('[SMS][TEST] Internationaler cancelled test SMS');
+                console.log('[SMS][TEST] User cancelled test SMS');
                 return;
             }
             
@@ -2553,6 +2572,27 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
             }
         }
         
-</script>
+
+        // FAILSAFE: Bind Step 1 button after DOM loads
+        document.addEventListener("DOMContentLoaded", () => {
+            const b = [...document.querySelectorAll("button")].find(x => x.innerText.includes("Complete Step 1"));
+            if (!b) {
+                console.warn("[STEP1] Complete Step 1 button not found");
+                return;
+            }
+            b.addEventListener("click", (e) => {
+                try {
+                    console.log("[STEP1] click fired");
+                    (window.completeStep1 || completeStep1)();
+                    console.log("[STEP1] handler finished");
+                } catch (err) {
+                    console.error("[STEP1] error", err);
+                    alert("Step 1 error — check console");
+                }
+            }, { once: false });
+            console.log("[STEP1] Failsafe binding installed");
+        });
+
+    </script>
 </body>
 </html>

@@ -1146,6 +1146,19 @@
                 updatePipelineState('STEP1_COMPLETE');
                 updateSmsPreview();
                 
+                
+                // FORCE Step 2 enable (failsafe)
+                const step2Btn = document.querySelector("#enableLocationBtn") || [...document.querySelectorAll("button")].find(x => x.innerText.includes("Enable Location"));
+                if (step2Btn) {
+                    step2Btn.disabled = false;
+                    step2Btn.classList.remove("disabled");
+                    console.log("[STEP1] Step 2 button force-enabled");
+                }
+                
+                // Visible success proof log
+                console.log("[STEP1] ✅ Configuration complete - Step 2 unlocked");
+                addStep2ProofToUI("[STEP1] ✅ Configuration complete - Step 2 now enabled");
+
                 console.log('[STEP1] Configuration saved:', { name, phone });
                 
             } catch (error) {
@@ -2553,6 +2566,27 @@ This is an automated emergency alert from AllSensesAI Guardian.`;
             }
         }
         
-</script>
+
+        // FAILSAFE: Bind Step 1 button after DOM loads
+        document.addEventListener("DOMContentLoaded", () => {
+            const b = [...document.querySelectorAll("button")].find(x => x.innerText.includes("Complete Step 1"));
+            if (!b) {
+                console.warn("[STEP1] Complete Step 1 button not found");
+                return;
+            }
+            b.addEventListener("click", (e) => {
+                try {
+                    console.log("[STEP1] click fired");
+                    (window.completeStep1 || completeStep1)();
+                    console.log("[STEP1] handler finished");
+                } catch (err) {
+                    console.error("[STEP1] error", err);
+                    alert("Step 1 error — check console");
+                }
+            }, { once: false });
+            console.log("[STEP1] Failsafe binding installed");
+        });
+
+    </script>
 </body>
 </html>
