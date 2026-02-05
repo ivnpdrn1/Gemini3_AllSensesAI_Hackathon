@@ -1,0 +1,13 @@
+S3 Bucket Contents - video/ directory
+Bucket: gemini3-guardian-prod-20260127120521
+Timestamp: 2026-02-01 18:12 (after JS module upload)
+
+2026-02-01 18:12:02       7776 video/IntegrationOrchestrator.js
+2026-02-01 18:11:50      11565 video/SignedURLGenerator.js
+2026-02-01 18:10:53       8449 video/VideoCaptureModule.js
+2026-02-01 18:11:13       9993 video/VideoStorageService.js
+2026-02-01 13:47:41     229727 video/index.html
+
+Total: 5 files
+- 1 HTML file (229,727 bytes)
+- 4 JavaScript modules (37,783 bytes total)

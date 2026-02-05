@@ -1,0 +1,289 @@
+# Checkpoint 12 Report: Release Candidate Packaging
+
+**Date**: 2026-02-01  
+**Task**: Task 12 - Release Candidate Packaging  
+**Status**: ✅ COMPLETE
+
+---
+
+## Objective
+
+Package Release Candidate 1 (RC1) with deployment scripts, rollback script, proof bundle template, and comprehensive release documentation.
+
+---
+
+## RC1 Package Contents
+
+### Core Files
+1. **gemini3-guardian-production-sms-video.html** (4746 lines)
+   - Video-enabled build variant
+   - Build ID: `GEMINI3-GUARDIAN-SMS-VIDEO-20260201-v1`
+   - Steps 1-3 unchanged (regression-safe)
+   - Video panel in Step 4 only
+
+2. **Video Modules** (JavaScript)
+   - `VideoCaptureModule.js` - Client-side video capture
+   - `VideoStorageService.js` - S3 upload integration
+   - `SignedURLGenerator.js` - Time-limited URL generation
+   - `IntegrationOrchestrator.js` - Video evidence orchestrator
+
+3. **Tests**
+   - `tests/property-tests.js` - Property-based tests for video capture
+
+4. **Checkpoints**
+   - `checkpoints/ckpt1/` through `checkpoints/ckpt11/` - Development checkpoints
+   - Each checkpoint includes backup files and detailed reports
+
+### Deployment Scripts
+
+#### 1. Deploy Script: `deploy-production-sms-video.ps1`
+**Purpose**: Deploy video variant to S3 + CloudFront
+
+**Features**:
+- Accepts bucket name, distribution ID, video path, region as parameters
+- Validates source file exists before deployment
+- Uploads to S3 with cache-busting headers
+- Verifies upload success
+- Creates CloudFront invalidation
+- Prints test URLs for verification
+- Provides rollback command
+
+**Usage**:
+```powershell
+.\deploy-production-sms-video.ps1 `
+    -BucketName "your-s3-bucket" `
+    -DistributionId "E1234567890ABC" `
+    -VideoPath "video/index.html"
+```
+
+**Safety Features**:
+- Deploys to SEPARATE S3 key (preserves baseline)
+- Cache-Control: `max-age=0, no-cache, no-store, must-revalidate`
+- Invalidates only video path (not `/*`)
+- Verifies baseline production unchanged
+
+#### 2. Rollback Script: `rollback-production-sms-video.ps1`
+**Purpose**: Rollback to baseline production (remove video variant)
+
+**Features**:
+- Accepts bucket name, distribution ID, video path, region as parameters
+- Requires explicit confirmation (`ROLLBACK` keyword)
+- Checks if video variant exists before deletion
+- Deletes video variant from S3
+- Creates CloudFront invalidation
+- Verifies baseline production still works
+- Prints verification URLs
+
+**Usage**:
+```powershell
+.\rollback-production-sms-video.ps1 `
+    -BucketName "your-s3-bucket" `
+    -DistributionId "E1234567890ABC"
+```
+
+**Safety Features**:
+- Requires explicit confirmation
+- Checks video variant exists before deletion
+- Verifies baseline production unchanged
+- Provides verification steps
+
+### Documentation
+
+#### 1. Release Notes: `RELEASE_NOTES.md`
+**Contents**:
+- Build ID and release date
+- Feature overview (video capture, SMS integration, UI)
+- Non-destructive guarantees (Steps 1-3 unchanged, SMS preserved)
+- Known limitations (backend compatibility, camera requirements)
+- Deployment strategy (parallel path deployment)
+- Rollback procedure
+- Testing checklist (pre-deployment, post-deployment, rollback)
+- Files included in RC1
+- Success criteria
+
+#### 2. Proof Bundle Template: `PROOF_BUNDLE.md`
+**Purpose**: Template for manual testing proof collection
+
+**Sections**:
+- **A) Page Load Proof**: Regression check (console logs, network requests)
+- **B) Baseline SMS Proof**: SMS without video (backward compatibility)
+- **C) Video SMS Proof**: SMS with video (new functionality)
+- **D) Failure Mode Proof**: Video failures non-blocking
+- **E) Regression Proof**: Steps 1-3 unchanged
+- **F) Final Certification**: Test summary and certification statement
+- **G) Deployment Proof**: Post-deployment verification
+
+**Format**: Markdown with placeholders for user to fill during testing
+
+---
+
+## Deployment Strategy
+
+### Parallel Path Deployment
+**CRITICAL**: Deploy video variant to a **separate S3 key** to preserve baseline production build.
+
+**Recommended S3 Keys**:
+- **Baseline Production**: `index.html` (unchanged)
+- **Video Variant**: `video/index.html` OR `gemini3-guardian-production-sms-video.html`
+
+**CloudFront Routing**:
+- **Production URL**: `https://example.cloudfront.net/` → `index.html` (baseline)
+- **Video URL**: `https://example.cloudfront.net/video/` → `video/index.html` (video variant)
+
+### Cache Control
+Use aggressive cache-busting for safe iteration:
+```
+Cache-Control: max-age=0, no-cache, no-store, must-revalidate
+```
+
+### Invalidation
+Invalidate only the video path (not `/*`):
+```
+/video/index.html
+/gemini3-guardian-production-sms-video.html
+```
+
+---
+
+## Rollback Procedure
+
+### Instant Rollback
+1. **Delete Video S3 Key**: Remove video variant from S3
+2. **Invalidate CloudFront**: Clear video path from CDN cache
+3. **Verify Baseline**: Confirm production build still accessible
+
+### Rollback Script
+Use `rollback-production-sms-video.ps1` to automate rollback:
+```powershell
+.\rollback-production-sms-video.ps1 -BucketName "your-bucket" -DistributionId "E1234567890ABC"
+```
+
+### Rollback Verification
+- Confirm video URL returns 404 or redirects to baseline
+- Confirm baseline production URL still works
+- Confirm no console errors on page load
+
+---
+
+## Testing Checklist
+
+### Pre-Deployment
+- [ ] Run regression tests (verify Steps 1-3 unchanged)
+- [ ] Verify build ID: `GEMINI3-GUARDIAN-SMS-VIDEO-20260201-v1`
+- [ ] Verify no console errors on page load
+- [ ] Verify no network calls on page load
+
+### Post-Deployment
+- [ ] Test SMS without video (baseline test)
+- [ ] Test SMS with video (new functionality)
+- [ ] Test video capture failure (non-blocking)
+- [ ] Verify video panel only in Step 4
+- [ ] Verify console logs show proof messages
+
+### Rollback Test
+- [ ] Execute rollback script
+- [ ] Verify video URL inaccessible
+- [ ] Verify baseline production URL works
+- [ ] Verify no console errors
+
+---
+
+## Success Criteria
+
+### Deployment Success
+✅ Video variant deployed to separate S3 key  
+✅ Baseline production build unchanged  
+✅ CloudFront invalidation completed  
+✅ Video URL accessible  
+✅ No console errors on page load
+
+### Functional Success
+✅ SMS sends without video (baseline test)  
+✅ SMS sends with video (new functionality)  
+✅ Video capture failures are non-blocking  
+✅ Video panel only appears in Step 4  
+✅ Console logs show proof messages
+
+### Rollback Success
+✅ Rollback script executes without errors  
+✅ Video URL inaccessible after rollback  
+✅ Baseline production URL still works  
+✅ No console errors after rollback
+
+---
+
+## Files Created/Modified
+
+### Created Files
+1. `Gemini3_AllSensesAI/video/release/rc1/RELEASE_NOTES.md`
+2. `Gemini3_AllSensesAI/video/release/rc1/deploy-production-sms-video.ps1`
+3. `Gemini3_AllSensesAI/video/release/rc1/rollback-production-sms-video.ps1`
+4. `Gemini3_AllSensesAI/video/release/rc1/PROOF_BUNDLE.md`
+5. `Gemini3_AllSensesAI/video/checkpoints/ckpt12/` (complete RC1 backup)
+6. `Gemini3_AllSensesAI/video/checkpoints/ckpt12/ckpt12-report.md` (this file)
+
+### Copied Files to RC1
+1. `gemini3-guardian-production-sms-video.html` (4746 lines)
+2. `VideoCaptureModule.js`
+3. `VideoStorageService.js`
+4. `SignedURLGenerator.js`
+5. `IntegrationOrchestrator.js`
+6. `tests/property-tests.js`
+7. `checkpoints/ckpt1/` through `checkpoints/ckpt11/`
+
+---
+
+## Key Insights
+
+### Deployment Safety
+1. **Parallel Path Deployment**: Video variant deployed to separate S3 key
+2. **Baseline Preservation**: Production build remains unchanged
+3. **Instant Rollback**: Delete video variant, baseline still works
+4. **Cache Busting**: Aggressive cache control for safe iteration
+
+### Testing Requirements
+1. **Manual Testing Required**: Camera access, SMS delivery, network requests
+2. **Proof Collection**: Console logs, network payloads, SMS messages, screenshots
+3. **Regression Testing**: Steps 1-3 unchanged, SMS flow preserved
+4. **Failure Testing**: Video failures non-blocking
+
+### Documentation Completeness
+1. **Release Notes**: Comprehensive feature overview and deployment guide
+2. **Proof Bundle**: Template for manual testing proof collection
+3. **Deployment Scripts**: Automated deployment and rollback
+4. **Checkpoint Reports**: Complete development history
+
+---
+
+## Compliance Summary
+
+### Task 12: Release Candidate Packaging
+✅ **RC1 Directory Created**: `Gemini3_AllSensesAI/video/release/rc1/`  
+✅ **Core Files Copied**: HTML, JS modules, tests, checkpoints  
+✅ **Deployment Script Created**: `deploy-production-sms-video.ps1`  
+✅ **Rollback Script Created**: `rollback-production-sms-video.ps1`  
+✅ **Release Notes Created**: `RELEASE_NOTES.md`  
+✅ **Proof Bundle Created**: `PROOF_BUNDLE.md`  
+✅ **Checkpoint 12 Created**: Complete RC1 backup  
+✅ **Checkpoint Report Created**: `ckpt12-report.md`
+
+---
+
+## Next Steps
+
+### Immediate Actions
+1. **Review RC1 Package**: Verify all files present and correct
+2. **Test Deployment Script**: Dry-run deployment to staging
+3. **Test Rollback Script**: Verify rollback works correctly
+4. **Fill Proof Bundle**: Execute manual testing and collect proof
+
+### Future Tasks
+1. **Task 13**: S3 bucket and lifecycle policies
+2. **Task 14**: Monitoring and alerting
+3. **Task 15**: Final regression verification
+
+---
+
+**Checkpoint 12 Status**: COMPLETE ✅  
+**RC1 Status**: Ready for Manual Testing ✅  
+**Next Step**: Execute E2E validation using PROOF_BUNDLE.md template

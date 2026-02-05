@@ -1,0 +1,54 @@
+# Regression Test Output - After Hash Fix
+# Date: 2026-02-01
+# Command: .\Gemini3_AllSensesAI\video\release\rc1\regression\run-regression-local.ps1
+
+========================================
+Local Regression Test - RC1
+========================================
+
+Loading baseline hash from local canonical file...
+Loaded known baseline hash: 3EE4EC5F221BEE1B15D4B467A35D59D8C567BF88C380341CD5A5D63E27F98B8D
+
+[1/5] Validating file paths...
+  Baseline file: .\Gemini3_AllSensesAI\gemini3-guardian-production-sms.html
+  Video file: .\Gemini3_AllSensesAI\gemini3-guardian-production-sms-video.html
+
+[2/5] Computing baseline file hash...
+  Baseline SHA256: 3EE4EC5F221BEE1B15D4B467A35D59D8C567BF88C380341CD5A5D63E27F98B8D
+
+[3/5] Computing video file hash...
+  Video SHA256: 991DCA09ED43CDD6191E13B46C7A339496146202312A70E14EAFF2264884C60C
+
+[4/5] Verifying baseline hash...
+  Known hash (ckpt1): 3EE4EC5F221BEE1B15D4B467A35D59D8C567BF88C380341CD5A5D63E27F98B8D
+  Current hash:       3EE4EC5F221BEE1B15D4B467A35D59D8C567BF88C380341CD5A5D63E27F98B8D
+  [PASS] Baseline hash matches checkpoint 1
+
+[5/5] Writing hashes to file...
+  Hashes written to: .\Gemini3_AllSensesAI\video\release\rc1\regression\hashes.txt
+
+========================================
+Regression Test Summary
+========================================
+
+Status: PASS
+Baseline: UNCHANGED (verified against checkpoint 1)
+Video Variant: READY FOR TESTING
+
+Next Steps:
+1. Review hashes.txt for verification
+2. Execute manual regression tests (REGRESSION_CHECKLIST.md)
+3. Run deployment regression script (run-regression-deploy.ps1)
+
+Exit Code: 0
+
+---
+
+## Verification
+
+✅ Regression test PASSES with authoritative ckpt1 hash
+✅ Baseline hash matches expected value
+✅ No changes to production baseline HTML content
+✅ History preserved with documented correction
+✅ Future runs cannot drift due to file-based hash loading
+

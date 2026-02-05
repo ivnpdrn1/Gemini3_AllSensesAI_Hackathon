@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AllSenses Live Location Tracking</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .status {
+            padding: 16px 24px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #28a745;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.stale {
+            background: #ffc107;
+        }
+
+        .status-dot.error {
+            background: #dc3545;
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        #map {
+            width: 100%;
+            height: 400px;
+            background: #e9ecef;
+        }
+
+        .info {
+            padding: 24px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-card label {
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .info-card value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #212529;
+        }
+
+        .alert {
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            border: 1px solid #dc3545;
+            color: #721c24;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border: 1px solid #17a2b8;
+            color: #0c5460;
+        }
+
+        .footer {
+            padding: 16px 24px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            text-align: center;
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        @media (max-width: 600px) {
+            .status {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ AllSenses Live Location</h1>
+            <p>Real-time emergency location tracking</p>
+        </div>
+
+        <div class="status">
+            <div class="status-item">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="statusText">Connecting...</span>
+            </div>
+            <div class="status-item">
+                <span id="lastUpdate">Last update: --</span>
+            </div>
+        </div>
+
+        <div id="map"></div>
+
+        <div class="info">
+            <div class="alert alert-info show" id="loadingAlert">
+                Loading location data...
+            </div>
+            <div class="alert alert-warning" id="staleAlert">
+                ⚠️ Location data is stale. Last update was more than 1 minute ago.
+            </div>
+            <div class="alert alert-danger" id="errorAlert">
+                ❌ Unable to load location data. Please check the tracking link.
+            </div>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <label>Latitude</label>
+                    <value id="latitude">--</value>
+                </div>
+                <div class="info-card">
+                    <label>Longitude</label>
+                    <value id="longitude">--</value>
+                </div>
+                <div class="info-card">
+                    <label>Accuracy</label>
+                    <value id="accuracy">--</value>
+                </div>
+                <div class="info-card">
+                    <label>Age</label>
+                    <value id="age">--</value>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            AllSenses AI Guardian • Emergency Location Tracking<br>
+            This link expires 24 hours after creation
+        </div>
+    </div>
+
+    <!-- Google Maps JavaScript API -->
+    <script>
+        // Configuration
+        const LAMBDA_URL = 'REPLACE_WITH_LAMBDA_FUNCTION_URL'; // Will be replaced during deployment
+        const POLL_INTERVAL = 3000; // 3 seconds
+        const STALE_THRESHOLD = 60; // 60 seconds
+        const GOOGLE_MAPS_API_KEY = window.__GOOGLE_MAPS_API_KEY__ || ""; // Optional: configure via window global
+
+        // Extract token from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('t');
+
+        console.log('[TRACK] Token:', token);
+
+        if (!token) {
+            showError('Invalid tracking link: missing token');
+        }
+
+        // Initialize map (Google Maps or fallback to embedded iframe)
+        let map = null;
+        let marker = null;
+        let accuracyCircle = null;
+        let useGoogleMapsAPI = false;
+
+        function initMap(lat, lng, accuracy) {
+            const mapContainer = document.getElementById('map');
+            
+            // If Google Maps API key is available, use JavaScript API
+            if (GOOGLE_MAPS_API_KEY && !map && typeof google !== 'undefined') {
+                useGoogleMapsAPI = true;
+                map = new google.maps.Map(mapContainer, {
+                    center: { lat, lng },
+                    zoom: 15,
+                    mapTypeControl: true,
+                    streetViewControl: false
+                });
+
+                marker = new google.maps.Marker({
+                    position: { lat, lng },
+                    map: map,
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        scale: 10,
+                        fillColor: '#667eea',
+                        fillOpacity: 1,
+                        strokeColor: 'white',
+                        strokeWeight: 3
+                    }
+                });
+
+                if (accuracy > 0) {
+                    accuracyCircle = new google.maps.Circle({
+                        map: map,
+                        center: { lat, lng },
+                        radius: accuracy,
+                        fillColor: '#667eea',
+                        fillOpacity: 0.2,
+                        strokeColor: '#667eea',
+                        strokeWeight: 2
+                    });
+                }
+            } else if (useGoogleMapsAPI && map) {
+                // Update existing Google Maps
+                marker.setPosition({ lat, lng });
+                map.setCenter({ lat, lng });
+                if (accuracyCircle) {
+                    accuracyCircle.setCenter({ lat, lng });
+                    accuracyCircle.setRadius(accuracy);
+                }
+            } else {
+                // Fallback: Use Google Maps embed (no API key required)
+                mapContainer.innerHTML = `
+                    <iframe 
+                        width="100%" 
+                        height="400" 
+                        frameborder="0" 
+                        style="border:0"
+                        src="https://www.google.com/maps?q=${lat},${lng}&z=15&output=embed"
+                        allowfullscreen>
+                    </iframe>
+                `;
+            }
+        }
+
+        // Load Google Maps API if key is available
+        if (GOOGLE_MAPS_API_KEY) {
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}`;
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+        }
+
+        // Fetch location data
+        async function fetchLocation() {
+            if (!token) return;
+
+            try {
+                console.log('[TRACK] Polling for token:', token);
+                
+                const response = await fetch(`${LAMBDA_URL}?token=${encodeURIComponent(token)}`);
+                
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        showError('Tracking session not found or expired');
+                    } else {
+                        showError(`Server error: ${response.status}`);
+                    }
+                    return;
+                }
+
+                const data = await response.json();
+                console.log('[TRACK] Location received:', data);
+
+                updateUI(data);
+                hideAlert('loadingAlert');
+                hideAlert('errorAlert');
+
+            } catch (error) {
+                console.error('[TRACK] Backend error:', error);
+                showError(`Connection error: ${error.message}`);
+            }
+        }
+
+        // Update UI with location data
+        function updateUI(data) {
+            const { latitude, longitude, accuracy, timestamp, age_seconds } = data;
+
+            // Update map
+            initMap(latitude, longitude, accuracy);
+
+            // Update info cards
+            document.getElementById('latitude').textContent = latitude.toFixed(6);
+            document.getElementById('longitude').textContent = longitude.toFixed(6);
+            document.getElementById('accuracy').textContent = accuracy > 0 ? `±${Math.round(accuracy)}m` : 'Unknown';
+            document.getElementById('age').textContent = formatAge(age_seconds);
+
+            // Update status
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            const lastUpdate = document.getElementById('lastUpdate');
+
+            if (age_seconds < STALE_THRESHOLD) {
+                statusDot.className = 'status-dot';
+                statusText.textContent = 'Live tracking active';
+                hideAlert('staleAlert');
+            } else {
+                statusDot.className = 'status-dot stale';
+                statusText.textContent = 'Location data is stale';
+                showAlert('staleAlert');
+            }
+
+            lastUpdate.textContent = `Last update: ${formatTimestamp(timestamp)}`;
+        }
+
+        // Show error
+        function showError(message) {
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            const errorAlert = document.getElementById('errorAlert');
+
+            statusDot.className = 'status-dot error';
+            statusText.textContent = 'Connection error';
+            errorAlert.textContent = `❌ ${message}`;
+            showAlert('errorAlert');
+            hideAlert('loadingAlert');
+        }
+
+        // Alert helpers
+        function showAlert(id) {
+            document.getElementById(id).classList.add('show');
+        }
+
+        function hideAlert(id) {
+            document.getElementById(id).classList.remove('show');
+        }
+
+        // Format helpers
+        function formatAge(seconds) {
+            if (seconds < 60) return `${Math.round(seconds)}s ago`;
+            if (seconds < 3600) return `${Math.round(seconds / 60)}m ago`;
+            return `${Math.round(seconds / 3600)}h ago`;
+        }
+
+        function formatTimestamp(ms) {
+            const date = new Date(ms);
+            return date.toLocaleTimeString();
+        }
+
+        // Start polling
+        if (token) {
+            fetchLocation(); // Initial fetch
+            setInterval(fetchLocation, POLL_INTERVAL);
+        }
+    </script>
+</body>
+</html>

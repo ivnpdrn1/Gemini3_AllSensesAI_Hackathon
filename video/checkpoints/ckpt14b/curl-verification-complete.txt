@@ -1,0 +1,95 @@
+# Curl Verification Results - Checkpoint 14b
+# Date: 2026-02-01 23:35 GMT
+# Status: ✅ ALL CHECKS PASSED
+
+## Phase 1: JS Modules Verification
+
+### VideoCaptureModule.js
+URL: https://dfc8ght8abwqc.cloudfront.net/video/VideoCaptureModule.js
+Status: HTTP/1.1 200 OK
+Content-Type: application/javascript
+Content-Length: 8449
+Last-Modified: Sun, 01 Feb 2026 23:10:53 GMT
+Cache-Control: max-age=0, no-cache, no-store, must-revalidate
+X-Cache: Miss from cloudfront
+✅ PASS
+
+### VideoStorageService.js
+URL: https://dfc8ght8abwqc.cloudfront.net/video/VideoStorageService.js
+Status: HTTP/1.1 200 OK
+Content-Type: application/javascript
+Content-Length: 9993
+Last-Modified: Sun, 01 Feb 2026 23:11:13 GMT
+Cache-Control: max-age=0, no-cache, no-store, must-revalidate
+X-Cache: Miss from cloudfront
+✅ PASS
+
+### SignedURLGenerator.js
+URL: https://dfc8ght8abwqc.cloudfront.net/video/SignedURLGenerator.js
+Status: HTTP/1.1 200 OK
+Content-Type: application/javascript
+Content-Length: 11565
+Last-Modified: Sun, 01 Feb 2026 23:11:50 GMT
+Cache-Control: max-age=0, no-cache, no-store, must-revalidate
+X-Cache: Miss from cloudfront
+✅ PASS
+
+### IntegrationOrchestrator.js
+URL: https://dfc8ght8abwqc.cloudfront.net/video/IntegrationOrchestrator.js
+Status: HTTP/1.1 200 OK
+Content-Type: application/javascript
+Content-Length: 7776
+Last-Modified: Sun, 01 Feb 2026 23:12:02 GMT
+Cache-Control: max-age=0, no-cache, no-store, must-revalidate
+X-Cache: Miss from cloudfront
+✅ PASS
+
+## Phase 2: HTML File Verification (After Path Fix)
+
+### index.html
+URL: https://dfc8ght8abwqc.cloudfront.net/video/index.html
+Status: HTTP/1.1 200 OK
+Content-Type: text/html
+Content-Length: 229711
+Last-Modified: Sun, 01 Feb 2026 23:34:57 GMT
+Cache-Control: max-age=0, no-cache, no-store, must-revalidate
+X-Cache: Miss from cloudfront
+✅ PASS
+
+## Summary
+
+✅ All 5 files return HTTP 200 OK
+✅ All files have correct Content-Type headers
+✅ All files have correct Cache-Control headers (no-cache)
+✅ All files served fresh from S3 (X-Cache: Miss)
+✅ HTML file updated with corrected paths (23:34:57 GMT)
+
+## Path Fix Verification
+
+Source File Paths (CORRECT):
+  <script src="./VideoCaptureModule.js"></script>
+  <script src="./VideoStorageService.js"></script>
+  <script src="./SignedURLGenerator.js"></script>
+  <script src="./IntegrationOrchestrator.js"></script>
+
+Deployed File Paths (NOW CORRECT - Fixed 2026-02-01 23:34:57):
+  <script src="./VideoCaptureModule.js"></script>
+  <script src="./VideoStorageService.js"></script>
+  <script src="./SignedURLGenerator.js"></script>
+  <script src="./IntegrationOrchestrator.js"></script>
+
+Previous Deployed Paths (WRONG - Caused 404s):
+  <script src="video/VideoCaptureModule.js"></script>  ❌ Resolved to /video/video/...
+  <script src="video/VideoStorageService.js"></script>  ❌ Resolved to /video/video/...
+  <script src="video/SignedURLGenerator.js"></script>  ❌ Resolved to /video/video/...
+  <script src="video/IntegrationOrchestrator.js"></script>  ❌ Resolved to /video/video/...
+
+## Next Step
+
+⏳ BROWSER VERIFICATION REQUIRED
+User must verify in browser:
+1. Network tab shows all JS modules load with 200 OK
+2. Console tab shows no errors
+3. Step 1 button works (completeStep1 is defined)
+
+See: browser-verification-guide.md for detailed instructions

@@ -1,0 +1,439 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AllSenses Video Evidence Storage Infrastructure - GEMINI3-GUARDIAN-SMS-VIDEO-20260130-v1'
+
+Parameters:
+  RetentionDays:
+    Type: Number
+    Default: 7
+    Description: 'Number of days to retain video evidence before automatic deletion'
+    MinValue: 1
+    MaxValue: 90
+
+Resources:
+  # S3 Bucket for Video Evidence Storage
+  VideoEvidenceBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub 'allsenses-emergency-evidence-${AWS::Region}-${AWS::AccountId}'
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteEvidenceAfterRetention
+            Status: Enabled
+            Prefix: evidence/
+            ExpirationInDays: !Ref RetentionDays
+            NoncurrentVersionExpirationInDays: 1
+      VersioningConfiguration:
+        Status: Enabled
+      CorsConfiguration:
+        CorsRules:
+          - AllowedOrigins:
+              - '*'
+            AllowedMethods:
+              - GET
+              - HEAD
+            AllowedHeaders:
+              - '*'
+            MaxAge: 3600
+      Tags:
+        - Key: Purpose
+          Value: EmergencyVideoEvidence
+        - Key: BuildID
+          Value: GEMINI3-GUARDIAN-SMS-VIDEO-20260130-v1
+
+  # Bucket Policy - Deny Public Access and Force TLS
+  VideoEvidenceBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref VideoEvidenceBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: DenyPublicACLs
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:PutObjectAcl'
+            Resource: !Sub '${VideoEvidenceBucket.Arn}/*'
+            Condition:
+              StringEquals:
+                s3:x-amz-acl:
+                  - public-read
+                  - public-read-write
+          - Sid: ForceTLS
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:*'
+            Resource:
+              - !GetAtt VideoEvidenceBucket.Arn
+              - !Sub '${VideoEvidenceBucket.Arn}/*'
+            Condition:
+              Bool:
+                aws:SecureTransport: 'false'
+          - Sid: AllowLambdaAccess
+            Effect: Allow
+            Principal:
+              AWS: !GetAtt VideoEvidenceLambdaRole.Arn
+            Action:
+              - 's3:GetObject'
+              - 's3:PutObject'
+              - 's3:DeleteObject'
+              - 's3:GetObjectTagging'
+              - 's3:PutObjectTagging'
+            Resource: !Sub '${VideoEvidenceBucket.Arn}/*'
+
+  # CloudWatch Log Group for Access Logging
+  AccessLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /allsenses/video-evidence/access-logs
+      RetentionInDays: 90
+
+  # DynamoDB Table for Access Event Tracking
+  AccessEventsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: allsenses-video-access-events
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: eventId
+          AttributeType: S
+        - AttributeName: accessTimestamp
+          AttributeType: S
+      KeySchema:
+        - AttributeName: eventId
+          KeyType: HASH
+        - AttributeName: accessTimestamp
+          KeyType: RANGE
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+      Tags:
+        - Key: Purpose
+          Value: VideoAccessAuditTrail
+        - Key: BuildID
+          Value: GEMINI3-GUARDIAN-SMS-VIDEO-20260130-v1
+
+  # IAM Role for Lambda Functions
+  VideoEvidenceLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'AllSenses-VideoEvidence-Lambda-${AWS::Region}'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: VideoEvidenceAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:DeleteObject
+                  - s3:GetObjectTagging
+                  - s3:PutObjectTagging
+                Resource: !Sub '${VideoEvidenceBucket.Arn}/*'
+              - Effect: Allow
+                Action:
+                  - s3:ListBucket
+                Resource: !GetAtt VideoEvidenceBucket.Arn
+              - Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                  - dynamodb:GetItem
+                  - dynamodb:Query
+                Resource: !GetAtt AccessEventsTable.Arn
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !GetAtt AccessLogGroup.Arn
+
+  # Lambda Function for Video Storage Service
+  VideoStorageFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: AllSenses-VideoStorage
+      Runtime: python3.11
+      Handler: index.handler
+      Role: !GetAtt VideoEvidenceLambdaRole.Arn
+      Timeout: 60
+      MemorySize: 512
+      Environment:
+        Variables:
+          EVIDENCE_BUCKET: !Ref VideoEvidenceBucket
+          ACCESS_EVENTS_TABLE: !Ref AccessEventsTable
+          RETENTION_DAYS: !Ref RetentionDays
+          BUILD_ID: GEMINI3-GUARDIAN-SMS-VIDEO-20260130-v1
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          import os
+          import base64
+          import hashlib
+          from datetime import datetime, timedelta, timezone
+          from urllib.parse import urlparse, parse_qs
+          import logging
+
+          logger = logging.getLogger()
+          logger.setLevel(logging.INFO)
+
+          s3 = boto3.client('s3')
+          dynamodb = boto3.resource('dynamodb')
+
+          BUCKET = os.environ['EVIDENCE_BUCKET']
+          ACCESS_TABLE = os.environ['ACCESS_EVENTS_TABLE']
+          RETENTION_DAYS = int(os.environ.get('RETENTION_DAYS', 7))
+
+          def handler(event, context):
+              """
+              Video Storage Service Handler
+              Supports: store_video, generate_signed_url, log_access
+              """
+              logger.info(f"Video storage handler: {json.dumps(event, default=str)}")
+              
+              try:
+                  # Parse request
+                  if 'body' in event:
+                      body = json.loads(event['body']) if isinstance(event['body'], str) else event['body']
+                  else:
+                      body = event
+                  
+                  action = body.get('action', 'store_video')
+                  
+                  if action == 'store_video':
+                      return store_video_asset(body)
+                  elif action == 'generate_signed_url':
+                      return generate_signed_url(body)
+                  elif action == 'log_access':
+                      return log_access_event(body)
+                  else:
+                      return error_response(f"Unknown action: {action}")
+                      
+              except Exception as e:
+                  logger.error(f"Error in video storage handler: {str(e)}", exc_info=True)
+                  return error_response(str(e))
+
+          def store_video_asset(body):
+              """Store video asset with encryption and tagging"""
+              try:
+                  event_id = body.get('eventId')
+                  video_data = body.get('videoData')  # base64 encoded
+                  metadata = body.get('metadata', {})
+                  frame_index = body.get('frameIndex', 0)
+                  
+                  if not event_id or not video_data:
+                      return error_response("Missing eventId or videoData")
+                  
+                  # Decode video data
+                  video_bytes = base64.b64decode(video_data)
+                  
+                  # Generate S3 key
+                  timestamp = datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')
+                  s3_key = f"evidence/{event_id}/{timestamp}_frame{frame_index}.mp4"
+                  
+                  # Calculate expiration date
+                  expiration_date = (datetime.now(timezone.utc) + timedelta(days=RETENTION_DAYS)).isoformat()
+                  
+                  # Store in S3 with encryption and tags
+                  s3.put_object(
+                      Bucket=BUCKET,
+                      Key=s3_key,
+                      Body=video_bytes,
+                      ServerSideEncryption='AES256',
+                      ContentType='video/mp4',
+                      Metadata={
+                          'event-id': event_id,
+                          'timestamp': timestamp,
+                          'frame-index': str(frame_index),
+                          'confidence-level': str(metadata.get('confidenceLevel', 0.0)),
+                          'expiration-date': expiration_date
+                      },
+                      Tagging=f"event_id={event_id}&expiration_date={expiration_date}&build_id=GEMINI3-GUARDIAN-SMS-VIDEO-20260130-v1"
+                  )
+                  
+                  logger.info(f"Video asset stored: {s3_key}")
+                  
+                  return success_response({
+                      's3Key': s3_key,
+                      'bucket': BUCKET,
+                      'eventId': event_id,
+                      'frameIndex': frame_index,
+                      'expirationDate': expiration_date,
+                      'encrypted': True
+                  })
+                  
+              except Exception as e:
+                  logger.error(f"Error storing video asset: {str(e)}", exc_info=True)
+                  return error_response(str(e))
+
+          def generate_signed_url(body):
+              """Generate pre-signed URL with time-limited access"""
+              try:
+                  s3_key = body.get('s3Key')
+                  expiration_minutes = body.get('expirationMinutes', 20)
+                  
+                  if not s3_key:
+                      return error_response("Missing s3Key")
+                  
+                  # Validate expiration window (15-30 minutes)
+                  if expiration_minutes < 15 or expiration_minutes > 30:
+                      expiration_minutes = 20
+                  
+                  # Generate pre-signed URL
+                  signed_url = s3.generate_presigned_url(
+                      'get_object',
+                      Params={
+                          'Bucket': BUCKET,
+                          'Key': s3_key
+                      },
+                      ExpiresIn=expiration_minutes * 60,
+                      HttpMethod='GET'
+                  )
+                  
+                  logger.info(f"Signed URL generated for {s3_key}, expires in {expiration_minutes} minutes")
+                  
+                  return success_response({
+                      'signedUrl': signed_url,
+                      's3Key': s3_key,
+                      'expirationMinutes': expiration_minutes,
+                      'expiresAt': (datetime.now(timezone.utc) + timedelta(minutes=expiration_minutes)).isoformat()
+                  })
+                  
+              except Exception as e:
+                  logger.error(f"Error generating signed URL: {str(e)}", exc_info=True)
+                  return error_response(str(e))
+
+          def log_access_event(body):
+              """Log video access event for audit trail"""
+              try:
+                  event_id = body.get('eventId')
+                  video_key = body.get('videoKey')
+                  ip_address = body.get('ipAddress', 'unknown')
+                  user_agent = body.get('userAgent', 'unknown')
+                  access_result = body.get('accessResult', 'success')
+                  
+                  if not event_id or not video_key:
+                      return error_response("Missing eventId or videoKey")
+                  
+                  # Hash IP address for privacy
+                  ip_hash = hashlib.sha256(ip_address.encode()).hexdigest()[:16]
+                  
+                  # Store access event in DynamoDB
+                  table = dynamodb.Table(ACCESS_TABLE)
+                  access_timestamp = datetime.now(timezone.utc).isoformat()
+                  
+                  table.put_item(
+                      Item={
+                          'eventId': event_id,
+                          'accessTimestamp': access_timestamp,
+                          'videoKey': video_key,
+                          'ipAddressHash': ip_hash,
+                          'userAgent': user_agent,
+                          'accessResult': access_result,
+                          'ttl': int((datetime.now(timezone.utc) + timedelta(days=90)).timestamp())
+                      }
+                  )
+                  
+                  logger.info(f"Access event logged: {event_id} - {access_result}")
+                  
+                  return success_response({
+                      'logged': True,
+                      'eventId': event_id,
+                      'accessTimestamp': access_timestamp
+                  })
+                  
+              except Exception as e:
+                  logger.error(f"Error logging access event: {str(e)}", exc_info=True)
+                  # Non-fatal: don't block video access if logging fails
+                  return success_response({
+                      'logged': False,
+                      'error': str(e)
+                  })
+
+          def success_response(data):
+              return {
+                  'statusCode': 200,
+                  'headers': {
+                      'Content-Type': 'application/json',
+                      'Access-Control-Allow-Origin': '*'
+                  },
+                  'body': json.dumps({
+                      'status': 'success',
+                      **data
+                  })
+              }
+
+          def error_response(error_message):
+              return {
+                  'statusCode': 200,
+                  'headers': {
+                      'Content-Type': 'application/json',
+                      'Access-Control-Allow-Origin': '*'
+                  },
+                  'body': json.dumps({
+                      'status': 'error',
+                      'error': error_message
+                  })
+              }
+
+  # Lambda Function URL for Video Storage
+  VideoStorageFunctionUrl:
+    Type: AWS::Lambda::Url
+    Properties:
+      TargetFunctionArn: !Ref VideoStorageFunction
+      AuthType: NONE
+      Cors:
+        AllowOrigins:
+          - "*"
+        AllowMethods:
+          - GET
+          - POST
+        AllowHeaders:
+          - content-type
+
+Outputs:
+  VideoEvidenceBucket:
+    Description: 'S3 Bucket for Video Evidence Storage'
+    Value: !Ref VideoEvidenceBucket
+    Export:
+      Name: !Sub "${AWS::StackName}-VideoEvidenceBucket"
+
+  VideoStorageURL:
+    Description: 'Video Storage Service API URL'
+    Value: !GetAtt VideoStorageFunctionUrl.FunctionUrl
+    Export:
+      Name: !Sub "${AWS::StackName}-VideoStorageURL"
+
+  AccessEventsTable:
+    Description: 'DynamoDB Table for Access Event Tracking'
+    Value: !Ref AccessEventsTable
+    Export:
+      Name: !Sub "${AWS::StackName}-AccessEventsTable"
+
+  AccessLogGroup:
+    Description: 'CloudWatch Log Group for Access Logs'
+    Value: !Ref AccessLogGroup
+    Export:
+      Name: !Sub "${AWS::StackName}-AccessLogGroup"
+
+  BuildID:
+    Description: 'Build Identifier (Globally Neutral)'
+    Value: GEMINI3-GUARDIAN-SMS-VIDEO-20260130-v1

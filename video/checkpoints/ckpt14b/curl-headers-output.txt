@@ -1,0 +1,141 @@
+CloudFront HTTP Header Verification
+Distribution: E2NIUI2KOXAO0Q (dfc8ght8abwqc.cloudfront.net)
+Timestamp: 2026-02-01 23:26-23:27 UTC
+Method: curl.exe -I -k (HEAD request with SSL bypass)
+
+================================================================================
+1. VideoCaptureModule.js
+================================================================================
+URL: https://dfc8ght8abwqc.cloudfront.net/video/VideoCaptureModule.js
+
+HTTP/1.1 200 OK
+Content-Type: application/javascript
+Content-Length: 8449
+Connection: keep-alive
+Date: Sun, 01 Feb 2026 23:26:36 GMT
+Last-Modified: Sun, 01 Feb 2026 23:10:53 GMT
+ETag: "cea267531c130f663a317726b370bb0c"
+x-amz-server-side-encryption: AES256
+Cache-Control: max-age=0, no-cache, no-store, must-revalidate
+Accept-Ranges: bytes
+Server: AmazonS3
+X-Cache: Miss from cloudfront
+Via: 1.1 224797da33bb8dc3f8cf7c2b25e379a0.cloudfront.net (CloudFront)
+X-Amz-Cf-Pop: MIA50-P2
+X-Amz-Cf-Id: Z2rLbKDVk70rcdVn2t8_pRv02FS7xO80j0IfSP2fg-_UYvm4OBG-kA==
+
+✓ Status: 200 OK
+✓ Content-Type: application/javascript
+✓ Cache-Control: Correct (no-cache)
+
+================================================================================
+2. VideoStorageService.js
+================================================================================
+URL: https://dfc8ght8abwqc.cloudfront.net/video/VideoStorageService.js
+
+HTTP/1.1 200 OK
+Content-Type: application/javascript
+Content-Length: 9993
+Connection: keep-alive
+Date: Sun, 01 Feb 2026 23:26:44 GMT
+Last-Modified: Sun, 01 Feb 2026 23:11:13 GMT
+ETag: "3cbf82a94fb29d56090944142f1d6214"
+x-amz-server-side-encryption: AES256
+Cache-Control: max-age=0, no-cache, no-store, must-revalidate
+Accept-Ranges: bytes
+Server: AmazonS3
+X-Cache: Miss from cloudfront
+Via: 1.1 8f16d5f49106baea166b37fa234e58b8.cloudfront.net (CloudFront)
+X-Amz-Cf-Pop: MIA50-P2
+X-Amz-Cf-Id: DZY7Bibbbe3nAyIaE3Pfcyll-mzDQ52XI7MY_qCTB7_GE329QrPDJA==
+
+✓ Status: 200 OK
+✓ Content-Type: application/javascript
+✓ Cache-Control: Correct (no-cache)
+
+================================================================================
+3. SignedURLGenerator.js
+================================================================================
+URL: https://dfc8ght8abwqc.cloudfront.net/video/SignedURLGenerator.js
+
+HTTP/1.1 200 OK
+Content-Type: application/javascript
+Content-Length: 11565
+Connection: keep-alive
+Date: Sun, 01 Feb 2026 23:26:51 GMT
+Last-Modified: Sun, 01 Feb 2026 23:11:50 GMT
+ETag: "311eb3ed5db0225a9f91b64581692f46"
+x-amz-server-side-encryption: AES256
+Cache-Control: max-age=0, no-cache, no-store, must-revalidate
+Accept-Ranges: bytes
+Server: AmazonS3
+X-Cache: Miss from cloudfront
+Via: 1.1 ac0b56c5dd4145dd0fafc6c493b39dd6.cloudfront.net (CloudFront)
+X-Amz-Cf-Pop: MIA50-P2
+X-Amz-Cf-Id: U5t6fQbxTt9JnndsmJL6Oc5qoDpOUNnnGO2hnFIApLfPt8075gnMBQ==
+
+✓ Status: 200 OK
+✓ Content-Type: application/javascript
+✓ Cache-Control: Correct (no-cache)
+
+================================================================================
+4. IntegrationOrchestrator.js
+================================================================================
+URL: https://dfc8ght8abwqc.cloudfront.net/video/IntegrationOrchestrator.js
+
+HTTP/1.1 200 OK
+Content-Type: application/javascript
+Content-Length: 7776
+Connection: keep-alive
+Date: Sun, 01 Feb 2026 23:27:29 GMT
+Last-Modified: Sun, 01 Feb 2026 23:12:02 GMT
+ETag: "6bd91b92e30288a33a0217676a4192c9"
+x-amz-server-side-encryption: AES256
+Cache-Control: max-age=0, no-cache, no-store, must-revalidate
+Accept-Ranges: bytes
+Server: AmazonS3
+X-Cache: Miss from cloudfront
+Via: 1.1 05240f8e0c8c9c13023806273b1311b6.cloudfront.net (CloudFront)
+X-Amz-Cf-Pop: MIA50-P2
+X-Amz-Cf-Id: Cqd9PaRqLmnJ4I0BRy449cc8YcnuRY1YYEx-_0Qp7Y3qsqpYf5ZxEA==
+
+✓ Status: 200 OK
+✓ Content-Type: application/javascript
+✓ Cache-Control: Correct (no-cache)
+
+================================================================================
+5. index.html
+================================================================================
+URL: https://dfc8ght8abwqc.cloudfront.net/video/index.html
+
+HTTP/1.1 200 OK
+Content-Type: text/html
+Content-Length: 229727
+Connection: keep-alive
+Date: Sun, 01 Feb 2026 23:27:36 GMT
+Last-Modified: Sun, 01 Feb 2026 18:47:41 GMT
+ETag: "0258b26617a8f9da29cec0f19cf9b197"
+x-amz-server-side-encryption: AES256
+Cache-Control: max-age=0, no-cache, no-store, must-revalidate
+Accept-Ranges: bytes
+Server: AmazonS3
+X-Cache: Miss from cloudfront
+Via: 1.1 dd570eae8ea6c2b999ea8f9811966e90.cloudfront.net (CloudFront)
+X-Amz-Cf-Pop: MIA50-P2
+X-Amz-Cf-Id: 1w0rlCBV6lRbqTsTG8wIHane24ndzZwv9Ihwp_36zy716sjJbBS4Tw==
+
+✓ Status: 200 OK
+✓ Content-Type: text/html
+✓ Cache-Control: Correct (no-cache)
+
+================================================================================
+VERIFICATION SUMMARY
+================================================================================
+✓ All 5 files return HTTP 200 OK
+✓ All JS modules have correct Content-Type: application/javascript
+✓ HTML has correct Content-Type: text/html
+✓ All files have correct Cache-Control headers (no-cache)
+✓ All files served from CloudFront (X-Cache: Miss indicates first fetch)
+✓ All files encrypted at rest (x-amz-server-side-encryption: AES256)
+
+NO CLOUDFRONT INVALIDATION REQUIRED - All files accessible immediately after S3 upload.

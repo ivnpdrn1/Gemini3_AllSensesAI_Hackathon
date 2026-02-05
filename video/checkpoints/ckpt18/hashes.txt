@@ -1,0 +1,17 @@
+﻿# Regression Test Hashes - RC1
+# Generated: 2026-02-01 15:10:47
+
+## Baseline Production File
+File: gemini3-guardian-production-sms.html
+SHA256: 3EE4EC5F221BEE1B15D4B467A35D59D8C567BF88C380341CD5A5D63E27F98B8D
+Known Hash (ckpt1): 3EE4EC5F221BEE1B15D4B467A35D59D8C567BF88C380341CD5A5D63E27F98B8D
+Verified: True
+
+## Video Variant File
+File: gemini3-guardian-production-sms-video.html
+SHA256: 1400ED51E4F5416BF1DD91063648018EB8B9E28EE0693FC1FB577E85A6F8B992
+
+## Verification Status
+Baseline Verified: True
+Baseline Unchanged: True
+
