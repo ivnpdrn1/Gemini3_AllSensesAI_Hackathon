@@ -115,6 +115,10 @@ def lambda_handler(event, context):
                     'AWS.SNS.SMS.MaxPrice': {
                         'DataType': 'String',
                         'StringValue': '0.50'  # Reasonable max price for international
+                    },
+                    'AWS.SNS.SMS.SenderID': {
+                        'DataType': 'String',
+                        'StringValue': 'AllSenses'  # Sender identification
                     }
                 }
             )
